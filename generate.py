@@ -418,7 +418,7 @@ def Heat_Setup(Calc, Job):
         print(file, file=f)
 
 def Pull_Setup(Umbrella, Calc, Job):
-    qm_config = f"! {Calc.Method} {Calc.Basis} D3BJ EnGrad TightSCF CFLOAT D3BJ NormalSCF"  # Removed EasyConv for convergence assistance
+    qm_config = f"! {Calc.Method} {Calc.Basis} D3BJ EnGrad TightSCF CFLOAT NormalSCF"  # Removed EasyConv for convergence assistance
     log.info(f"QM config line is {qm_config}")
     Calc.Set_Length(100, 2) # 100 steps at 2 fs = 200 fs
     Calc.Set_Outputs(5,1,10) # Timings, Restart, Trajectory
