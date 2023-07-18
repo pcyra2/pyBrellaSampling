@@ -287,7 +287,7 @@ harmonic {"{"}
 
 colvar {"{"}
     name angle
-    distance {"{"}
+    angle {"{"}
         group1 {"{"} atomNumbers {Umbrella.atom1} {"}"}
         group2 {"{"} atomNumbers {Umbrella.atom2} {"}"}
         group3 {"{"} atomNumbers {Umbrella.atom3} {"}"}
@@ -306,7 +306,7 @@ harmonic {"{"}
 
         colvar {"{"}
             name dihedral
-            distance {"{"}
+            dihedral {"{"}
                 group1 {"{"} atomNumbers {Umbrella.atom1} {"}"}
                 group2 {"{"} atomNumbers {Umbrella.atom2} {"}"}
                 group3 {"{"} atomNumbers {Umbrella.atom3} {"}"}
