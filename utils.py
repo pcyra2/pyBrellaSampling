@@ -38,6 +38,7 @@ def dict_read(path):
 def dict_write(path, dict):
     with open(path,"w") as f:
         json.dump(dict, f)
+        
 def input_parser(args):
     if args.verbose == 0:
         log.basicConfig(format="%(levelname)s: %(message)s", level=log.CRITICAL)
