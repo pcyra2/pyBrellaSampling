@@ -13,6 +13,7 @@ def file_write(path, lines):
     with open(path, 'w') as f:
         for i in lines:
             print(i,file=f)
+            
 def data_2d(path):
     data0 = file_read(path)
     data = []

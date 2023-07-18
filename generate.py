@@ -429,13 +429,22 @@ def Pull_Setup(Umbrella, Calc, Job):
         pressure = "off"
     Joblist = [None]*Umbrella.Bins
     for i in range(Umbrella.Bins):
-        if Umbrella.BinVals[i] > Umbrella.Start:
-            prevPull = f"../{i-1}/pull.{i-1}.restart.coor"
-        elif Umbrella.BinVals[i] < Umbrella.Start:
-            prevPull = f"../{i + 1}/pull.{i + 1}.restart.coor"
-        elif Umbrella.BinVals[i] == Umbrella.Start:
-            Umbrella.add_start(i)
-            prevPull = f"../heat.restart.coor"
+        if Umbrella.Width > 0:
+            if Umbrella.BinVals[i] > Umbrella.Start:
+                prevPull = f"../{i-1}/pull.{i-1}.restart.coor"
+            elif Umbrella.BinVals[i] < Umbrella.Start:
+                prevPull = f"../{i + 1}/pull.{i + 1}.restart.coor"
+            elif Umbrella.BinVals[i] == Umbrella.Start:
+                Umbrella.add_start(i)
+                prevPull = f"../heat.restart.coor"
+        else:
+            if Umbrella.BinVals[i] < Umbrella.Start:
+                prevPull = f"../{i-1}/pull.{i-1}.restart.coor"
+            elif Umbrella.BinVals[i] > Umbrella.Start:
+                prevPull = f"../{i + 1}/pull.{i + 1}.restart.coor"
+            elif Umbrella.BinVals[i] == Umbrella.Start:
+                Umbrella.add_start(i)
+                prevPull = f"../heat.restart.coor"            
         Calc.Job_Name("pull")
         Calc.Set_OutFile(f"{Calc.Name}.{i}")
         file = Namd_File(Calc, "../complex.parm7", "../start.rst7",prevPull, qm_config, i)
