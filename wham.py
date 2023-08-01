@@ -5,7 +5,12 @@ import matplotlib.pyplot as plt
 import logging as log
 import subprocess
 
-
+def autocorrelate(data):
+    try:
+        integral_time = emcee.autocorr.integrated_time(data, c=1)
+    except emcee.autocorr.AutocorrError:
+        integral_time = 1
+    return integral_time
 
 def Init_Wham(Job, Umbrella, Wham):
     hist_bar = []
@@ -18,10 +23,7 @@ def Init_Wham(Job, Umbrella, Wham):
         os.remove(f"{Job.WorkDir}/WHAM/{Wham.Name}metadata.dat")
     for i in range(0,Umbrella.Bins):    # Ignore line 1...
         time, value = utils.data_2d(f"{Job.WorkDir}{i}/{Wham.Name}.{i}.colvars.traj")
-        try:
-            integral_time = emcee.autocorr.integrated_time(value, c=1)
-        except emcee.autocorr.AutocorrError:
-            integral_time =1
+        integral_time = autocorrelate(value)
         counts, bins, bars = plt.hist(value, 100)
         hist_count.extend(counts)
         hist_bar.extend(bins)
