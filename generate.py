@@ -4,7 +4,7 @@ import os
 import os.path as path
 
 
-def Namd_File(Calc, parm, coord1, coord2, qmvars, i, heating="off"):
+def Namd_File(Calc, parm, coord1, coord2, qmvars, i, heating="off", colfile = "const"):
     if Calc.Ensemble == "NVP":
         pressure = "on"
     else:
@@ -28,11 +28,11 @@ temperature         {Calc.Temp}
     try:
         if Calc.Force > 1000:
             Rest_Lines = f"""colvars on 
-colvarsConfig colvars.pull.conf"""
+colvarsConfig colvars.{colfile}.conf"""
         elif Calc.Force < 1000:
             Rest_Lines = \
 f"""colvars on 
-colvarsConfig colvars.const.conf"""
+colvarsConfig colvars.{colfile}.conf"""
     except AttributeError:
         Rest_Lines = "# No Restraints applied"
     file = f"""## Umbrella {Calc.OutFile} input file 
@@ -254,16 +254,18 @@ quit
         print(tcl, file=f)
 
 def colvar_gen(Umbrella, i, type, force):
-    # if i > Umbrella.StartBin:
-    #     prevBin = i - 1
-    # elif i < Umbrella.StartBin:
-    #     prevBin = i + 1
-    # else:
-    #     prevBin = i
+    if i > Umbrella.StartBin:
+        prevBin = i - 1
+    elif i < Umbrella.StartBin:
+        prevBin = i + 1
+    else:
+        prevBin = i
     if type == "pull":
-        freq = 20
+        freq = 1
+        Stages = 100
     else:
         freq = 1
+        Stages = 0
     if Umbrella.atom3 == 0: ### Bond distance
         file = f"""colvarsTrajFrequency     {freq}
 
@@ -307,18 +309,34 @@ harmonic {"{"}
         colvar {"{"}
             name dihedral
             dihedral {"{"}
-                group1 {"{"} atomNumbers {Umbrella.atom1} {"}"}
-                group2 {"{"} atomNumbers {Umbrella.atom2} {"}"}
-                group3 {"{"} atomNumbers {Umbrella.atom3} {"}"}
-                group4 {"{"} atomNumbers {Umbrella.atom4} {"}"}
+                group1 {"{"}  atomsFile ../syst-col.pdb
+                              atomsCol B
+                              atomsColValue 1.00
+                       {"}"}
+                group2 {"{"}  atomsFile ../syst-col.pdb
+                              atomsCol B
+                              atomsColValue 2.00
+                       {"}"}
+                group3 {"{"}  atomsFile ../syst-col.pdb
+                              atomsCol B
+                              atomsColValue 3.00
+                       {"}"}
+                group4 {"{"}  atomsFile ../syst-col.pdb
+                              atomsCol B
+                              atomsColValue 4.00
+                       {"}"}
             {"}"}
         {"}"}
 
         harmonic {"{"}
             name dihedpot
             colvars dihedral
-            centers {Umbrella.BinVals[i]}
+            centers {Umbrella.BinVals[prevBin]}
             forceConstant {force}
+            targetCenters {Umbrella.BinVals[i]}
+            outputCenters on
+            targetNumSteps 200
+            outputAccumulatedWork on
         {"}"}
         """
     return file
@@ -420,14 +438,21 @@ def Heat_Setup(Calc, Job):
 def Pull_Setup(Umbrella, Calc, Job):
     qm_config = f"! {Calc.Method} {Calc.Basis} D3BJ EnGrad TightSCF CFLOAT NormalSCF"  # Removed EasyConv for convergence assistance
     log.info(f"QM config line is {qm_config}")
-    Calc.Set_Length(100, 2) # 100 steps at 2 fs = 200 fs
+    Calc.Set_Length(200, 0.5) # 100 steps at 2 fs = 200 fs
     Calc.Set_Outputs(5,1,10) # Timings, Restart, Trajectory
     Calc.Set_Shake("all") # restrain all bonds involving Hydrogen
-    Calc.Set_Force(5000)
+    Calc.Set_Force(10)
     Calc.Set_QM("on")
     if Calc.Ensemble == "NVT":
         pressure = "off"
     Joblist = [None]*Umbrella.Bins
+    for i in range(Umbrella.Bins):
+       if Umbrella.Width > 0:
+            if Umbrella.BinVals[i] == Umbrella.Start:
+                Umbrella.add_start(i)
+       else:
+            if Umbrella.BinVals[i] == Umbrella.Start:
+                Umbrella.add_start(i)
     for i in range(Umbrella.Bins):
         if Umbrella.Width > 0:
             if Umbrella.BinVals[i] > Umbrella.Start:
@@ -444,10 +469,10 @@ def Pull_Setup(Umbrella, Calc, Job):
                 prevPull = f"../{i + 1}/pull.{i + 1}.restart.coor"
             elif Umbrella.BinVals[i] == Umbrella.Start:
                 Umbrella.add_start(i)
-                prevPull = f"../heat.restart.coor"            
+                prevPull = f"../heat.restart.coor"
         Calc.Job_Name("pull")
         Calc.Set_OutFile(f"{Calc.Name}.{i}")
-        file = Namd_File(Calc, "../complex.parm7", "../start.rst7",prevPull, qm_config, i)
+        file = Namd_File(Calc, "../complex.parm7", "../start.rst7",prevPull, qm_config, i, colfile="pull")
         with open(f"{Job.WorkDir}{i}/pull.conf", 'w') as f:
             print(file, file=f)
         file = colvar_gen(Umbrella, i, "pull", Calc.Force)
