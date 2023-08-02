@@ -15,6 +15,42 @@ import matplotlib.pyplot as plt
 
 # import WHAM
 
+class LabelClass:
+    bond = []
+    bondName = []
+    bondThresh = []
+    dihedral = []
+    dihedralName = []
+    dihedralTarget1 = []
+    dihedralTarget2 = []
+    dihedralTarget1Name = []
+    dihedralTarget2Name = []
+    def __init__(self,  parm):
+        self.parm = parm
+    def add_bond(self, selection, name, thresh):
+        self.bond.append(selection)
+        self.bondName.append(name)
+        self.bondThresh.append(thresh)
+    def add_dihedral(self, selection, name, target1, t1name, target2, t2name):
+        self.dihedral.append(selection)
+        self.dihedralName.append(name)
+        self.dihedralTarget1.append(target1)
+        self.dihedralTarget1Name.append(t1name)
+        self.dihedralTarget2.append(target2)
+        self.dihedralTarget2Name.append(t2name)
+    def file_name(self, name):
+        self.file = name
+
+class DataClass:
+    dat = []
+    def __init__(self, Name, ):
+        self.name = Name
+    def add_data(self, name, window, data):
+        self.dat.append(pd.DataFrame(
+            data={"Name": name, "Window": window, "Data": data}))
+    def __repr__(self):
+        return f"{self.name}: \n{self.dat}"
+
 def main():
     starttime = time.time()
 
@@ -140,38 +176,38 @@ def main():
         def __init__(self, Name, Force):
             self.Name = Name
             self.Force = Force
-    class LabelClass:
-        bond = []
-        bondName = []
-        bondThresh = []
-        dihedral = []
-        dihedralName = []
-        dihedralTarget1 = []
-        dihedralTarget2 = []
-        dihedralTarget1Name = []
-        dihedralTarget2Name = []
-        def __init__(self,  parm):
-            self.parm = parm
-        def add_bond(self, selection, name, thresh):
-            self.bond.append(selection)
-            self.bondName.append(name)
-            self.bondThresh.append(thresh)
-        def add_dihedral(self, selection, name, target1, t1name, target2, t2name):
-            self.dihedral.append(selection)
-            self.dihedralName.append(name)
-            self.dihedralTarget1.append(target1)
-            self.dihedralTarget1Name.append(t1name)
-            self.dihedralTarget2.append(target2)
-            self.dihedralTarget2Name.append(t2name)
-        def file_name(self, name):
-            self.file = name
-    class DataClass:
-        dat = []
-        def __init__(self, Name, ):
-            self.name = Name
-        def add_data(self, name, window, data):
-            self.dat.append(pd.DataFrame(
-                data={"Name": name, "Window": window, "Data": data}))
+    # class LabelClass:
+    #     bond = []
+    #     bondName = []
+    #     bondThresh = []
+    #     dihedral = []
+    #     dihedralName = []
+    #     dihedralTarget1 = []
+    #     dihedralTarget2 = []
+    #     dihedralTarget1Name = []
+    #     dihedralTarget2Name = []
+    #     def __init__(self,  parm):
+    #         self.parm = parm
+    #     def add_bond(self, selection, name, thresh):
+    #         self.bond.append(selection)
+    #         self.bondName.append(name)
+    #         self.bondThresh.append(thresh)
+    #     def add_dihedral(self, selection, name, target1, t1name, target2, t2name):
+    #         self.dihedral.append(selection)
+    #         self.dihedralName.append(name)
+    #         self.dihedralTarget1.append(target1)
+    #         self.dihedralTarget1Name.append(t1name)
+    #         self.dihedralTarget2.append(target2)
+    #         self.dihedralTarget2Name.append(t2name)
+    #     def file_name(self, name):
+    #         self.file = name
+    # class DataClass:
+    #     dat = []
+    #     def __init__(self, Name, ):
+    #         self.name = Name
+    #     def add_data(self, name, window, data):
+    #         self.dat.append(pd.DataFrame(
+    #             data={"Name": name, "Window": window, "Data": data}))
 
 
     Umbrella = UmbrellaClass(args.UmbrellaMin, args.UmbrellaBins,
@@ -359,3 +395,5 @@ def main():
 
     endtime = time.time()
     print(f"Total time is {endtime - starttime}")
+
+

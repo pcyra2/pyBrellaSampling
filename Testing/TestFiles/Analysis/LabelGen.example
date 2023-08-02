@@ -1,0 +1,17 @@
+mol new coord.file waitfor -1
+mol addfile param.file
+
+
+label add Bonds 0/1 0/2
+label graph Bonds 0 testbond.dat
+label delete Bonds 0
+
+label add Dihedrals 0/1 0/2 0/3 0/4
+label graph Dihedrals 0 testdihedral.dat
+label delete Dihedrals 0
+
+label add Dihedrals 0/1 0/2 0/3 0/4
+label graph Dihedrals 0 MultiTest.dat
+label delete Dihedrals 0
+
+quit

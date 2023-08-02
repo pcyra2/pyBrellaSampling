@@ -11,6 +11,8 @@ class BondClass:
         self.at2 = atom2
         self.name = name
         self.thresh = threshold
+    def __repr__(self):
+        return f"Atoms: {self.at1} {self.at2}, name: {self.name}, threshold: {self.thresh}"
 
 class DihedralClass:
     def __init__(self, atom1, atom2, atom3, atom4, name, target1, t1name, target2, t2name):
@@ -23,6 +25,8 @@ class DihedralClass:
         self.target1Name = t1name
         self.target2 = target2
         self.target2Name = t2name
+    def __repr__(self):
+        return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
 
 
 
@@ -31,7 +35,7 @@ def tcl_bondPlot(bond):
     lines = f"""label add Bonds 0/{bond.at1} 0/{bond.at2}
 label graph Bonds 0 {bond.name}.dat
 label delete Bonds 0
-    """
+"""
     return lines
 
 def tcl_bondAnalysis(bond, data, simulation):
@@ -50,11 +54,12 @@ def tcl_bondAnalysis(bond, data, simulation):
             State = "Normal"
         if State !=  prevState:
             log.warning(f"{bond.name} has changed to {State} for window {simulation} on step {i}")
+    return State
 
 def tcl_dihedPlot(dihed):
     lines = f"""label add Dihedrals 0/{dihed.at1} 0/{dihed.at2} 0/{dihed.at3} 0/{dihed.at4}
-    label graph Dihedrals 0 {dihed.name}.dat
-    label delete Dihedrals 0
+label graph Dihedrals 0 {dihed.name}.dat
+label delete Dihedrals 0
 """
     return lines
 
@@ -74,6 +79,7 @@ def tcl_dihedAnalysis(dihed, data, window):
             State = dihed.target2Name
         if prevState != State:
             log.warning(f"Dihedral flip from {dihed.name} {prevState} to {State} for window {window}, on step {i}")
+    return State
 
 def Label_Maker(Label, path):
     Bonds = [None] * len(Label.bond)
