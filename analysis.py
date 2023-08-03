@@ -1,34 +1,8 @@
 import logging as log
 import pyBrellaSampling.utils as utils
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
 
-
-class BondClass:
-    def __init__(self, atom1, atom2, name, threshold):
-        self.at1 = atom1
-        self.at2 = atom2
-        self.name = name
-        self.thresh = threshold
-    def __repr__(self):
-        return f"Atoms: {self.at1} {self.at2}, name: {self.name}, threshold: {self.thresh}"
-
-class DihedralClass:
-    def __init__(self, atom1, atom2, atom3, atom4, name, target1, t1name, target2, t2name):
-        self.at1 = atom1
-        self.at2 = atom2
-        self.at3 = atom3
-        self.at4 = atom4
-        self.name = name
-        self.target1 = target1
-        self.target1Name = t1name
-        self.target2 = target2
-        self.target2Name = t2name
-    def __repr__(self):
-        return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
-
-
+from pyBrellaSampling.classes import BondClass, DihedralClass
 
 
 def tcl_bondPlot(bond):
@@ -104,7 +78,7 @@ mol addfile {Label.parm}
                                          Label.dihedralTarget1[i],
                                          Label.dihedralTarget1Name[i],
                                          Label.dihedralTarget2[i],
-                                         Label.dihedralTarget2Name[i],)
+                                         Label.dihedralTarget2Name[i], )
             lines = tcl_dihedPlot(Dihedrals[i])
             print(lines, file=f)
         print("quit", file=f)

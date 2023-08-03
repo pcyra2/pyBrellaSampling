@@ -60,3 +60,4 @@ def input_parser(args):
         dict_write(f"{args.WorkDir}{args.input}", lst)
     return args
 
+

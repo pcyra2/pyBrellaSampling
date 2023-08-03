@@ -1,5 +1,7 @@
 import pyBrellaSampling.analysis as analysis
+import pyBrellaSampling.classes
 import pyBrellaSampling.pyBrella as pybrella
+import pyBrellaSampling.utils
 import pyBrellaSampling.utils as utils
 import os
 import pandas as pd
@@ -7,13 +9,13 @@ import pandas as pd
 Test_Dir = "./Testing/TestFiles/Analysis/"
 
 
-test_bond = analysis.BondClass(1,2,"testbond",
-                               1.2)
-test_dihedral = analysis.DihedralClass(1,2,3,4,
-                                       "testdihedral",0,"Min",
-                                       180,"Max")
+test_bond = pyBrellaSampling.classes.BondClass(1, 2, "testbond",
+                                               1.2)
+test_dihedral = pyBrellaSampling.classes.DihedralClass(1, 2, 3, 4,
+                                       "testdihedral", 0,"Min",
+                                                       180,"Max")
 
-test_label = pybrella.LabelClass("param.file")
+test_label = pyBrellaSampling.classes.LabelClass("param.file")
 test_label.file_name("coord.file")
 test_label.add_bond("1,2", "testbond", 1.2)
 test_label.add_dihedral("1,2,3,4","testdihedral",0,
@@ -59,7 +61,7 @@ def test_DihedralAnalysis():
     assert State == "Max", "Dihedral analysis not working..."
 
 def test_DataframeGeneration():
-    DataFrame = pybrella.DataClass("DataFrame")
+    DataFrame = pyBrellaSampling.classes.DataClass("DataFrame")
     DataFrame = analysis.Labal_Analysis([test_bond], [test_dihedral], f"{Test_Dir}", 1, DataFrame)
     df = pd.concat(DataFrame.dat)
     df.to_csv(f"{Test_Dir}DataFrame.tmp")
