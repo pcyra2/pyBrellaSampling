@@ -254,18 +254,19 @@ quit
         print(tcl, file=f)
 
 def colvar_gen(Umbrella, i, type, force):
-    if i > Umbrella.StartBin:
-        prevBin = i - 1
-    elif i < Umbrella.StartBin:
-        prevBin = i + 1
-    else:
-        prevBin = i
     if type == "pull":
         freq = 1
         Stages = 100
+        if i > Umbrella.StartBin:
+            prevBin = i - 1
+        elif i < Umbrella.StartBin:
+            prevBin = i + 1
+        else:
+            prevBin = i
     else:
         freq = 1
         Stages = 0
+        prevBin = i
     if Umbrella.atom3 == 0: ### Bond distance
         file = f"""colvarsTrajFrequency     {freq}
 
@@ -438,7 +439,7 @@ def Heat_Setup(Calc, Job):
 def Pull_Setup(Umbrella, Calc, Job):
     qm_config = f"! {Calc.Method} {Calc.Basis} D3BJ EnGrad TightSCF CFLOAT NormalSCF"  # Removed EasyConv for convergence assistance
     log.info(f"QM config line is {qm_config}")
-    Calc.Set_Length(200, 0.5) # 100 steps at 2 fs = 200 fs
+    Calc.Set_Length(50, 0.5) # 100 steps at 2 fs = 200 fs
     Calc.Set_Outputs(5,1,10) # Timings, Restart, Trajectory
     Calc.Set_Shake("all") # restrain all bonds involving Hydrogen
     Calc.Set_Force(10)
@@ -485,7 +486,6 @@ def Prod_Setup(Umbrella, Calc, Job, startCoord):
     qm_config = f"! {Calc.Method} {Calc.Basis} D3BJ EnGrad TightSCF CFLOAT SlowConv"
     log.info(f"QM config line is {qm_config}")
     Calc.Set_Shake("none")  # restrain all bonds involving Hydrogen
-    Calc.Set_Force(300)
     Calc.Set_QM("on")
     if Calc.Ensemble == "NVT":
         pressure = "off"

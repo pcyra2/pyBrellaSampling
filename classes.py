@@ -11,10 +11,8 @@ class UmbrellaClass:
         self.Bins = bins
         self.Start = Start
         self.Width = Width
-
     def add_bins(self, BinVals):
         self.BinVals = BinVals
-
     def add_start(self, StartBin):
         self.StartBin = StartBin
 
@@ -24,7 +22,6 @@ class JobClass:
         self.WorkDir = args.WorkDir
         self.JobType = args.JobType
         self.Verbosity = args.verbose
-
 
 class LabelClass:
     bond = []
@@ -52,7 +49,6 @@ class LabelClass:
     def file_name(self, name):
         self.file = name
 
-
 class DataClass:
     dat = []
     def __init__(self, Name, ):
@@ -63,7 +59,6 @@ class DataClass:
     def __repr__(self):
         return f"{self.name}: \n{self.dat}"
 
-
 class BondClass:
     def __init__(self, atom1, atom2, name, threshold):
         self.at1 = atom1
@@ -72,7 +67,6 @@ class BondClass:
         self.thresh = threshold
     def __repr__(self):
         return f"Atoms: {self.at1} {self.at2}, name: {self.name}, threshold: {self.thresh}"
-
 
 class DihedralClass:
     def __init__(self, atom1, atom2, atom3, atom4, name, target1, t1name, target2, t2name):
@@ -87,7 +81,6 @@ class DihedralClass:
         self.target2Name = t2name
     def __repr__(self):
         return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
-
 
 class WhamClass:
     def __init__(self, Name, Force):

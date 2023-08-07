@@ -8,6 +8,7 @@ import pyBrellaSampling.generate as Generate
 import pyBrellaSampling.wham as Wham
 import pyBrellaSampling.analysis as Anal
 import pyBrellaSampling.utils as Utils
+import pyBrellaSampling.UmbrellaSetup as Setup
 import pandas as pd
 import time
 
@@ -165,21 +166,23 @@ def main():
     Umbrella.add_bins(bins)
 
     if setup == True:
-        Generate.make_dirs(args.UmbrellaBins, args.WorkDir)
-        Calc.Set_Ensemble("NVT")
-        Umbrella, pullJobs = Generate.Pull_Setup(Umbrella, Calc, Job)
-        log.info(f"Pull Start Bin = {Umbrella.StartBin}")
-        with open(f"{Job.WorkDir}pull.sh",'w') as f:
-            print("#!/bin/bash", file=f)
-            for i in range(Umbrella.StartBin, Umbrella.Bins):
-                print(pullJobs[i], file=f)
-            for i in range(0, Umbrella.StartBin):
-                print(pullJobs[Umbrella.StartBin -i -1],file=f)
-        if args.DryRun == False:
-            log.warning("Running Pull command")
-            subprocess.run(["sh pull.sh"], shell=True, capture_output=True)
+        Setup.run_setup(args, Umbrella, Calc, Job, args.DryRun)
+        # Generate.make_dirs(args.UmbrellaBins, args.WorkDir)
+        # Calc.Set_Ensemble("NVT")
+        # Umbrella, pullJobs = Generate.Pull_Setup(Umbrella, Calc, Job)
+        # log.info(f"Pull Start Bin = {Umbrella.StartBin}")
+        # with open(f"{Job.WorkDir}pull.sh",'w') as f:
+        #     print("#!/bin/bash", file=f)
+        #     for i in range(Umbrella.StartBin, Umbrella.Bins):
+        #         print(pullJobs[i], file=f)
+        #     for i in range(0, Umbrella.StartBin):
+        #         print(pullJobs[Umbrella.StartBin -i -1],file=f)
+        # if args.DryRun == False:
+        #     log.warning("Running Pull command")
+        #     subprocess.run(["sh pull.sh"], shell=True, capture_output=True)
 
     if run == True:
+        Calc.Set_Force(args.Force)
         Calc.Set_Ensemble("NVT")
         Calc.Job_Name("equil")
         Calc.Set_Length(2000, 0.5)  # 2000 steps at 0.5 fs = 1 ps ~ 1 day

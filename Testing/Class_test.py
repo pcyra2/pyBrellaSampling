@@ -57,3 +57,26 @@ def test_DataClass():
     with open(f"{Test_Dir}DataClass.pickle","rb") as f:
         TestDataClass = pickle.load(f)
     assert compare(TestDataClass,GenDataClass) == None, "Dataframe class is incorrect"
+
+def test_CalcClass():
+    GenCalcClass = CalcClass(args)
+    GenCalcClass.Job_Name("TestCalc")
+    GenCalcClass.Set_OutFile("TestCalcOutFile")
+    GenCalcClass.Set_Force(1)
+    GenCalcClass.Set_Id(1)
+    GenCalcClass.Change_Cell(1)
+    GenCalcClass.Set_QM(True)
+    GenCalcClass.Set_Ensemble("NVT")
+    GenCalcClass.Set_Temp(300)
+    GenCalcClass.Set_Length(10,0.5)
+    GenCalcClass.Set_Outputs(1,1,1)
+    GenCalcClass.Set_Shake("none")
+    with open(f"{Test_Dir}CalcClass.pickle", 'rb') as f:
+        TestCalcClass = pickle.load(f)
+    assert compare(TestCalcClass, GenCalcClass) == None, "CalcClass is incorrect"
+
+def test_WhamClass():
+    GenWhamClass = WhamClass("Wham", 100)
+    with open(f"{Test_Dir}WhamClass.pickle", "rb") as f:
+        TestWhamClass = pickle.load(f)
+    assert compare(GenWhamClass, TestWhamClass) == None, "WhamClass is incorrect"
