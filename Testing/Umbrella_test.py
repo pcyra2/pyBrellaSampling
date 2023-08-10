@@ -1,18 +1,21 @@
 from pyBrellaSampling.classes import UmbrellaClass, CalcClass, JobClass
 import pyBrellaSampling.utils as utils
-import pyBrellaSampling.UmbrellaSetup as setup
-import argparse as ap
+import pyBrellaSampling.Umbrella as setup
+import pyBrellaSampling.InputParser as input
 import pickle
 import os
 import shutil
 from testfixtures import compare
 
-Test_Dir = "./Testing/TestFiles/pyBrella/"
+Test_Dir = "./Testing/TestFiles/Umbrella/"
 ClassExamples_Dir = "./Testing/TestFiles/Classes/"
 
-test_input = utils.dict_read(f"./Testing/TestFiles/Utils/input.example")
-test_input["WorkDir"] = Test_Dir
-args = ap.Namespace(**test_input)
+Arguments = [f"-wd={Test_Dir}", "-jt=umbrella", "-v=0","-dr=True","-cores=1",
+                 "-mem=1", "-MDcpu=NAMDPATHCPU", "-MDgpu=NAMDPATHGPU",
+                 "--QmPath=ORCAPATH", "-qsel=ATOMSEL", "-qc=1", "-qspin=1",
+                 "-qm=FUNCTIONAL", "-qb=BASIS", "-min=1.0", "-width=1", "-bins=10",
+                 "-pf=1", "-sd=1","-mask=Comma,Separated,Atom,Index", "-stg=full", "-wf=WHAM"]
+args = input.VariableParser(Arguments)
 
 
 def class_load(name):
@@ -37,7 +40,9 @@ def test_SetupPulls():
     for i in range(args.UmbrellaBins):
         shutil.rmtree(f"{Test_Dir}{i}")
     with open(f"{Test_Dir}Umbrella.pickle", 'rb') as f:
+        # pickle.dump(GenUmbrella,f)
         TestUmbrella=pickle.load(f)
+    # utils.file_write(f"{Test_Dir}pullJobs.example", GenPullJobs)
     TestJobs = utils.file_read(f"{Test_Dir}pullJobs.example")
     TestJobs = [line.replace("\n","") for line in TestJobs] #When File is re-read in, linebreaks are added.
     assert GenPullJobs == TestJobs, "JobFile generation failed"

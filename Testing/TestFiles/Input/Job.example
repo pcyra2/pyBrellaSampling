@@ -1,0 +1,4 @@
+WorkDir=./
+JobType=Test
+Verbosity=1
+DryRun=False

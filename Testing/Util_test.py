@@ -12,7 +12,7 @@ Test_args = {"input": "TestOut.tmp",
              "NamdPath": "PATH/TO/namd3",
              "NumCores": 1,
              "JobType": "TEST",
-             "verbose": 1,
+             "Verbosity": 1,
              "DryRun": True,
              "UmbrellaMin": 1,
              "UmbrellaWidth": 1,
@@ -58,9 +58,9 @@ def test_Read2D():
     assert col1.any() == Data_1D.any(), "Cannot read 2D data file column 1"
     assert col2.any() == Data_1D.any(), "Cannot read 2D data file column 2"
 
-def test_InputParser():
-    test_input = Utils.dict_read(f"{Test_Dir}input.example")
-    args = ap.Namespace(**test_input)
-    returned_args = Utils.input_parser(args)
-    true_input = ap.Namespace(**Test_args)
-    assert true_input == returned_args, "Something wrong with the input parser."
+# def test_InputParser():
+#     test_input = Utils.dict_read(f"{Test_Dir}input.example")
+#     args = ap.Namespace(**test_input)
+#     returned_args = Utils.input_parser(args)
+#     true_input = ap.Namespace(**Test_args)
+#     assert true_input == returned_args, "Something wrong with the input parser."

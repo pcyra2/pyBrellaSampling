@@ -1,0 +1,9 @@
+UmbrellaMin=1
+UmbrellaWidth=1
+UmbrellaBins=10
+PullForce=100
+ConstForce=1
+StartDistance=1.1
+AtomMask=1,2,3,4
+Stage=Init
+WhamFile=equil

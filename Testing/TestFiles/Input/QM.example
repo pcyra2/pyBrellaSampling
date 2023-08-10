@@ -1,0 +1,6 @@
+QmPath=/home/pcyra2/Software/ORCA/orca
+QmSelection=resname CTN
+QmCharge=1
+QmSpin=1
+QmMethod=PBE
+QmBasis=6-31G*

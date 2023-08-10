@@ -21,7 +21,7 @@ class JobClass:
     def __init__(self, args):
         self.WorkDir = args.WorkDir
         self.JobType = args.JobType
-        self.Verbosity = args.verbose
+        self.Verbosity = args.Verbosity
 
 class LabelClass:
     bond = []
@@ -93,15 +93,16 @@ class CalcClass:
     QM = "off"
     CutOff = 8.0
     def __init__(self,args):
-        self.NamdPath = args.NamdPath
-        self.GPUNamd = "/home/pcyra2/Downloads/NAMD_Git-2021-09-30_Linux-x86_64-multicore-CUDA/namd2"
+        self.NamdPath = args.MDCPUPath
+        self.GPUNamd = args.MDGPUPath
         self.QMpath = args.QmPath
         self.QMSel = args.QmSelection
         self.Charge = args.QmCharge
         self.Spin = args.QmSpin
         self.Method = args.QmMethod
         self.Basis = args.QmBasis
-        self.Threads = args.NumCores
+        self.Threads = args.CoresPerJob
+        self.Memory = args.MemoryPerJob
     def Job_Name(self, Name,):
         self.Name = Name
     def Set_OutFile(self, OutFile):

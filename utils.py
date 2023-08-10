@@ -39,25 +39,25 @@ def dict_write(path, dict):
     with open(path,"w") as f:
         json.dump(dict, f)
         
-def input_parser(args):
-    if args.verbose == 0:
-        log.basicConfig(format="%(levelname)s: %(message)s", level=log.CRITICAL)
-    elif args.verbose == 1:
-        log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
-        log.info("Verbose output.")
-    try:
-        data = dict_read(f"{args.WorkDir}{args.input}")
-        lst = vars(args)
-        newlst = lst
-        for i in data:
-            for j in lst:
-                if j == i:
-                    newlst[j] = data[i]
-        args = ap.Namespace(**newlst)
-        dict_write(f"{args.WorkDir}{args.input}", newlst)
-    except FileNotFoundError:
-        lst = vars(args)
-        dict_write(f"{args.WorkDir}{args.input}", lst)
-    return args
+# def input_parser(args):
+#     if args.Verbosity == 0:
+#         log.basicConfig(format="%(levelname)s: %(message)s", level=log.CRITICAL)
+#     elif args.Verbosity == 1:
+#         log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
+#         log.info("Verbose output.")
+#     try:
+#         data = dict_read(f"{args.WorkDir}{args.input}")
+#         lst = vars(args)
+#         newlst = lst
+#         for i in data:
+#             for j in lst:
+#                 if j == i:
+#                     newlst[j] = data[i]
+#         args = ap.Namespace(**newlst)
+#         dict_write(f"{args.WorkDir}{args.input}", newlst)
+#     except FileNotFoundError:
+#         lst = vars(args)
+#         dict_write(f"{args.WorkDir}{args.input}", lst)
+#     return args
 
 

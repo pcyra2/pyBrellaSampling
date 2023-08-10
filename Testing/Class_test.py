@@ -1,14 +1,14 @@
 from pyBrellaSampling.classes import *
-import pyBrellaSampling.utils as utils
+# import pyBrellaSampling.utils as utils
 import pickle as pickle
 from testfixtures import compare
-import argparse as ap
+# import argparse as ap
 
 
 Test_Dir = "./Testing/TestFiles/Classes/"
 
-test_input = utils.dict_read(f"./Testing/TestFiles/Utils/input.example")
-args = ap.Namespace(**test_input)
+with open("./Testing/TestFiles/Input/Arguments.pickle", 'rb') as f:
+    args = pickle.load(f)
 
 test_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -25,7 +25,7 @@ def test_DihedralClass():
                                          "Min", 180,"Max")
     with open(f"{Test_Dir}DihedralClass.pickle", "rb") as f:
         TestDihedral = pickle.load(f)
-    assert compare(GenDihedral, TestDihedral) == None, "Bond class is incorrect."
+    assert compare(GenDihedral, TestDihedral) == None, "Dihedral class is incorrect."
 
 def test_LabelClass():
     GenLabelClass = LabelClass("param.file")
@@ -34,6 +34,7 @@ def test_LabelClass():
     GenLabelClass.add_dihedral("1,2,3,4", "testdihedral", 0,
                             "Min", 180, "Max")
     with open(f"{Test_Dir}LabelClass.pickle", "rb") as f:
+        # pickle.dump(GenLabelClass,f)
         TestLabelClass = pickle.load(f)
     assert compare(GenLabelClass, TestLabelClass) == None, "Label class is incorrect."
 
@@ -42,12 +43,14 @@ def test_UmbrellaClass():
     GenUmbrellaClass.add_start(4)
     GenUmbrellaClass.add_bins(test_array)
     with open(f"{Test_Dir}UmbrellaClass.pickle", "rb") as f:
+        # pickle.dump(GenUmbrellaClass,f)
         TestUmbrellaClass = pickle.load(f)
     assert compare(GenUmbrellaClass,TestUmbrellaClass) == None, "Umbrella class is incorrect"
 
 def test_JobClass():
     GenJobClass = JobClass(args)
     with open(f"{Test_Dir}JobClass.pickle", "rb") as f:
+        # pickle.dump(GenJobClass, f)
         TestJobClass = pickle.load(f)
     assert compare(TestJobClass,GenJobClass) == None, "Job class is incorrect"
 
@@ -72,6 +75,7 @@ def test_CalcClass():
     GenCalcClass.Set_Outputs(1,1,1)
     GenCalcClass.Set_Shake("none")
     with open(f"{Test_Dir}CalcClass.pickle", 'rb') as f:
+        # pickle.dump(GenCalcClass, f)
         TestCalcClass = pickle.load(f)
     assert compare(TestCalcClass, GenCalcClass) == None, "CalcClass is incorrect"
 
