@@ -1,13 +1,10 @@
-
 import sys
 import time
 
 
 import pyBrellaSampling.InputParser as input
 import pyBrellaSampling.Umbrella as UmbrellaRun
-
-
-
+import pyBrellaSampling.QMMM as QMMMRun
 
 
 def main():
@@ -28,6 +25,8 @@ def main():
     # Umbrella.add_bins(bins)
     if args.JobType.casefold() == "umbrella":   #JobType is case insensitive
         UmbrellaRun.main(args)
+    if args.JobType.casefold() == "QMMM":
+        QMMMRun.main(args)
         # UmbrellaCalculation(args, init, setup, run, wham, analysis)
     # if setup == True:
     #     Setup.run_setup(args, Umbrella, Calc, Job, args.DryRun)

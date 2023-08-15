@@ -1,2 +1,3 @@
-CoresPerJob=16
-MemoryPerJob=10
+CoresPerJob=1
+MemoryPerJob=1
+MaxStepsPerCalc=10

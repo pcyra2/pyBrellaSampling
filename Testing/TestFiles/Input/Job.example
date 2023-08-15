@@ -1,4 +1,4 @@
-WorkDir=./
-JobType=Test
-Verbosity=1
-DryRun=False
+WorkDir=./TEST
+JobType=test
+Verbosity=2
+DryRun=false

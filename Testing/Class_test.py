@@ -1,5 +1,7 @@
 from pyBrellaSampling.classes import *
 # import pyBrellaSampling.utils as utils
+import pyBrellaSampling.InputParser as input
+
 import pickle as pickle
 from testfixtures import compare
 # import argparse as ap
@@ -7,10 +9,17 @@ from testfixtures import compare
 
 Test_Dir = "./Testing/TestFiles/Classes/"
 
-with open("./Testing/TestFiles/Input/Arguments.pickle", 'rb') as f:
-    args = pickle.load(f)
+# with open("./Testing/TestFiles/Input/Arguments.pickle", 'rb') as f:
+#     args = pickle.load(f)
+arguments = [f"-wd=./Testing/TestFiles/Input/", "-jt=umbrella", "-v=0","-dr=True","-cores=1",
+                 "-mem=1", "-MaxCalc=0", "-MDcpu=NAMDPATHCPU", "-MDgpu=NAMDPATHGPU",
+                 "--QmPath=ORCAPATH", "-qsel=ATOMSEL", "-qc=1", "-qspin=1",
+                 "-qm=FUNCTIONAL", "-qb=BASIS", "-qargs=D3BJ", "-min=1.0", "-width=1", "-bins=10",
+                 "-pf=1","-f=150", "-sd=1","-mask=Comma,Separated,Atom,Index", "-stg=full", "-wf=WHAM"]
+args = input.VariableParser(arguments)
 
 test_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
 
 
 def test_BondClass():
@@ -65,15 +74,8 @@ def test_CalcClass():
     GenCalcClass = CalcClass(args)
     GenCalcClass.Job_Name("TestCalc")
     GenCalcClass.Set_OutFile("TestCalcOutFile")
-    GenCalcClass.Set_Force(1)
     GenCalcClass.Set_Id(1)
-    GenCalcClass.Change_Cell(1)
     GenCalcClass.Set_QM(True)
-    GenCalcClass.Set_Ensemble("NVT")
-    GenCalcClass.Set_Temp(300)
-    GenCalcClass.Set_Length(10,0.5)
-    GenCalcClass.Set_Outputs(1,1,1)
-    GenCalcClass.Set_Shake("none")
     with open(f"{Test_Dir}CalcClass.pickle", 'rb') as f:
         # pickle.dump(GenCalcClass, f)
         TestCalcClass = pickle.load(f)
@@ -84,3 +86,60 @@ def test_WhamClass():
     with open(f"{Test_Dir}WhamClass.pickle", "rb") as f:
         TestWhamClass = pickle.load(f)
     assert compare(GenWhamClass, TestWhamClass) == None, "WhamClass is incorrect"
+
+
+def test_QMClass():
+    GenQMClass = QMClass(args)
+    with open(f"{Test_Dir}QMClass.pickle", "rb") as f:
+        # pickle.dump(GenQMClass, f)
+        TestQMClass = pickle.load(f)
+    assert compare(GenQMClass, TestQMClass) == None, "QMClass is incorrect"
+
+def test_MMClass():
+    GenMMClass = MMClass(args)
+    GenMMClass.Set_Shake("bonds")
+    GenMMClass.Set_Outputs(1,1,1,)
+    GenMMClass.Set_Temp(300)
+    GenMMClass.Set_Ensemble("NVT")
+    GenMMClass.Set_Length(1000, 0.05)
+    GenMMClass.Change_Cell(10)
+    GenMMClass.Set_Force(args.ConstForce)
+    with open(f"{Test_Dir}MMClass.pickle", "rb") as f:
+        # pickle.dump(GenMMClass, f)
+        TestMMClass = pickle.load(f)
+    assert compare(GenMMClass, TestMMClass ) == None, "MMClass is incorrect"
+
+def test_NAMDClass():
+    with open(f"{Test_Dir}CalcClass.pickle", "rb") as f:
+        Calc = pickle.load(f)
+    with open(f"{Test_Dir}MMClass.pickle", "rb") as f:
+        MM = pickle.load(f)
+    with open(f"{Test_Dir}QMClass.pickle", "rb") as f:
+        QM = pickle.load(f)
+    print(Calc.QM)
+    MM.Ensemble = "heat"
+    GenNAMDClass = NAMDClass(Calc,MM)
+    assert GenNAMDClass.BrensdenPressure == "off", "heat not working"
+    MM.Ensemble = "NPT"
+    GenNAMDClass = NAMDClass(Calc, MM)
+    assert GenNAMDClass.BrensdenPressure == "on", "NPT not working"
+    MM.Ensemble = "min"
+    Calc.QM = "False"
+    GenNAMDClass = NAMDClass(Calc, MM)
+    GenNAMDClass.set_qm(Calc, QM,)
+    assert GenNAMDClass.qmForces == "off", "turn qm off doesnt work"
+    assert GenNAMDClass.runtype == "minimize", "minimize not working"
+    Calc.QM = True
+    MM.Ensemble = "NVT"
+    GenNAMDClass = NAMDClass(Calc, MM)
+    GenNAMDClass.set_pme("on")
+    GenNAMDClass.set_cellvectors(10)
+    GenNAMDClass.set_qm(Calc,QM, 0)
+    assert GenNAMDClass.colvarlines == "", "Colvars not turned off by default"
+    GenNAMDClass.set_colvars("ColvarFile")
+    GenNAMDClass.set_startcoords("bincoor", "ambercoor", "parm")
+    with open(f"{Test_Dir}NAMDClass.pickle", "rb") as f:
+        # pickle.dump(GenNAMDClass, f)
+        TestNAMDClass = pickle.load(f)
+    assert compare(GenNAMDClass, TestNAMDClass) == None, "NAMDClass is incorrect"
+

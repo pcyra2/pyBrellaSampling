@@ -1,6 +1,6 @@
 from pyBrellaSampling.classes import UmbrellaClass, CalcClass, JobClass
 import pyBrellaSampling.utils as utils
-import pyBrellaSampling.Umbrella as setup
+import pyBrellaSampling.Umbrella as umbrella
 import pyBrellaSampling.InputParser as input
 import pickle
 import os
@@ -11,12 +11,11 @@ Test_Dir = "./Testing/TestFiles/Umbrella/"
 ClassExamples_Dir = "./Testing/TestFiles/Classes/"
 
 Arguments = [f"-wd={Test_Dir}", "-jt=umbrella", "-v=0","-dr=True","-cores=1",
-                 "-mem=1", "-MDcpu=NAMDPATHCPU", "-MDgpu=NAMDPATHGPU",
+                 "-mem=1", "-MaxCalc=0", "-MDcpu=NAMDPATHCPU", "-MDgpu=NAMDPATHGPU",
                  "--QmPath=ORCAPATH", "-qsel=ATOMSEL", "-qc=1", "-qspin=1",
-                 "-qm=FUNCTIONAL", "-qb=BASIS", "-min=1.0", "-width=1", "-bins=10",
-                 "-pf=1", "-sd=1","-mask=Comma,Separated,Atom,Index", "-stg=full", "-wf=WHAM"]
+                 "-qm=FUNCTIONAL", "-qb=BASIS", "-qargs=D3BJ", "-min=1.0", "-width=1", "-bins=10",
+                 "-pf=1", "-f=150", "-sd=1","-mask=Comma,Separated,Atom,Index", "-stg=full", "-wf=WHAM"]
 args = input.VariableParser(Arguments)
-
 
 def class_load(name):
     with open(f"{ClassExamples_Dir}{name}.pickle", 'rb') as f:
@@ -26,41 +25,65 @@ def class_load(name):
 Umbrella = class_load("UmbrellaClass")
 Calc = class_load("CalcClass")
 Job = class_load("JobClass")
+Job.WorkDir = Test_Dir
+QM = class_load("QMClass")
+MM = class_load("MMClass")
+
 
 def test_makeumbrelladirs():
-    setup.make_umbrellaDirs(args)
+    umbrella.make_umbrellaDirs(Umbrella, Job)
     for i in range(args.UmbrellaBins):
         assert os.path.isdir(f"{Test_Dir}{i}"), "Problem with generating paths"
         os.rmdir(f"{Test_Dir}{i}")
 
-def test_SetupPulls():
-    Job.WorkDir = Test_Dir
-    setup.make_umbrellaDirs(args)
-    GenUmbrella, GenPullJobs = setup.setup_pulls(Umbrella, Calc, Job)
+
+def test_pullsetup():
+    umbrella.make_umbrellaDirs(Umbrella, Job)
+    umbrella.pull_setup(Umbrella, MM, QM, Calc, Job)
+    GenFile = utils.file_read(f"{Test_Dir}pull.txt")
+    TestFile = utils.file_read(f"{Test_Dir}pullArray.example")
+    assert GenFile == TestFile, "Array file doesnt work"
+    os.remove(f"{Test_Dir}pull.txt")
+    GenFile = utils.file_read(f"{Test_Dir}pull.sh")
+    TestFile = utils.file_read(f"{Test_Dir}pullScript.example")
+    assert GenFile == TestFile, "Script file doesnt work"
+    os.remove(f"{Test_Dir}pull.sh")
+    GenFile = utils.file_read(f"{Test_Dir}0/pull.conf")
+    TestFile = utils.file_read(f"{Test_Dir}pull.example")
+    assert GenFile == TestFile, "pull.conf file doesnt work"
+    GenFile = utils.file_read(f"{Test_Dir}0/colvars.pull.conf")
+    TestFile = utils.file_read(f"{Test_Dir}colvars.pull.example")
+    assert GenFile == TestFile, "colvars.pull.conf file doesnt work"
     for i in range(args.UmbrellaBins):
         shutil.rmtree(f"{Test_Dir}{i}")
-    with open(f"{Test_Dir}Umbrella.pickle", 'rb') as f:
-        # pickle.dump(GenUmbrella,f)
-        TestUmbrella=pickle.load(f)
-    # utils.file_write(f"{Test_Dir}pullJobs.example", GenPullJobs)
-    TestJobs = utils.file_read(f"{Test_Dir}pullJobs.example")
-    TestJobs = [line.replace("\n","") for line in TestJobs] #When File is re-read in, linebreaks are added.
-    assert GenPullJobs == TestJobs, "JobFile generation failed"
-    assert compare(GenUmbrella, TestUmbrella) == None, "Updated umbrellaclass failed"
-    Job.WorkDir = f"{Test_Dir}example_"
-    setup.make_runfile(Job, TestUmbrella, TestJobs)
-    test_runscript = utils.file_read(f"{Test_Dir}pullsh.example")
-    gen_runscript = utils.file_read(f"{Test_Dir}example_pull.sh")
-    os.remove(f"{Test_Dir}example_pull.sh")
-    assert test_runscript == gen_runscript, "Run Script generation failed"
 
+def test_minsetup():
+    umbrella.min_setup(MM, Calc, Job)
+    GenFile = utils.file_read(f"{Test_Dir}min.conf")
+    TestFile = utils.file_read(f"{Test_Dir}min.example")
+    assert GenFile == TestFile, "Array file doesnt work"
+    os.remove(f"{Test_Dir}min.conf")
 
-def test_PullRun():
-    runout = setup.run_pullScript(f"{Test_Dir}")
-    assert runout != None, "Cannot find Namd executable. Is the module loaded"
+def test_heatsetup():
+    umbrella.heat_setup(MM, Calc, Job)
+    GenFile = utils.file_read(f"{Test_Dir}heat.conf")
+    TestFile = utils.file_read(f"{Test_Dir}heat.example")
+    assert GenFile == TestFile, "Heat file doesnt work"
+    os.remove(f"{Test_Dir}heat.conf")
 
-def test_FullRunSetup():
-    Job.WorkDir = Test_Dir
-    setup.run_setup(args, Umbrella, Calc, Job, DryRun=True)
+def test_equilsetup():
+    umbrella.make_umbrellaDirs(Umbrella, Job)
+    Calc.Name = "equil"
+    umbrella.equil_setup(MM, QM, Job, Calc, Umbrella, "prevJob")
+    GenFile = utils.file_read(f"{Test_Dir}equil_1.txt")
+    TestFile = utils.file_read(f"{Test_Dir}equil_1.example")
+    assert GenFile == TestFile, "Equil array file not working"
+    os.remove(f"{Test_Dir}equil_1.txt")
+    GenFile = utils.file_read(f"{Test_Dir}0/equil_1.conf")
+    TestFile = utils.file_read(f"{Test_Dir}equil.example")
+    assert GenFile == TestFile, "Equil conf file not working"
+    GenFile = utils.file_read(f"{Test_Dir}0/colvars.const.conf")
+    TestFile = utils.file_read(f"{Test_Dir}colvars.const.example")
+    assert GenFile == TestFile, "colvars.equil.conf file doesnt work"
     for i in range(args.UmbrellaBins):
         shutil.rmtree(f"{Test_Dir}{i}")

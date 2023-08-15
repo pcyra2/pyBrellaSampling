@@ -1,6 +1,5 @@
 import pyBrellaSampling.utils as utils
 import argparse as ap
-import logging as log
 
 ### Aim to use case insensitive variables for the end user, especially in the input files.
 ### Use ".casefold()" when comparing strings and ensure new variables are not differing by case...
@@ -56,7 +55,7 @@ def arg_parse(dict, sysargs):
                         help="Type of calculation to run", default=dict["JobType"])
     Core.add_argument('-v', '--Verbosity', type=int,
                         help="Verbosity: 0 = none, 1 = info", default=dict["Verbosity"])
-    Core.add_argument('-dr', '--DryRun', type=bool,
+    Core.add_argument('-dr', '--DryRun', type=str,
                         help="Indicates whether programs are executed or not", default=dict["DryRun"])
 
     Compute = parser.add_argument_group("Compute Arguments")
@@ -65,6 +64,9 @@ def arg_parse(dict, sysargs):
                         help="Number of cores per individual calculation", default=dict["CoresPerJob"])
     Compute.add_argument('-mem','--MemoryPerJob', type=int,
                         help="Gb of memory per individual calculation", default=dict["MemoryPerJob"])
+    Compute.add_argument('-MaxCalc', '--MaxStepsPerCalc', type=int,
+                         help="The maximum number of steps per calculation. splits jobs into sub-steps. useful for short wall times. 0 == No cap.",
+                         default=dict["MaxStepsPerCalc"])
 
     ### MM Arguments
     MM = parser.add_argument_group("Molecular Dynamics Arguments")
@@ -87,6 +89,7 @@ def arg_parse(dict, sysargs):
                         help="Qm method", default=dict["QmMethod"])
     QM.add_argument('-qb', '--QmBasis', type=str,
                         help="QM basis set", default=dict["QmBasis"])
+    QM.add_argument('-qargs', '--QmArgs', type=str, help="Extra arguments for ORCA calculation", default=dict["QmArgs"])
 
     ### Umbrella Arguments
     Umbrella = parser.add_argument_group("Umbrella Sampling arguments")
@@ -116,7 +119,7 @@ def arg_parse(dict, sysargs):
 
 def JobInput(path):
     InpVars = ["WorkDir", "JobType", "Verbosity", "DryRun"]
-    InpValues = ["./", None, 0, True]
+    InpValues = ["./", None, 0, "True"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -137,8 +140,8 @@ def JobInput(path):
     return Dict
 
 def ComputeInput(path):
-    InpVars = ["CoresPerJob", "MemoryPerJob"]
-    InpValues = [10, 10]
+    InpVars = ["CoresPerJob", "MemoryPerJob", "MaxStepsPerCalc"]
+    InpValues = [10, 10, 0]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -181,8 +184,8 @@ def MMInput(path):
     return Dict
 
 def QMInput(path):
-    InpVars = ["QmPath", "QmSelection", "QmCharge", "QmSpin", "QmMethod", "QmBasis"]
-    InpValues = ["/gpfs01/home/pcyra2/Software/ORCA/orca", "resname CTN POP MG", 1, 1, "PBE", "6-31G*"]
+    InpVars = ["QmPath", "QmSelection", "QmCharge", "QmSpin", "QmMethod", "QmBasis", "QmArgs"]
+    InpValues = ["/gpfs01/home/pcyra2/Software/ORCA/orca", "resname CTN POP MG", 1, 1, "PBE", "6-31G*", "D3BJ TightSCF CFLOAT NormalSCF"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
