@@ -308,3 +308,34 @@ colvarsConfig   {file}
         self.bincoor = bincoor
         self.ambercoor = ambercoor
         self.parm = parm
+
+class SLURMClass:
+    account = ""
+    qos = ""
+    dependency = ""
+    def __init__(self, args):
+        self.WallTime = args.MaxWallTime
+        self.Cores = args.CoresPerJob
+        self.Memory = args.MemoryPerJob
+        self.HostName = args.HostName
+        self.Partition = args.Partition
+        self.NodeCores = args.MaxCores
+        if args.Account != "None":
+            self.account = f"#SBATCH --account={args.Account}"
+        if args.QualityofService != "None":
+            self.qos = f"#SBATCH --qos={args.QualityofService}"
+        self.Software = args.SoftwareLines
+    def set_dependancy(self, ID):
+        self.dependency = f"#SBATCH --dependency=afterok:{ID}"
+    def set_arrayJob(self, ArrayJob, Length):
+        self.ArrayJob = ArrayJob
+        if "archer" in self.HostName.casefold():
+            sublength = math.ceil(Length/(self.NodeCores/self.Cores))
+            self.ArrayLength = sublength
+        else:
+            self.ArrayLength = Length
+    def set_software(self, Software):
+        self.Software = Software
+    def set_accountInfo(self, Qos, Account):
+        self.qos = Qos
+        self.account = Account

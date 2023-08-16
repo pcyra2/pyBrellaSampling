@@ -16,7 +16,9 @@ def VariableParser(sysargs):
     MMDict = MMInput(f"{WorkDir}MM.conf")
     QMDict = QMInput(f"{WorkDir}QM.conf")
     UmbrellaDict = UmbrellaInput(f"{WorkDir}Umbrella.conf")
-    FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict}
+    HPCDict = HPCInput(f"{WorkDir}HPC.conf")
+    print(HPCDict)
+    FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict}
     args = arg_parse(FileDict,sysargs)
     if args.JobType.casefold() == "inpfile":
         InputFileGen(args)
@@ -44,9 +46,14 @@ def InputFileGen(args):
     with open(f"{args.WorkDir}Umbrella.conf", "w") as f:
         for i in UmbrellaDict.keys():
             print(f"{i}={argsDict[i]}", file=f)
+    HPCDict = HPCInput(f"{args.WorkDir}HPC.conf")
+    with open(f"{args.WorkDir}HPC.conf", "w") as f:
+        for i in HPCDict.keys():
+            print(f"{i}={argsDict[i]}", file=f)
 
 def arg_parse(dict, sysargs):
-    parser = ap.ArgumentParser(description="Commandline arguments. This method of calculation input is being deprecated. Please do not use.")
+    parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
+It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
     ### Core Job arguments
     Core = parser.add_argument_group("Core Job Arguments")
     Core.add_argument('-wd', '--WorkDir', type=str,
@@ -111,8 +118,29 @@ def arg_parse(dict, sysargs):
                         help="Stage of ummbrella simulation", default=dict["Stage"])
     Umbrella.add_argument('-wf', '--WhamFile', type=str,
                         help="Name prefix of wham data.(XXX.i.colvars.traj", default=dict["WhamFile"])
+
+    ### HPC Arguments
+    HPC = parser.add_argument_group("HPC/SLURM arguments")
+    HPC.add_argument("-MaxTime", "--MaxWallTime", type=int,
+                     help="Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)",
+                     default=dict["MaxWallTime"])
+    HPC.add_argument("-Host", "--HostName", type=str,
+                     help="HostName of the HPC", default=dict["HostName"])
+    HPC.add_argument("--Partition", type=str, help="Calculation partition name",
+                     default=dict["Partition"])
+    HPC.add_argument("--MaxCores", type=int,
+                     help="Maximum number of cores available to a node (For array splitting)", default=dict["MaxCores"])
+    HPC.add_argument("-QoS", "--QualityofService", type=str,
+                     help="Slurm QoS, set to None if not relevant.", default=dict["QualityofService"])
+    HPC.add_argument("--Account", type=str,
+                     help="Slurm account, (Not username), Set to None if not relevant", default=dict["Account"])
+    HPC.add_argument("-Software", "--SoftwareLines", type=str,
+                    help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
+                    default=dict["SoftwareLines"], nargs="*")
+
     ### Parse commandline arguments
     args = parser.parse_args(sysargs)
+    print(vars(args))
     return args
 
 
@@ -225,4 +253,39 @@ def UmbrellaInput(path):
     Dict = {}
     for i in range(len(InpVars)):
         Dict[InpVars[i]] = InpValues[i]
+    return Dict
+
+def HPCInput(path):
+    InpVars = ["MaxWallTime", "HostName","Partition", "MaxCores", "QualityofService", "Account", "SoftwareLines"]
+    InpValues = [24, "login.archer2.ac.uk", "standard", 128, None, None, "module load ORCA", ]
+    InpVars2 = []
+    InpValues2 = []
+    assert len(InpVars) == len(InpValues)
+    try:
+        lines = utils.file_read(path)
+    except FileNotFoundError:
+        print("WARNING, No config found for HPC input, Using defaults.")
+        Dict = {}
+        for i in range(len(InpVars)):
+            Dict[InpVars[i]] = InpValues[i]
+        return Dict
+    for i in range(len(lines)):
+        words = lines[i].split("=",1)
+        for j in range(len(InpVars)):
+            if words[0].casefold() == InpVars[j].casefold():
+                InpValues2.append(words[1].replace("\n",""))
+                InpVars2.append(words[0])
+    Dict = {}
+    for i in range(len(InpVars2)):
+        if Dict.get(InpVars2[i]) == None:
+            Dict[InpVars2[i]] = InpValues2[i]
+            # print(Dict.get(InpVars2[i]))
+        else:       ### This allows for multiple iof the same word keyword (i.e. Multiple software lines)
+            Vals = Dict.get(InpVars2[i])
+            if type(Vals) == str:
+                Dict[InpVars2[i]] = [Vals, InpValues2[i]]
+            else:
+                Vals.append(InpValues2[i])
+                Dict[InpVars2[i]] = Vals
+            print(Vals)
     return Dict

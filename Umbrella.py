@@ -22,6 +22,7 @@ def main(args):
     Umbrella.add_bins(bins)
     equil_length = 2000
     prod_length = 8000
+    SLURM = SLURMClass(args)
     # UmbrellaCalculation()
     if path.isdir(f"{Job.WorkDir}setup") == False: ### Make setup directory. Not essential but makes dirs cleaner
         os.mkdir(f"{Job.WorkDir}setup")
@@ -56,6 +57,9 @@ def main(args):
         MM.Set_Length(equil_length, 0.5)  # 2000 steps at 0.5 fs = 1 ps ~ 1 day
         MM.Set_Outputs(100, 100, 80)  # Timings, Restart, Trajectory
         equil_setup(MM, QM, Job, Calc, Umbrella, "pull_0")
+        SLURM.set_arrayJob("equil.txt", 54)
+        print("gen slurm")
+        utils.slurm_gen("equil", SLURM, "sh array_job.sh", f"{Job.WorkDir}sub.sh")
         if args.DryRun == "False":
             equil_run(Job)
             # subprocess.run(["sh equil.sh"], shell=True, capture_output=True)

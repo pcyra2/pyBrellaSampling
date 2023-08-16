@@ -297,3 +297,61 @@ def init_bins(num, step, start):
     for i in range(num):
         bins[i] = round(start + step * i,2)
     return bins
+
+def slurm_gen(JobName, SLURM, Job, path):
+    if SLURM.ArrayJob != None:
+        slurmScript = f"""#!/bin/bash
+#SBATCH --job-name={JobName}
+#SBATCH --time={SLURM.WallTime}:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node={SLURM.Cores}
+#SBATCH --cpus-per-task=1
+#SBATCH --mincpus={SLURM.Cores}
+#SBATCH --array=1-{SLURM.ArrayLength}
+
+#SBATCH --partition={SLURM.Partition}
+{SLURM.account}
+{SLURM.qos}
+
+#SBATCH --get-user-env
+#SBATCH --parsable
+
+{SLURM.dependency}
+
+export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+export OMP_NUM_THREADS=1
+export OMP_PLACES=cores
+
+export ARRAY_JOBFILE=array_job.sh
+export ARRAY_TASKFILE={SLURM.ArrayJob}
+export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
+
+"""
+        file_write(path, [slurmScript])
+    else:
+        slurmScript = f"""#!/bin/bash
+#SBATCH --job-name={JobName}
+#SBATCH --time={SLURM.WallTime}
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node={SLURM.Cores}
+#SBATCH --cpus-per-task=1
+#SBATCH --mincpus={SLURM.Cores}
+
+#SBATCH --partition={SLURM.Partition}
+{SLURM.account}
+{SLURM.qos}
+
+#SBATCH --get-user-env
+#SBATCH --parsable
+ 
+{SLURM.dependency}
+
+export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
+export OMP_NUM_THREADS=1
+export OMP_PLACES=cores
+
+{SLURM.Software}
+
+{Job}
+"""
+        file_write(path, [slurmScript])
