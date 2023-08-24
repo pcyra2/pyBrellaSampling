@@ -86,7 +86,7 @@ def test_UmbrellaInput():
     with open(f"{Test_Dir}Umbrella.pickle", "rb") as f:
         # pickle.dump(GenInput, f)
         TestInput = pickle.load(f)
-    assert GenInput == TestInput, "ComputeInput doesnt work"
+    assert GenInput == TestInput, "UmbrellaInput doesnt work"
     DefInput = input.UmbrellaInput(f"{Test_Dir}Umbrella.conf")
     assert UmbrellaDefaults == DefInput, "Umbrella defaults arent working, Have the defaults changed?"
 

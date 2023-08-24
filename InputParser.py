@@ -17,11 +17,21 @@ def VariableParser(sysargs):
     QMDict = QMInput(f"{WorkDir}QM.conf")
     UmbrellaDict = UmbrellaInput(f"{WorkDir}Umbrella.conf")
     HPCDict = HPCInput(f"{WorkDir}HPC.conf")
-    print(HPCDict)
-    FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict}
+    StandaloneDict = StandaloneJobInput(f"{WorkDir}Standalone.conf")
+    if JobDict["JobType"].casefold() == "umbrella":
+        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict,
+                    **HPCDict, **StandaloneDict,**UmbrellaDict}
+    elif JobDict["JobType"].casefold() == "Inpfile":
+        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
+    elif JobDict["JobType"].casefold() == "mm" or JobDict["JobType"].casefold() == "qmmm":
+        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
+    else:
+        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
     args = arg_parse(FileDict,sysargs)
     if args.JobType.casefold() == "inpfile":
         InputFileGen(args)
+    if args.Verbosity >= 2:
+        print(vars(args))
     return args
 
 def InputFileGen(args):
@@ -50,6 +60,7 @@ def InputFileGen(args):
     with open(f"{args.WorkDir}HPC.conf", "w") as f:
         for i in HPCDict.keys():
             print(f"{i}={argsDict[i]}", file=f)
+    StandaloneDict = StandaloneJobInput(f"{args.WorkDir}Standalone.conf")
 
 def arg_parse(dict, sysargs):
     parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
@@ -118,6 +129,7 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                         help="Stage of ummbrella simulation", default=dict["Stage"])
     Umbrella.add_argument('-wf', '--WhamFile', type=str,
                         help="Name prefix of wham data.(XXX.i.colvars.traj", default=dict["WhamFile"])
+    Umbrella.add_argument("--StartFile", default=dict["StartFile"], type=str, help="Initial coordinate file if not starting from \"start.rst7\"")
 
     ### HPC Arguments
     HPC = parser.add_argument_group("HPC/SLURM arguments")
@@ -138,16 +150,27 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                     help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
                     default=dict["SoftwareLines"], nargs="*")
 
+    Standalone = parser.add_argument_group("Standalone Job arguments")
+    Standalone.add_argument("--Ensemble", type=str,
+                            choices=["min", "heat", "NVT", "NPT"],
+                            help="Ensemble for Calculation", default=dict["Ensemble"])
+    Standalone.add_argument("--QM", type=str, choices=["True", "False"],
+                            default=dict["QM"], help="Whether this is a QMMM calculation or not.")
+    Standalone.add_argument("-st", "--Steps", type=int, default=dict["Steps"],
+                            help="Number of simulation steps.")
+    Standalone.add_argument("-dt", "--TimeStep", type=float,
+                            default=dict["TimeStep"], help="Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM")
+
+
+
     ### Parse commandline arguments
     args = parser.parse_args(sysargs)
-    print(vars(args))
+    # print(vars(args))
     return args
-
-
 
 def JobInput(path):
     InpVars = ["WorkDir", "JobType", "Verbosity", "DryRun"]
-    InpValues = ["./", None, 0, "True"]
+    InpValues = ["./", "inpfile", 0, "True"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -155,7 +178,7 @@ def JobInput(path):
         print("WARNING, No config found for Job input, This is a bad idea... Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for line in lines:
         words = line.split("=")
@@ -177,7 +200,7 @@ def ComputeInput(path):
         print("WARNING, No config found for Compute input, Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for line in lines:
         words = line.split("=")
@@ -199,7 +222,7 @@ def MMInput(path):
         print("WARNING, No config found for MM input, Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for line in lines:
         words = line.split("=")
@@ -221,7 +244,7 @@ def QMInput(path):
         print("WARNING, No config found for QM input, Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for line in lines:
         words = line.split("=")
@@ -234,8 +257,8 @@ def QMInput(path):
     return Dict
 
 def UmbrellaInput(path):
-    InpVars = ["UmbrellaMin", "UmbrellaWidth", "UmbrellaBins", "PullForce", "ConstForce", "StartDistance", "AtomMask", "Stage", "WhamFile"]
-    InpValues = [1.3, 0.05, 54, 5000, 150, 1.4, "13716,13731,0,0", "Setup", "prod"]
+    InpVars = ["UmbrellaMin", "UmbrellaWidth", "UmbrellaBins", "PullForce", "ConstForce", "StartDistance", "AtomMask", "Stage", "WhamFile", "StartFile"]
+    InpValues = [1.3, 0.05, 54, 5000, 150, 1.4, "0,0,0,0", "Setup", "prod", "start.rst7"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -243,7 +266,7 @@ def UmbrellaInput(path):
         print("WARNING, No config found for Umbrella input, Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for line in lines:
         words = line.split("=")
@@ -267,7 +290,7 @@ def HPCInput(path):
         print("WARNING, No config found for HPC input, Using defaults.")
         Dict = {}
         for i in range(len(InpVars)):
-            Dict[InpVars[i]] = InpValues[i]
+            Dict[InpVars[i]] = str(InpValues[i])
         return Dict
     for i in range(len(lines)):
         words = lines[i].split("=",1)
@@ -287,5 +310,59 @@ def HPCInput(path):
             else:
                 Vals.append(InpValues2[i])
                 Dict[InpVars2[i]] = Vals
-            print(Vals)
+            # print(Vals)
     return Dict
+
+def StandaloneJobInput(path):
+    InpVars = ["Name", "ParmFile", "AmberCoordinates", "StartFile", "Ensemble",
+               "QM", "Steps", "TimeStep", "RestartOut", "TrajOut", "SMD", "Force", "StartValue", "EndValue", "AtomMask"]
+    InpValues = ["QMMM_Job","complex.parm7", "start.rst7", "Start.rst7" ,"min",
+                 "true", 1000, 0.05, 10, 50, "off", 1, 1, 2, "0,0,0,0"]
+    assert len(InpVars) == len(InpValues)
+    try:
+        lines = utils.file_read(path)
+    except FileNotFoundError:
+        print("WARNING, No config found for Standalone Job input, Using defaults.")
+        Dict = {}
+        for i in range(len(InpVars)):
+            Dict[InpVars[i]] = str(InpValues[i])
+        return Dict
+    for line in lines:
+        words = line.split("=")
+        for i in range(len(InpVars)):
+            if words[0].casefold() == InpVars[i].casefold():
+                InpValues[i] = words[1].replace("\n","")
+    Dict = {}
+    for i in range(len(InpVars)):
+        Dict[InpVars[i]] = InpValues[i]
+    return Dict
+
+def BondsInput(path, Labels):
+    try:
+        data = utils.file_read(path)
+    except FileNotFoundError:
+        print("No bond information file found...")
+        return Labels
+    for lines in data:
+        variables = lines.split()
+        if "name" in variables[0].casefold():
+            pass
+        else:
+            Labels.add_bond(selection=f"{variables[1]},{variables[2]}", name=variables[0], thresh=float(variables[3]))
+    return Labels
+
+def DihedralInput(path, Labels):
+    try:
+        data = utils.file_read(path)
+    except FileNotFoundError:
+        print("No dihedral information file found...")
+        return Labels
+    for lines in data:
+        variables = lines.split()
+        if "name" in variables[0].casefold():
+            pass
+        else:
+            Labels.add_dihedral(selection=f"{variables[1]},{variables[2]},{variables[3]},{variables[4]}",
+                        name=variables[0], target1=float(variables[6]), t1name=variables[5],
+                        target2=float(variables[8]), t2name=variables[7])
+    return Labels

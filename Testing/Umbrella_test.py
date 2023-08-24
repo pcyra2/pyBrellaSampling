@@ -58,7 +58,7 @@ def test_pullsetup():
         shutil.rmtree(f"{Test_Dir}{i}")
 
 def test_minsetup():
-    umbrella.min_setup(MM, Calc, Job)
+    umbrella.min_setup(MM, Calc, Job, startfile="start.rst7")
     GenFile = utils.file_read(f"{Test_Dir}min.conf")
     TestFile = utils.file_read(f"{Test_Dir}min.example")
     assert GenFile == TestFile, "Array file doesnt work"

@@ -4,7 +4,7 @@ import time
 
 import pyBrellaSampling.InputParser as input
 import pyBrellaSampling.Umbrella as UmbrellaRun
-import pyBrellaSampling.QMMM as QMMMRun
+import pyBrellaSampling.Standalone as QMMMRun
 
 
 def main():

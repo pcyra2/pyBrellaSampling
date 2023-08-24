@@ -1,4 +1,4 @@
-WorkDir=./TEST
-JobType=test
-Verbosity=2
-DryRun=false
+WorkDir=./
+JobType=inpfile
+Verbosity=0
+DryRun=True

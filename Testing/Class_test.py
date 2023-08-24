@@ -15,7 +15,7 @@ arguments = [f"-wd=./Testing/TestFiles/Input/", "-jt=umbrella", "-v=0","-dr=True
                  "-mem=1", "-MaxCalc=0", "-MDcpu=NAMDPATHCPU", "-MDgpu=NAMDPATHGPU",
                  "--QmPath=ORCAPATH", "-qsel=ATOMSEL", "-qc=1", "-qspin=1",
                  "-qm=FUNCTIONAL", "-qb=BASIS", "-qargs=D3BJ", "-min=1.0", "-width=1", "-bins=10",
-                 "-pf=1","-f=150", "-sd=1","-mask=Comma,Separated,Atom,Index", "-stg=full", "-wf=WHAM"]
+                 "-pf=1","-f=150", "-sd=1","-mask=1,2,3,4", "-stg=full", "-wf=WHAM"]
 args = input.VariableParser(arguments)
 
 test_array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]

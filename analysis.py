@@ -59,10 +59,11 @@ def Label_Maker(Label, path):
     Bonds = [None] * len(Label.bond)
     Dihedrals = [None] * len(Label.dihedral)
     with open(path, 'w') as f:
-        print(f"""mol new {Label.file} waitfor -1
-mol addfile {Label.parm}
-
-""", file=f)
+        print(f"mol new {Label.parm} waitfor -1", file=f)
+    with open(path, 'a') as f:
+        for i in Label.file:
+            print(f"mol addfile {i} waitfor -1", file=f)
+# """, file=f)
         for i in range(len(Label.bond)):
             atoms = Label.bond[i]
             Bonds[i] = BondClass(atoms.split(",")[0], atoms.split(",")[1], Label.bondName[i], Label.bondThresh[i])

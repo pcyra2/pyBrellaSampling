@@ -26,10 +26,10 @@ colvarsTrajFrequency     1
             name dihedpot
             colvars dihedral
             centers 1
-            forceConstant 150
+            forceConstant 150.0
             targetCenters 1
             outputCenters on
-            targetNumSteps 200
+            targetNumSteps 50
             outputAccumulatedWork on
         }
         

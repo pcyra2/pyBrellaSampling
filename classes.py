@@ -5,10 +5,10 @@ import math as math
 
 class UmbrellaClass:
     def __init__(self, args, Min, bins, Start, Width, ):
-        self.atom1 = args.AtomMask.split(",")[0]
-        self.atom2 = args.AtomMask.split(",")[1]
-        self.atom3 = args.AtomMask.split(",")[2]
-        self.atom4 = args.AtomMask.split(",")[3]
+        self.atom1 = int(args.AtomMask.split(",")[0])
+        self.atom2 = int(args.AtomMask.split(",")[1])
+        self.atom3 = int(args.AtomMask.split(",")[2])
+        self.atom4 = int(args.AtomMask.split(",")[3])
         self.Min = Min
         self.Bins = bins
         self.Start = Start
@@ -19,8 +19,9 @@ class UmbrellaClass:
         self.BinVals = BinVals
     def add_start(self, StartBin):
         self.StartBin = StartBin
-
-
+    def set_force(self, Force): ### To combine Umbrella for use in Standalone calculations
+        self.PullForce = Force
+        self.ConstForce = Force
 class JobClass:
     def __init__(self, args):
         self.WorkDir = args.WorkDir
@@ -173,6 +174,9 @@ class MMClass:
         self.CellVec = CellVec
     def Set_Force(self, Force):
         self.Force = Force
+    def Set_Files(self, parm, ambercoor):
+        self.parmfile = parm
+        self.ambercoor = ambercoor
 
 class CalcClass:
     QM = "off"
@@ -314,10 +318,11 @@ class SLURMClass:
     qos = ""
     dependency = ""
     def __init__(self, args):
+        self.HostName = args.HostName
         self.WallTime = args.MaxWallTime
         self.Cores = args.CoresPerJob
         self.Memory = args.MemoryPerJob
-        self.HostName = args.HostName
+        self.k = args.HostName
         self.Partition = args.Partition
         self.NodeCores = args.MaxCores
         if args.Account != "None":
@@ -332,10 +337,13 @@ class SLURMClass:
         if "archer" in self.HostName.casefold():
             sublength = math.ceil(Length/(self.NodeCores/self.Cores))
             self.ArrayLength = sublength
+            self.JobsPerNode = math.floor(self.NodeCores/self.Cores)
         else:
             self.ArrayLength = Length
+            self.JobsPerNode = 1    # If Nodes arent exclusive, this can be set to 1 and it will run a normal array job.
     def set_software(self, Software):
         self.Software = Software
     def set_accountInfo(self, Qos, Account):
         self.qos = Qos
         self.account = Account
+

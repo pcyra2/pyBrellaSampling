@@ -16,7 +16,7 @@ test_dihedral = pyBrellaSampling.classes.DihedralClass(1, 2, 3, 4,
                                                        180,"Max")
 
 test_label = pyBrellaSampling.classes.LabelClass("param.file")
-test_label.file_name("coord.file")
+test_label.file_name(["coord.file"])
 test_label.add_bond("1,2", "testbond", 1.2)
 test_label.add_dihedral("1,2,3,4","testdihedral",0,
                         "Min", 180, "Max")

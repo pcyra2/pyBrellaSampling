@@ -1,7 +1,7 @@
-QmPath=/PATH/TO/orca
-QmSelection=VMD QM selection
-QmCharge=2
-QmSpin=3
-QmMethod=B3LYP
-QmBasis=def2SVP
-QmArgs=QM args
+QmPath=/gpfs01/home/pcyra2/Software/ORCA/orca
+QmSelection=resname CTN POP MG
+QmCharge=1
+QmSpin=1
+QmMethod=PBE
+QmBasis=6-31G*
+QmArgs=D3BJ TightSCF CFLOAT NormalSCF

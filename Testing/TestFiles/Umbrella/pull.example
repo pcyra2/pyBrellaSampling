@@ -82,6 +82,9 @@ QMPositionOutStride     1
 
 
 
+# Colvar options:
+colvars         on
+colvarsConfig   colvars.pull.conf
 
 
 run                 50

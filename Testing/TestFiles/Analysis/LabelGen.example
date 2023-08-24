@@ -1,7 +1,5 @@
-mol new coord.file waitfor -1
-mol addfile param.file
-
-
+mol new param.file waitfor -1
+mol addfile coord.file waitfor -1
 label add Bonds 0/1 0/2
 label graph Bonds 0 testbond.dat
 label delete Bonds 0

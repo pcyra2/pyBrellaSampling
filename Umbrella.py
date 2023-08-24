@@ -5,6 +5,7 @@ import pyBrellaSampling.FileGen as FileGen
 import pyBrellaSampling.wham as Wham
 import pyBrellaSampling.analysis as Anal
 from pyBrellaSampling.classes import *
+import pyBrellaSampling.InputParser as input
 
 import subprocess
 import matplotlib.pyplot as plt
@@ -20,6 +21,7 @@ def main(args):
     QM = QMClass(args)
     bins = utils.init_bins(Umbrella.Bins, Umbrella.Width, Umbrella.Min)
     Umbrella.add_bins(bins)
+    # print(Umbrella.atom1, Umbrella.atom2, Umbrella.atom3, Umbrella.atom4)
     equil_length = 2000
     prod_length = 8000
     SLURM = SLURMClass(args)
@@ -33,14 +35,22 @@ def main(args):
                 print("Setting up the QM pdb file.")
             logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "qm_prep.tcl"],
                                      text = True, capture_output = True)
-            with open(f"{Job.WorkDir}tcl.log","w") as f:
+            with open(f"{Job.WorkDir}tcl-qm.log","w") as f:
                 print(logfile, file=f)
-    if Job.Stage == "init" or Job.Stage == "full" or Job.Stage == "min":
+        utils.ColVarPDB_Gen(Umbrella, Job)
+        if args.DryRun == "False":
+            if Job.Verbosity >= 1:
+                print("Setting up the Colvar pdb file.")
+            logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "Colvar_prep.tcl"],
+                                     text = True, capture_output = True)
+            with open(f"{Job.WorkDir}tcl-colvar.log","w") as f:
+                print(logfile, file=f)
+    if Job.Stage == "full" or Job.Stage == "min":
         # generate.Min_Setup(Calc, Job, MM, QM)
-        min_setup(MM, Calc, Job)
+        min_setup(MM, Calc, Job, args.StartFile)
         if args.DryRun == "False":
             min_run(MM,Job)
-    if Job.Stage == "init" or Job.Stage == "full" or Job.Stage == "heat":
+    if Job.Stage == "full" or Job.Stage == "heat":
         heat_setup(MM, Calc, Job)
         if args.DryRun == "False":
             heat_run(MM,Job)
@@ -56,10 +66,10 @@ def main(args):
         Calc.Job_Name("equil")
         MM.Set_Length(equil_length, 0.5)  # 2000 steps at 0.5 fs = 1 ps ~ 1 day
         MM.Set_Outputs(100, 100, 80)  # Timings, Restart, Trajectory
-        equil_setup(MM, QM, Job, Calc, Umbrella, "pull_0")
-        SLURM.set_arrayJob("equil.txt", 54)
+        equil_setup(MM, QM, Job, Calc, Umbrella, "pull_1")
+        SLURM.set_arrayJob("equil_1.txt", 54)
         print("gen slurm")
-        utils.slurm_gen("equil", SLURM, "sh array_job.sh", f"{Job.WorkDir}sub.sh")
+        utils.slurm_gen("equil", SLURM, "sh array_job.sh", Job.WorkDir)
         if args.DryRun == "False":
             equil_run(Job)
             # subprocess.run(["sh equil.sh"], shell=True, capture_output=True)
@@ -76,20 +86,24 @@ def main(args):
         Wham.Init_Wham(Job, Umbrella, wham)
     if Job.Stage == "analysis" or Job.Stage == "full":
         Labels = LabelClass("../complex.parm7")
-        Labels.add_bond("13722,13724", "C4-Hup", 1.1) # Atom index
-        Labels.add_bond("13722,13723", "C4-Hdown", 1.1) # Atom index
-        Labels.add_bond("13730,13715", "C2-C7", 1.6)
-        Labels.add_bond("13717,13730", "C3-C7", 2.5)
-        Labels.add_bond("13722,13708", "C4-O", 2.8)
-        Labels.add_dihedral("13741,13738,13735,13730", "SobVert", 50, "Sob", -60, "Vert")
-        Labels.add_dihedral("13761,13756,13730,13731", "C7Methyl", 30, "up", 180, "down")
-        Labels.add_dihedral("13761,13756,13717,13718", "C3Methyl", 50, "up", 180, "down")
-        Labels.add_dihedral("13715,13730,13728,13725", "c6Ring", -55, "Chair", -20, "Boat")
+        Labels = input.BondsInput(f"{Job.WorkDir}Bonds.dat", Labels)
+        # Labels.add_bond("13722,13724", "C4-Hup", 1.1) # Atom index
+        # Labels.add_bond("13722,13723", "C4-Hdown", 1.1) # Atom index
+        # Labels.add_bond("13730,13715", "C2-C7", 1.6)
+        # Labels.add_bond("13717,13730", "C3-C7", 2.5)
+        # Labels.add_bond("13722,13708", "C4-O", 2.8)
+        Labels = input.DihedralInput(f"{Job.WorkDir}Dihedral.dat", Labels)
+        # Labels.add_dihedral("13741,13738,13735,13730", "SobVert", 50, "Sob", -60, "Vert")
+        # Labels.add_dihedral("13761,13756,13730,13731", "C7Methyl", 30, "up", 180, "down")
+        # Labels.add_dihedral("13761,13756,13717,13718", "C3Methyl", 50, "up", 180, "down")
+        # Labels.add_dihedral("13715,13730,13728,13725", "c6Ring", -55, "Chair", -20, "Boat")
         core_load = []
         core_load.append("mol new complex.parm7")
         dataframe = DataClass("Production")
         for i in range(Umbrella.Bins):
-            Labels.file_name(f"equil.{i}.dcd")
+            Labels.file_name([f"pull_1.{i}.dcd"])
+            # Labels.file_name([f"equil_1.{i}.dcd", f"equil_2.{i}.dcd"])
+            # Labels.file_name([f"prod_1.{i}.dcd", f"prod_2.{i}.dcd", f"prod_3.{i}.dcd", f"prod_4.{i}.dcd", f"prod_5.{i}.dcd", f"prod_6.{i}.dcd"])
             # Labels.file_name(f"prod_PBE_1_{i}.nc")
             Bonds, Dihedrals = Anal.Label_Maker(Labels, f"{Job.WorkDir}{i}/label_maker.tcl")
             if args.DryRun == "False":
@@ -102,6 +116,18 @@ def main(args):
         # print(dataframe.dat)
         df = pd.concat(dataframe.dat)
         print(df.loc[df["Name"] == "c6Ring", "Data"].shape)
+        # reactioncoordinate = "C2-C7"
+        for bond in Bonds:
+            if ((bond.at1 == Umbrella.atom1) or (bond.at2 == Umbrella.atom1)) and ((bond.at1 == Umbrella.atom2) or (bond.at2 == Umbrella.atom2)) and Umbrella.atom3 == 0:
+                reactioncoordinate = bond.name
+                print(f"Reaction coordinate is {reactioncoordinate}")
+            # print(bond.at1, bond.at2)
+        for dihed in Dihedrals:
+            if ((dihed.at1 == Umbrella.atom1) or (dihed.at4 == Umbrella.atom1)) and ((dihed.at2 == Umbrella.atom2) or (dihed.at3 == Umbrella.atom2)) and ((dihed.at3 == Umbrella.atom3) or (dihed.at2 == Umbrella.atom3)) and ((dihed.at4 == Umbrella.atom4) or (dihed.at1 == Umbrella.atom4)):
+                reactioncoordinate = dihed.name
+                print(f"Reaction coordinate is {reactioncoordinate}")
+            # print(dihed.at1, dihed.at2, dihed.at3, dihed.at4)
+            # print(Umbrella.atom1, Umbrella.atom2, Umbrella.atom3, Umbrella.atom4)
         for bond in Bonds:
             plt.hist(df.loc[df["Name"] == bond.name, "Data"], 100)
             plt.title(f"{bond.name} bond")
@@ -110,7 +136,7 @@ def main(args):
             plt.savefig(f"{Job.WorkDir}{bond.name}.eps")
             plt.show()
             plt.hist2d(df.loc[df["Name"] == bond.name, "Data"],
-                       df.loc[df["Name"] == "C2-C7", "Data"],100, cmap="binary")
+                       df.loc[df["Name"] == reactioncoordinate, "Data"],100, cmap="binary")
             plt.title(f"Reaction coordinate vs. {bond.name} bond")
             plt.xlabel(f"{bond.name} bond distance")
             plt.ylabel("Reaction coordinate")
@@ -124,7 +150,7 @@ def main(args):
             plt.savefig(f"{Job.WorkDir}{dihed.name}.eps")
             plt.show()
             plt.hist2d(df.loc[df["Name"] == dihed.name, "Data"],
-                       df.loc[df["Name"] == "C2-C7", "Data"], 100, cmap="binary")
+                       df.loc[df["Name"] == reactioncoordinate, "Data"], 100, cmap="binary")
             plt.title(f"Reaction coordinate vs. {dihed.name} dihedral")
             plt.xlabel(f"{dihed.name} dihedral angle")
             plt.ylabel("Reaction coordinate")
@@ -133,14 +159,17 @@ def main(args):
 
         df.to_csv(f"{Job.WorkDir}/Data.csv")
 
-def min_setup(MM, Calc, Job):
+def min_setup(MM, Calc, Job, startfile):
     MM.Set_Ensemble("min")
     MM.Set_Outputs(1000, 100, 0)
     MM.Set_Length(10000)
     Calc.Job_Name("min")
     NAMD = NAMDClass(Calc, MM)
     NAMD.set_pme("on")
-    NAMD.set_startcoords(None, ambercoor="start.rst7", parm="complex.parm7")
+    if startfile == "start.rst7":
+        NAMD.set_startcoords(None, ambercoor="start.rst7", parm="complex.parm7")
+    else:
+        NAMD.set_startcoords(bincoor=startfile, ambercoor="start.rst7", parm="complex.parm7")
     NAMD.set_cellvectors(MM.CellVec)
     file = FileGen.Namd_File(NAMD)
     utils.file_write(f"{Job.WorkDir}min.conf", [file])
@@ -225,35 +254,46 @@ def pull_setup(Umbrella, MM, QM, Calc, Job, DryRun="False"):
     NAMD.set_cellvectors(MM.CellVec)
     Joblist = [None]*Umbrella.Bins
     for i in range(Umbrella.Bins):
-       if Umbrella.Width > 0:
-            if Umbrella.BinVals[i] == Umbrella.Start:
-                Umbrella.add_start(i)
-       else:
-            if Umbrella.BinVals[i] == Umbrella.Start:
-                Umbrella.add_start(i)
+       # print(Umbrella.BinVals[i] - Umbrella.Start)
+       if abs(Umbrella.BinVals[i] - Umbrella.Start) < abs(Umbrella.Width * 0.5):
+           Umbrella.add_start(i)
+       # if Umbrella.Width > 0:
+       #      if Umbrella.BinVals[i] == Umbrella.Start:
+       #          Umbrella.add_start(i)
+       # else:
+       #      if Umbrella.BinVals[i] == Umbrella.Start:
+       #          Umbrella.add_start(i)
     for i in range(Umbrella.Bins):
-        if Umbrella.Width > 0:
-            if Umbrella.BinVals[i] > Umbrella.Start:
-                prevPull = f"../{i-1}/pull_1.{i-1}.restart.coor"
-            elif Umbrella.BinVals[i] < Umbrella.Start:
-                prevPull = f"../{i + 1}/pull_1.{i + 1}.restart.coor"
-            elif Umbrella.BinVals[i] == Umbrella.Start:
-                Umbrella.add_start(i)
-                prevPull = f"../heat_1.0.restart.coor"
-                if Job.Verbosity >= 1:
-                    print(f"Pull starts from directory {i}")
-        else:
-            if Umbrella.BinVals[i] < Umbrella.Start:
-                prevPull = f"../{i-1}/pull_1.{i-1}.restart.coor"
-            elif Umbrella.BinVals[i] > Umbrella.Start:
-                prevPull = f"../{i + 1}/pull_1.{i + 1}.restart.coor"
-            elif Umbrella.BinVals[i] == Umbrella.Start:
-                Umbrella.add_start(i)
-                prevPull = f"../heat_1.0.restart.coor"
-                if Job.Verbosity >= 1:
-                    print(f"Pull starts from directory {i}")
+        # if Umbrella.Width > 0:
+        #     if Umbrella.BinVals[i] > Umbrella.Start:
+        #         prevPull = f"../{i-1}/pull_1.{i-1}.restart.coor"
+        #     elif Umbrella.BinVals[i] < Umbrella.Start:
+        #         prevPull = f"../{i + 1}/pull_1.{i + 1}.restart.coor"
+        #     elif Umbrella.BinVals[i] == Umbrella.Start:
+        #         # Umbrella.add_start(i)
+        #         prevPull = f"../heat_1.0.restart.coor"
+        #         if Job.Verbosity >= 1:
+        #             print(f"Pull starts from directory {i}")
+        # else:
+        #     if Umbrella.BinVals[i] < Umbrella.Start:
+        #         prevPull = f"../{i-1}/pull_1.{i-1}.restart.coor"
+        #     elif Umbrella.BinVals[i] > Umbrella.Start:
+        #         prevPull = f"../{i + 1}/pull_1.{i + 1}.restart.coor"
+        #     elif Umbrella.BinVals[i] == Umbrella.Start:
+        #         # Umbrella.add_start(i)
+        #         prevPull = f"../heat_1.0.restart.coor"
+        #         if Job.Verbosity >= 1:
+        #             print(f"Pull starts from directory {i}")
+        if i < Umbrella.StartBin:
+            prevPull = f"../{i + 1}/pull_1.{i + 1}.restart.coor"
+        elif i > Umbrella.StartBin:
+            prevPull = f"../{i-1}/pull_1.{i-1}.restart.coor"
+        elif i == Umbrella.StartBin:
+            prevPull = f"../heat_1.0.restart.coor"#
+            print(f"Pull starts from directory {i}")
         NAMD.set_qm(Calc, QM, i)
         NAMD.set_startcoords(prevPull)
+        NAMD.set_colvars("colvars.pull.conf")
         file = FileGen.Namd_File(NAMD, window=i)
         utils.file_write(f"{Job.WorkDir}{i}/pull.conf", [file])
         colvarfile = utils.colvar_gen(Umbrella, i, "pull", Umbrella.PullForce )

@@ -62,11 +62,10 @@ def dict_write(path, dict):
 #         dict_write(f"{args.WorkDir}{args.input}", lst)
 #     return args
 
-
 def QM_Gen(qmzone,wd):
     tcl = f"""
 mol new complex.parm7
-mol addfile complex.pdb
+mol addfile start.rst7
 
 set qmPDB "syst-qm.pdb"
 set qmPSF "syst-qm.QMonly.parm7"
@@ -79,20 +78,20 @@ $sel set occupancy 0
 set seltext "({qmzone})"
 [atomselect 0 "$seltext"] set beta 1
 
-puts "Initializing segment and QM region loops."
-set systemSegs [lsort -unique [[atomselect 0 "protein or nucleic"] get segname]]
+puts "Initializing chain and QM region loops."
+set systemSegs [lsort -unique [[atomselect 0 "protein or nucleic"] get chain]]
 set systemQMregs [lsort -unique [[atomselect 0 "(protein or nucleic) and beta > 0"] get beta]]
 
-puts "Segments: $systemSegs"
+puts "Chains: $systemSegs"
 puts "QM Regions: $systemQMregs"
 
 foreach seg $systemSegs {"{"}
     foreach qmReg $systemQMregs {"{"}
-        puts "\nChecking QM region $qmReg in segment $seg"
-        set qmmmm [atomselect 0 "(protein and name CA) and beta == $qmReg and segname $seg"]
-        set cter [lindex [lsort -unique -integer [[atomselect 0 "segname $seg"] get resid]] end]
+        puts "\nChecking QM region $qmReg in chain $seg"
+        set qmmmm [atomselect 0 "(protein and name CA) and beta == $qmReg and chain $seg"]
+        set cter [lindex [lsort -unique -integer [[atomselect 0 "chain $seg"] get resid]] end]
         set listqmmm [$qmmmm get resid]
-        puts "Protein residues marked for QM this region in this segment: $listqmmm"
+        puts "Protein residues marked for QM this region in this chain: $listqmmm"
         list QM1bond
         list QM2bond
         puts "Checking N-Terminal-direction QM-MM bonds..."
@@ -112,19 +111,19 @@ foreach seg $systemSegs {"{"}
         {"}"}
         puts "Making changes..."
         if {"{"}[info exists QM2bond]{"}"} {"{"}
-            [atomselect 0 "name CA C and (resid $QM2bond and segname $seg)"] set occupancy 1
-            [atomselect 0 "name C O and (resid $QM2bond and segname $seg)"] set beta 0
+            [atomselect 0 "name CA C and (resid $QM2bond and chain $seg)"] set occupancy 1
+            [atomselect 0 "name C O and (resid $QM2bond and chain $seg)"] set beta 0
             unset QM2bond
         {"}"}
         if {"{"}[info exists QM1bond]{"}"} {"{"}
-            [atomselect 0 "name CA C and (resid $QM1bond and segname $seg)"] set occupancy 1
-            [atomselect 0 "name C O and (resid $QM1bond and segname $seg)"] set beta $qmReg
+            [atomselect 0 "name CA C and (resid $QM1bond and chain $seg)"] set occupancy 1
+            [atomselect 0 "name C O and (resid $QM1bond and chain $seg)"] set beta $qmReg
             unset QM1bond
         {"}"}
-       set qmmmm [atomselect 0 "(nucleic and name P) and beta == $qmReg and segname $seg"]
-        set fiveTer [lindex [lsort -unique -integer [[atomselect 0 "segname $seg"] get resid]] 0]
+       set qmmmm [atomselect 0 "(nucleic and name P) and beta == $qmReg and chain $seg"]
+        set fiveTer [lindex [lsort -unique -integer [[atomselect 0 "chain $seg"] get resid]] 0]
         set listqmmm [$qmmmm get resid]
-        puts "Nucleic residues marked for QM this region in this segment: $listqmmm"
+        puts "Nucleic residues marked for QM this region in this chain: $listqmmm"
 
         list QM1bond
         list QM2bond
@@ -147,13 +146,13 @@ foreach seg $systemSegs {"{"}
 
        puts "Making changes..."
         if {"{"}[info exists QM2bond]{"}"} {"{"}
-            [atomselect 0 "name C4' C5' and (resid $QM2bond and segname $seg)"] set occupancy 1
-            [atomselect 0 "name P O1P O2P O5' C5' H5' H5'' and (resid $QM2bond and segname $seg)"] set beta 0
+            [atomselect 0 "name C4' C5' and (resid $QM2bond and chain $seg)"] set occupancy 1
+            [atomselect 0 "name P O1P O2P O5' C5' H5' H5'' and (resid $QM2bond and chain $seg)"] set beta 0
             unset QM2bond
         {"}"}
         if {"{"}[info exists QM1bond]{"}"} {"{"}
-            [atomselect 0 "name C4' C5' and (resid $QM1bond and segname $seg)"] set occupancy 1
-            [atomselect 0 "name P O1P O2P O5' C5' H5' H5'' and (resid $QM1bond and segname $seg)"] set beta $qmReg
+            [atomselect 0 "name C4' C5' and (resid $QM1bond and chain $seg)"] set occupancy 1
+            [atomselect 0 "name P O1P O2P O5' C5' H5' H5'' and (resid $QM1bond and chain $seg)"] set beta $qmReg
             unset QM1bond
         {"}"}
     {"}"}
@@ -199,7 +198,79 @@ quit
     with open(f"{wd}qm_prep.tcl", "w") as f:
         print(tcl, file=f)
 
+def ColVarPDB_Gen(Umbrella, Job):
+    if Umbrella.atom3 == 0:
+        tcl = f"""mol new complex.parm7
+mol addfile start.rst7
 
+set colPDB "syst-col.pdb"
+
+set sel [atomselect 0 all]
+$sel set beta 0
+$sel set occupancy 0
+
+set seltext "(index {Umbrella.atom1})"
+[atomselect 0 "$seltext"] set beta 1
+
+set seltext "(index {Umbrella.atom2})"
+[atomselect 0 "$seltext"] set beta 2
+
+$sel writepdb $colPDB
+
+quit
+"""
+    elif Umbrella.atom4 == 0:
+        tcl = f"""mol new complex.parm7
+mol addfile start.rst7
+
+set colPDB "syst-col.pdb"
+
+set sel [atomselect 0 all]
+$sel set beta 0
+$sel set occupancy 0
+
+set seltext "(index {Umbrella.atom1})"
+[atomselect 0 "$seltext"] set beta 1
+
+set seltext "(index {Umbrella.atom2})"
+[atomselect 0 "$seltext"] set beta 2
+
+set seltext "(index {Umbrella.atom3})"
+[atomselect 0 "$seltext"] set beta 3
+
+
+
+$sel writepdb $colPDB
+
+quit
+"""
+    else:
+        tcl = f"""mol new complex.parm7
+mol addfile start.rst7
+
+set colPDB "syst-col.pdb"
+
+set sel [atomselect 0 all]
+$sel set beta 0
+$sel set occupancy 0
+
+set seltext "(index {Umbrella.atom1})"
+[atomselect 0 "$seltext"] set beta 1
+
+set seltext "(index {Umbrella.atom2})"
+[atomselect 0 "$seltext"] set beta 2
+
+set seltext "(index {Umbrella.atom3})"
+[atomselect 0 "$seltext"] set beta 3
+
+set seltext "(index {Umbrella.atom4})"
+[atomselect 0 "$seltext"] set beta 4
+
+$sel writepdb $colPDB
+
+quit
+"""
+    file_write(f"{Job.WorkDir}Colvar_prep.tcl", [tcl])
 def colvar_gen(Umbrella, i, type, force):
     if type == "pull":
         freq = 1
@@ -208,20 +279,38 @@ def colvar_gen(Umbrella, i, type, force):
             prevBin = i - 1
         elif i < Umbrella.StartBin:
             prevBin = i + 1
-        else:
-            prevBin = i
+        else:  # Sets initial pull value to actual start value rather than bin target. Allows for smoother pulls.
+            bins = Umbrella.BinVals
+            # print(bins)
+            # print(len(bins))
+            bins = numpy.append(bins, Umbrella.Start)
+            # print(bins)
+            # print(len(bins))
+            Umbrella.add_bins(bins)
+            prevBin = len(Umbrella.BinVals) -1
+            # print(prevBin)
     else:
         freq = 1
         Stages = 0
         prevBin = i
     if Umbrella.atom3 == 0: ### Bond distance
+        print("Bond collective variable")
+        # group1 {"{"} atomNumbers {Umbrella.atom1} {"}"}
+        # group2 {"{"} atomNumbers {Umbrella.atom2} {"}"}
         file = f"""colvarsTrajFrequency     {freq}
 
 colvar {"{"}
     name length
     distance {"{"}
-        group1 {"{"} atomNumbers {Umbrella.atom1} {"}"}
-        group2 {"{"} atomNumbers {Umbrella.atom2} {"}"}
+
+        group1 {"{"}  atomsFile ../syst-col.pdb
+                      atomsCol B
+                      atomsColValue 1.00
+               {"}"}
+        group2 {"{"}  atomsFile ../syst-col.pdb
+                      atomsCol B
+                      atomsColValue 2.00
+               {"}"}
     {"}"}
 {"}"}
 
@@ -233,6 +322,7 @@ harmonic {"{"}
 {"}"}
 """
     elif Umbrella.atom4 == 0: ### 3 Atom angle
+        print("Angle collective variable")
         file = f"""colvarsTrajFrequency     {freq}
 
 colvar {"{"}
@@ -252,6 +342,7 @@ harmonic {"{"}
 {"}"}
 """
     else:   ### Dihedral angle
+        print("Dihedral collective variable")
         file = f"""colvarsTrajFrequency     {freq}
 
         colvar {"{"}
@@ -283,12 +374,11 @@ harmonic {"{"}
             forceConstant {force}
             targetCenters {Umbrella.BinVals[i]}
             outputCenters on
-            targetNumSteps 200
+            targetNumSteps 50
             outputAccumulatedWork on
         {"}"}
         """
     return file
-
 
 def init_bins(num, step, start):
     bins = np.zeros(num)
@@ -299,6 +389,9 @@ def init_bins(num, step, start):
     return bins
 
 def slurm_gen(JobName, SLURM, Job, path):
+    SoftwareLines = ""
+    for i in SLURM.Software:
+        SoftwareLines=SoftwareLines+"\n"+i
     if SLURM.ArrayJob != None:
         slurmScript = f"""#!/bin/bash
 #SBATCH --job-name={JobName}
@@ -318,6 +411,8 @@ def slurm_gen(JobName, SLURM, Job, path):
 
 {SLURM.dependency}
 
+{SoftwareLines}
+
 export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
 export OMP_NUM_THREADS=1
 export OMP_PLACES=cores
@@ -326,8 +421,16 @@ export ARRAY_JOBFILE=array_job.sh
 export ARRAY_TASKFILE={SLURM.ArrayJob}
 export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
 
+
+sh $ARRAY_JOBFILE
 """
-        file_write(path, [slurmScript])
+        file_write(f"{path}sub.sh", [slurmScript])
+        arrayfile = f"""#!/bin/bash
+RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*{SLURM.JobsPerNode})) | tail -n {SLURM.JobsPerNode})
+eval "$RUNLINE wait"
+
+"""
+        file_write(f"{path}array_job.sh",[arrayfile])
     else:
         slurmScript = f"""#!/bin/bash
 #SBATCH --job-name={JobName}
@@ -346,11 +449,11 @@ export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
  
 {SLURM.dependency}
 
+{SoftwareLines}
+
 export SRUN_CPUS_PER_TASK=$SLURM_CPUS_PER_TASK
 export OMP_NUM_THREADS=1
 export OMP_PLACES=cores
-
-{SLURM.Software}
 
 {Job}
 """

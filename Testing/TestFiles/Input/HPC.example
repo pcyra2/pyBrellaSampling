@@ -1,0 +1,7 @@
+MaxWallTime=24
+HostName=login.archer2.ac.uk
+Partition=standard
+MaxCores=128
+QualityofService=None
+Account=None
+SoftwareLines=module load ORCA

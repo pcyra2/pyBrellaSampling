@@ -29,7 +29,7 @@ colvarsTrajFrequency     1
             forceConstant 1.0
             targetCenters 1
             outputCenters on
-            targetNumSteps 200
+            targetNumSteps 50
             outputAccumulatedWork on
         }
         
