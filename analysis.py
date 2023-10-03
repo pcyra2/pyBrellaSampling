@@ -105,4 +105,16 @@ def Labal_Analysis(Bonds, Dihedrals, Path, window, dataframe):
             break
     return dataframe
 
-
+def glue_stick(Umbrella, Job, NumJobs, file):
+    for i in range(Umbrella.Bins):
+        step, value = ["#Step"], ["Value"]
+        for j in range(NumJobs):
+            try:
+                coords, datay = utils.data_2d(f"{Job.WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj")
+            except FileNotFoundError:
+                print(f"{Job.WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj is not found. moving on...")
+                pass
+            step = step + [int(k+(len(step)-1)) for k in coords if k != 0]      # NAMD prints state 0 at the start so will need to remove repeats.
+            value = value + [datay[k] for k in range(len(coords)) if k != 0]
+        utils.file_2dwrite(path=f"{Job.WorkDir}{i}/{file}.{i}.colvars.traj",
+                           x=step, y=value)

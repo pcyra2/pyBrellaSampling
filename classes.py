@@ -1,7 +1,8 @@
 import pandas as pd
 import numpy as np
 import math as math
-
+from pyBrellaSampling.utils import MM_DefaultVars as MMVars
+import os
 
 class UmbrellaClass:
     def __init__(self, args, Min, bins, Start, Width, ):
@@ -67,8 +68,8 @@ class DataClass:
 
 class BondClass:
     def __init__(self, atom1, atom2, name, threshold):
-        self.at1 = atom1
-        self.at2 = atom2
+        self.at1 = int(atom1)
+        self.at2 = int(atom2)
         self.name = name
         self.thresh = threshold
     def __repr__(self):
@@ -76,10 +77,10 @@ class BondClass:
 
 class DihedralClass:
     def __init__(self, atom1, atom2, atom3, atom4, name, target1, t1name, target2, t2name):
-        self.at1 = atom1
-        self.at2 = atom2
-        self.at3 = atom3
-        self.at4 = atom4
+        self.at1 = int(atom1)
+        self.at2 = int(atom2)
+        self.at3 = int(atom3)
+        self.at4 = int(atom4)
         self.name = name
         self.target1 = target1
         self.target1Name = t1name
@@ -89,51 +90,10 @@ class DihedralClass:
         return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
 
 class WhamClass:
-    def __init__(self, Name, Force):
+    def __init__(self, Name, Force, type="discrete"):
         self.Name = Name
         self.Force = Force
-
-# class CalcClass:
-#     CellVec = 150.2205127
-#     Temp = 300
-#     QM = "off"
-#     CutOff = 8.0
-#     def __init__(self,args):
-#         self.NamdPath = args.MDCPUPath
-#         self.GPUNamd = args.MDGPUPath
-#         self.QMpath = args.QmPath
-#         self.QMSel = args.QmSelection
-#         self.Charge = args.QmCharge
-#         self.Spin = args.QmSpin
-#         self.Method = args.QmMethod
-#         self.Basis = args.QmBasis
-#         self.Threads = args.CoresPerJob
-#         self.Memory = args.MemoryPerJob
-#     def Job_Name(self, Name,):
-#         self.Name = Name
-#     def Set_OutFile(self, OutFile):
-#         self.OutFile = OutFile
-#     def Set_Force(self, Force):
-#         self.Force = Force
-#     def Set_Id(self, Id):
-#         self.Id = Id
-#     def Change_Cell(self, CellVec):
-#         self.CellVec = CellVec
-#     def Set_QM(self, val):
-#         self.QM = val
-#     def Set_Ensemble(self, Ensemble):
-#         self.Ensemble = Ensemble
-#     def Set_Temp(self, Temp):
-#         self.Temp = Temp
-#     def Set_Length(self, Steps, TimeStep):
-#         self.Steps = Steps
-#         self.TimeStep = TimeStep
-#     def Set_Outputs(self, TimeOut, RestOut, TrajOut):
-#         self.TimeOut = TimeOut
-#         self.RestOut = RestOut
-#         self.TrajOut = TrajOut
-#     def Set_Shake(self, Shake):
-#         self.Shake = Shake
+        self.Type = type
 
 class QMClass:
     def __init__(self, args):
@@ -148,8 +108,8 @@ class QMClass:
 class MMClass:
     CellVec = 150.2205127
     CellShape = "oct"
-    Temp = 300
-    CutOff = 8.0
+    Temp = MMVars["temperature"]
+    CutOff = MMVars["cutoff"]
     PME = "off"
     parmfile = "../complex.parm7"
     ambercoor = "../start.rst7"
@@ -195,28 +155,28 @@ class CalcClass:
 
 
 class NAMDClass:
-    amber = "on"
-    switching = "off"
-    exclude = "scaled1-4"
-    scaling = 0.833333333
-    scnb = 2.0
-    readexclusions = "yes"
-    watermodel = "tip3"
-    pairListDist = 11
-    LJcorrection = "on"
-    ZeroMomentum = "on"
-    rigidTolerance = "1.0e-8"
-    rigidIterations = 100
-    fullElectFrequency = 1
-    nonBondedFreq = 1
-    stepspercycle = 10
-    PME = "off"
-    PMEGridSizeX = 300
-    PMEGridSizeY = 300
-    PMEGridSizeZ = 300
-    PMETolerance = "1.0e-6"
-    PMEInterpOrder = 4
-    qmForces = "off"
+    amber = MMVars["amber"]
+    switching = MMVars["switching"]
+    exclude = MMVars["exclude"]
+    scaling = MMVars["1-4scaling"]
+    scnb = MMVars["scnb"]
+    readexclusions = MMVars["readexclusions"]
+    watermodel = MMVars["watermodel"]
+    pairListDist = MMVars["pairListdist"]
+    LJcorrection = MMVars["LJcorrection"]
+    ZeroMomentum = MMVars["ZeroMomentum"]
+    rigidTolerance = MMVars["rigidTolerance"]
+    rigidIterations = MMVars["rigidIterations"]
+    fullElectFrequency = MMVars["fullElectFrequency"]
+    nonBondedFreq = MMVars["nonBondedFreq"]
+    stepspercycle = MMVars["stepspercycle"]
+    PME = MMVars["PME"]
+    PMEGridSizeX = MMVars["PMEGridSizeX"]
+    PMEGridSizeY = MMVars["PMEGridSizeY"]
+    PMEGridSizeZ = MMVars["PMEGridSizeZ"]
+    PMETolerance = MMVars["PMETolerance"]
+    PMEInterpOrder = MMVars["PMEInterpOrder"]
+    qmForces = MMVars["qmForces"]
     qmLines = f""
     colvarlines = ""
     def __init__(self, Calc, MM,):
@@ -280,29 +240,53 @@ langevin            off"""
             self.qmLines = f""
         else:
             self.qmForces = "on"
+#             self.qmLines = f"""
+# qmParamPDB              "../syst-qm.pdb"
+# qmColumn                "beta"
+# qmBondColumn            "occ"
+# QMsimsPerNode           1
+# QMElecEmbed             on
+# QMSwitching             on
+# QMSwitchingType         shift
+# QMPointChargeScheme     round
+# QMBondScheme            "cs"
+# qmBaseDir               "/dev/shm/NAMD_{index}"
+# qmConfigLine            "! {QM.Method} {QM.Basis} EnGrad {QM.QMExtra}"
+# qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
+# qmConfigLine            "%PAL NPROCS {Calc.Threads} END"
+# qmMult                  "1 {QM.Spin}"
+# qmCharge                "1 {QM.Charge}"
+# qmSoftware              "orca"
+# qmExecPath              "{QM.QMpath}"
+# QMOutStride             1
+# qmEnergyStride          1
+# QMPositionOutStride     1
+#
+# """
             self.qmLines = f"""
-qmParamPDB              "../syst-qm.pdb"
-qmColumn                "beta"
-qmBondColumn            "occ"
-QMsimsPerNode           1
-QMElecEmbed             on
-QMSwitching             on
-QMSwitchingType         shift
-QMPointChargeScheme     round
-QMBondScheme            "cs"
-qmBaseDir               "/dev/shm/NAMD_{index}"
-qmConfigLine            "! {QM.Method} {QM.Basis} EnGrad {QM.QMExtra}"
-qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
-qmConfigLine            "%PAL NPROCS {Calc.Threads} END"
-qmMult                  "1 {QM.Spin}"
-qmCharge                "1 {QM.Charge}"
-qmSoftware              "orca"
-qmExecPath              "{QM.QMpath}"
-QMOutStride             1
-qmEnergyStride          1
-QMPositionOutStride     1
+            qmParamPDB              "../syst-qm.pdb"
+            qmColumn                "beta"
+            qmBondColumn            "occ"
+            QMsimsPerNode           1
+            QMElecEmbed             on
+            QMSwitching             on
+            QMSwitchingType         shift
+            QMPointChargeScheme     round
+            QMBondScheme            "cs"
+            qmBaseDir               "/dev/shm/NAMD_{index}"
+            qmConfigLine            "! {QM.Method} {QM.Basis} EnGrad {QM.QMExtra}"
+            qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
+            qmConfigLine            "%PAL NPROCS {Calc.Threads} END"
+            qmMult                  "1 {QM.Spin}"
+            qmCharge                "1 {QM.Charge}"
+            qmSoftware              "custom"
+            qmExecPath              "WorkDir/{index}/runORCA.py"
+            QMOutStride             1
+            qmEnergyStride          1
+            QMPositionOutStride     1
 
-"""
+            """
+
     def set_colvars(self, file, toggle="on"):
         self.colvarlines = f"""# Colvar options:
 colvars         {toggle}

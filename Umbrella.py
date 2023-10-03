@@ -82,8 +82,24 @@ def main(args):
         if args.DryRun == "False":
             equil_run(Job)
     if Job.Stage == "wham" or Job.Stage == "full":
-        wham = WhamClass(args.WhamFile, 300)
+        if Calc.MaxSteps == 0:
+            NumJobs = 1
+        else:
+            if "prod" in args.WhamFile.casefold():
+                steps = prod_length
+            elif "equil" in args.WhamFile.casefold():
+                steps = equil_length
+            NumJobs = math.ceil(steps / Calc.MaxSteps)
+        if Job.Verbosity >= 1:
+            print(f"Number of steps to glue together is {NumJobs}")
+        Anal.glue_stick(Umbrella, Job, NumJobs=NumJobs, file=args.WhamFile)
+        if Umbrella.atom3 != 0:
+            periodicity = "Periodic"
+        else:
+            periodicity = "discrete"
+        wham = WhamClass(args.WhamFile, Umbrella.ConstForce, periodicity)
         Wham.Init_Wham(Job, Umbrella, wham)
+        Wham.Run_Wham(Job, Umbrella)
     if Job.Stage == "analysis" or Job.Stage == "full":
         Labels = LabelClass("../complex.parm7")
         Labels = input.BondsInput(f"{Job.WorkDir}Bonds.dat", Labels)
@@ -101,9 +117,10 @@ def main(args):
         core_load.append("mol new complex.parm7")
         dataframe = DataClass("Production")
         for i in range(Umbrella.Bins):
-            Labels.file_name([f"pull_1.{i}.dcd"])
+            # Labels.file_name([f"pull_1.{i}.dcd"])
             # Labels.file_name([f"equil_1.{i}.dcd", f"equil_2.{i}.dcd"])
-            # Labels.file_name([f"prod_1.{i}.dcd", f"prod_2.{i}.dcd", f"prod_3.{i}.dcd", f"prod_4.{i}.dcd", f"prod_5.{i}.dcd", f"prod_6.{i}.dcd"])
+            Labels.file_name([f"prod_1.{i}.dcd", f"prod_2.{i}.dcd", f"prod_3.{i}.dcd", f"prod_4.{i}.dcd", f"prod_5.{i}.dcd", f"prod_6.{i}.dcd", f"prod_7.{i}.dcd", f"prod_8.{i}.dcd"])
+            # Labels.file_name([f"prod-NoRI_1.{i}.dcd", f"prod-NoRI_2.{i}.dcd", f"prod-NoRI_3.{i}.dcd", f"prod-NoRI_4.{i}.dcd", f"prod-NoRI_5.{i}.dcd", f"prod-NoRI_6.{i}.dcd", f"prod-NoRI_7.{i}.dcd",f"prod-NoRI_8.{i}.dcd",])
             # Labels.file_name(f"prod_PBE_1_{i}.nc")
             Bonds, Dihedrals = Anal.Label_Maker(Labels, f"{Job.WorkDir}{i}/label_maker.tcl")
             if args.DryRun == "False":
@@ -117,47 +134,121 @@ def main(args):
         df = pd.concat(dataframe.dat)
         print(df.loc[df["Name"] == "c6Ring", "Data"].shape)
         # reactioncoordinate = "C2-C7"
+        print(type(Umbrella.atom1), Umbrella.atom2, Umbrella.atom3)
         for bond in Bonds:
-            if ((bond.at1 == Umbrella.atom1) or (bond.at2 == Umbrella.atom1)) and ((bond.at1 == Umbrella.atom2) or (bond.at2 == Umbrella.atom2)) and Umbrella.atom3 == 0:
+            if ((bond.at1 == Umbrella.atom1) or (bond.at2 == Umbrella.atom1)) and ((bond.at1 == Umbrella.atom2) or (bond.at2 == Umbrella.atom2)) and (Umbrella.atom3 == 0):
                 reactioncoordinate = bond.name
                 print(f"Reaction coordinate is {reactioncoordinate}")
-            # print(bond.at1, bond.at2)
+            # elif bond.at1 == Umbrella.atom1 and bond.at2 == Umbrella.atom2:
+            #     reactioncoordinate = bond.name
+            #     print(f"Reaction coordinate is {reactioncoordinate}")
+            # elif bond.at1 == Umbrella.atom2 and bond.at2 == Umbrella.atom1:#and Umbrella.atom3 == 0:
+            #     reactioncoordinate = bond.name
+            #     print(f"Reaction coordinate is {reactioncoordinate}")
+            # print(type(bond.at1), bond.at2)
         for dihed in Dihedrals:
             if ((dihed.at1 == Umbrella.atom1) or (dihed.at4 == Umbrella.atom1)) and ((dihed.at2 == Umbrella.atom2) or (dihed.at3 == Umbrella.atom2)) and ((dihed.at3 == Umbrella.atom3) or (dihed.at2 == Umbrella.atom3)) and ((dihed.at4 == Umbrella.atom4) or (dihed.at1 == Umbrella.atom4)):
                 reactioncoordinate = dihed.name
                 print(f"Reaction coordinate is {reactioncoordinate}")
             # print(dihed.at1, dihed.at2, dihed.at3, dihed.at4)
             # print(Umbrella.atom1, Umbrella.atom2, Umbrella.atom3, Umbrella.atom4)
+        try:
+            os.mkdir(f"{Job.WorkDir}Figures/")
+        except:
+            if Job.Verbosity >= 1:
+                print("Figures directory already exists")
+            else:
+                pass
         for bond in Bonds:
-            plt.hist(df.loc[df["Name"] == bond.name, "Data"], 100)
+            plt.hist(df.loc[df["Name"] == bond.name, "Data",], 100,color="black")
             plt.title(f"{bond.name} bond")
             plt.xlabel("Distance")
             plt.ylabel("Count")
-            plt.savefig(f"{Job.WorkDir}{bond.name}.eps")
-            plt.show()
-            plt.hist2d(df.loc[df["Name"] == bond.name, "Data"],
-                       df.loc[df["Name"] == reactioncoordinate, "Data"],100, cmap="binary")
+            plt.savefig(f"{Job.WorkDir}Figures/{bond.name}.eps",transparent=True)
+            if args.Verbosity >= 1:
+                plt.show()
+            else:
+                plt.clf()
+            plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == bond.name, "Data"],
+                       100, cmap="binary")
+            # for i in Umbrella.BinVals:
+            #     plt.axvline(i, color="red", linestyle="dashed", linewidth=0.2)
             plt.title(f"Reaction coordinate vs. {bond.name} bond")
-            plt.xlabel(f"{bond.name} bond distance")
-            plt.ylabel("Reaction coordinate")
-            plt.savefig(f"{Job.WorkDir}{bond.name}_2d.eps")
-            plt.show()
+            plt.ylabel(f"{bond.name} bond distance")
+            plt.xlabel("Reaction coordinate")
+            plt.savefig(f"{Job.WorkDir}Figures/{bond.name}_2d.eps",transparent=True)
+            if args.Verbosity >= 1:
+                plt.show()
+            else:
+                plt.clf()
         for dihed in Dihedrals:
-            plt.hist(df.loc[df["Name"] == dihed.name, "Data"], 100)
+            plt.hist(df.loc[df["Name"] == dihed.name, "Data"], 100, color="black")
             plt.title(f"{dihed.name} dihedral")
             plt.xlabel("Angle")
             plt.ylabel("Count")
-            plt.savefig(f"{Job.WorkDir}{dihed.name}.eps")
-            plt.show()
-            plt.hist2d(df.loc[df["Name"] == dihed.name, "Data"],
-                       df.loc[df["Name"] == reactioncoordinate, "Data"], 100, cmap="binary")
+            plt.savefig(f"{Job.WorkDir}Figures/{dihed.name}.eps",transparent=True)
+            if args.Verbosity >= 1:
+                plt.show()
+            else:
+                plt.clf()
+            plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == dihed.name, "Data"],100, cmap="binary")
+            # for i in Umbrella.BinVals:
+            #     plt.axvline(i, color="red", linestyle="dashed", linewidth=0.2)
             plt.title(f"Reaction coordinate vs. {dihed.name} dihedral")
-            plt.xlabel(f"{dihed.name} dihedral angle")
-            plt.ylabel("Reaction coordinate")
-            plt.savefig(f"{Job.WorkDir}{dihed.name}_2d.eps")
-            plt.show()
+            plt.ylabel(f"{dihed.name} dihedral angle")
+            plt.xlabel("Reaction coordinate")
+            plt.savefig(f"{Job.WorkDir}Figures/{dihed.name}_2d.eps",transparent=True)
+            if args.Verbosity >= 1:
+                plt.show()
+            else:
+                plt.clf()
 
-        df.to_csv(f"{Job.WorkDir}/Data.csv")
+        df.to_csv(f"{Job.WorkDir}Figures/Data.csv")
+    if Job.Stage == "convergence":
+        if Calc.MaxSteps == 0:
+            NumJobs = 1
+        else:
+            if "prod" in args.WhamFile.casefold():
+                steps = prod_length
+            elif "equil" in args.WhamFile.casefold():
+                steps = equil_length
+            NumJobs = math.ceil(steps / Calc.MaxSteps)
+        if Job.Verbosity >= 1:
+            print(f"Number of steps to glue together is {NumJobs}")
+        try:
+            os.mkdir(f"{Job.WorkDir}WHAM/Conv")
+        except:
+            if Job.Verbosity >= 1:
+                print("Figures directory already exists")
+            else:
+                pass
+        for i in range(1,NumJobs+1):
+            Anal.glue_stick(Umbrella, Job, NumJobs=i, file=args.WhamFile)
+            if Umbrella.atom3 != 0:
+                periodicity = "Periodic"
+            else:
+                periodicity = "discrete"
+            wham = WhamClass(args.WhamFile, Umbrella.ConstForce, periodicity)
+            Wham.Init_Wham(Job, Umbrella, wham)
+            Wham.Run_Wham(Job, Umbrella)
+            subprocess.run(f"head -n {Umbrella.Bins} {Job.WorkDir}WHAM/out.pmf > {Job.WorkDir}WHAM/Conv/{i}.pmf", shell=True)
+            subprocess.run(f"mv {Job.WorkDir}WHAM/PMF.eps {Job.WorkDir}WHAM/Conv/{i}.eps", shell=True)
+            subprocess.run(f"sed -i \"0,/+\/-/s/+\/-/Err1/\" {Job.WorkDir}WHAM/Conv/{i}.pmf " , shell=True)
+            subprocess.run(
+                f"sed -i \"0,/+\/-/s/+\/-/Err2/\" {Job.WorkDir}WHAM/Conv/{i}.pmf ",
+                shell=True)
+            subprocess.run(
+                f"sed -i \"s/#Coor/Coor/g\" {Job.WorkDir}WHAM/Conv/{i}.pmf",
+                shell=True)
+    if Job.Stage == "vis":
+        VisInit(Job, Umbrella, args.WhamFile)
+        if args.DryRun == "False":
+            VisLoad(args.WhamFile)
+    if Job.Stage == "test":
+        file = FileGen.ORCA_Wrapper(QM, Calc)
+        utils.file_write(f"{Job.WorkDir}runORCA.py", [file])
+        SLURM.set_arrayJob("equil_1.txt", 54)
+        utils.mpi_gen(SLURM,Umbrella)
 
 def min_setup(MM, Calc, Job, startfile):
     MM.Set_Ensemble("min")
@@ -185,7 +276,7 @@ def min_run(MM, Job, GPU=True):
         if Job.Verbosity >= 1:
             print("Running locally on GPU!")
         subprocess.run([
-                           MM.GPUNamd + f" +autoProvision +setcpuaffinity +devices 0 min.conf > min_1.0.out"],
+                           MM.GPUNamd + f" +oneWthPerCore +setcpuaffinity +devices 0 min.conf > min_1.0.out"],
                        shell=True, capture_output=True)
     if Job.Verbosity >= 1:
         print("Cleaning up directory!")
@@ -229,7 +320,7 @@ def heat_run(MM, Job,GPU=True):
         if Job.Verbosity >= 1:
             print("Running locally on GPU!")
         subprocess.run([
-                           MM.GPUNamd + f" +autoProvision +setcpuaffinity +devices 0 heat.conf > heat_1.0.out"],
+                           MM.GPUNamd + f" +oneWthPerCore +setcpuaffinity +devices 0 heat.conf > heat_1.0.out"],
                        shell=True, capture_output=True)
     subprocess.run(["mv heat* ./setup", ],
                    shell=True, capture_output=True)
@@ -355,6 +446,7 @@ def equil_setup(MM, QM, Job, Calc, Umbrella, PreviousJob):
         utils.file_write(f"{Job.WorkDir}{Calc.Name}_{i + 1}.txt",
                          JobList[lines : lines + Umbrella.Bins])
 
+
 def equil_run(Job):
     if Job.Verbosity >= 1:
         print("Running Equil command locally, This is not recommended...")
@@ -403,4 +495,14 @@ def make_runfile(Job, Umbrella, pullJobs):
             print(pullJobs[i], file=f)
         for i in range(0, Umbrella.StartBin):
             print(pullJobs[Umbrella.StartBin - i - 1], file=f)
+
+def VisInit(Job, Umbrella, File, extension="restart.coor"):
+    Lines = [None] * (Umbrella.Bins + 1)
+    Lines[0] = f"mol new complex.parm7"
+    for i in range(Umbrella.Bins):
+        Lines[i+1] = f"mol addfile ./{i}/{File}.{i}.{extension}"
+    utils.file_write(f"{Job.WorkDir}/{File}_load.tcl", lines=Lines)
+
+def VisLoad(File):
+    subprocess.run([f"vmd -e {File}_load.tcl"], shell=True, capture_output=True)
 

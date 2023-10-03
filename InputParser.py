@@ -61,6 +61,9 @@ def InputFileGen(args):
         for i in HPCDict.keys():
             print(f"{i}={argsDict[i]}", file=f)
     StandaloneDict = StandaloneJobInput(f"{args.WorkDir}Standalone.conf")
+    with open(f"{args.WorkDir}Standalone.conf", "w") as f:
+        for i in StandaloneDict.keys():
+            print(f"{i}={argsDict[i]}", file=f)
 
 def arg_parse(dict, sysargs):
     parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
@@ -151,17 +154,37 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                     default=dict["SoftwareLines"], nargs="*")
 
     Standalone = parser.add_argument_group("Standalone Job arguments")
+    Standalone.add_argument("--Name", type=str,
+                            default=dict["Name"], help="Name for the calculation")
     Standalone.add_argument("--Ensemble", type=str,
                             choices=["min", "heat", "NVT", "NPT"],
                             help="Ensemble for Calculation", default=dict["Ensemble"])
     Standalone.add_argument("--QM", type=str, choices=["True", "False"],
                             default=dict["QM"], help="Whether this is a QMMM calculation or not.")
-    Standalone.add_argument("-st", "--Steps", type=int, default=dict["Steps"],
-                            help="Number of simulation steps.")
+    Standalone.add_argument("-st", "--Steps", type=int,
+                            default=dict["Steps"], help="Number of simulation steps.")
     Standalone.add_argument("-dt", "--TimeStep", type=float,
                             default=dict["TimeStep"], help="Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM")
+    Standalone.add_argument("--ParmFile", type=str,
+                            default=dict["ParmFile"], help="Parameter file name")
+    Standalone.add_argument("--AmberCoordinates", type=str,
+                            default=dict["AmberCoordinates"], help="Amber coordinate file name that relates to the parameter file")
+    # Standalone.add_argument("--StartFile", type=str, default=dict["StartFile"], help="Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.")
+    Standalone.add_argument("--RestartOut", type=int, default=dict["RestartOut"], help="Frequency to generate a restart file")
+    Standalone.add_argument("--TrajOut", type=int, default=dict["TrajOut"], help="Frequency to add to the trajectory file")
+    Standalone.add_argument("--SMD", type=str, choices=["off", "on"], default=dict["SMD"], help="Wheter to use steered molecular dynamics")
+    Standalone.add_argument("--Force", type=float, default=dict["Force"], help="Force for Steered MD")
+    Standalone.add_argument("--StartValue", type=float, default=dict["StartValue"], help="Start value for SMD")
+    Standalone.add_argument("--EndValue", type=float, default=dict["EndValue"], help="End value for SMD. MAKE == Start if wanting constant.")
 
 
+
+
+
+
+
+
+    # Standalone.add_argument("", type=, default=dict[""], help="")
 
     ### Parse commandline arguments
     args = parser.parse_args(sysargs)

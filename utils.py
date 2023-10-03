@@ -2,7 +2,7 @@ import numpy
 import logging as log
 import argparse as ap
 import json
-
+import subprocess
 import numpy as np
 
 
@@ -15,7 +15,13 @@ def file_write(path, lines):
     with open(path, 'w') as f:
         for i in lines:
             print(i,file=f)
-            
+
+def file_2dwrite(path, x, y):
+    assert len(x) == len(y), f"Column 1 length is {len(x)} but column 2 length is{len(y)}. They need to be equal to work"
+    with open(path, 'w') as f:
+        for i in range(len(x)):
+            print(f"{x[i]}\t{y[i]}", file=f)
+
 def data_2d(path):
     data0 = file_read(path)
     data = []
@@ -40,27 +46,6 @@ def dict_read(path):
 def dict_write(path, dict):
     with open(path,"w") as f:
         json.dump(dict, f)
-        
-# def input_parser(args):
-#     if args.Verbosity == 0:
-#         log.basicConfig(format="%(levelname)s: %(message)s", level=log.CRITICAL)
-#     elif args.Verbosity == 1:
-#         log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
-#         log.info("Verbose output.")
-#     try:
-#         data = dict_read(f"{args.WorkDir}{args.input}")
-#         lst = vars(args)
-#         newlst = lst
-#         for i in data:
-#             for j in lst:
-#                 if j == i:
-#                     newlst[j] = data[i]
-#         args = ap.Namespace(**newlst)
-#         dict_write(f"{args.WorkDir}{args.input}", newlst)
-#     except FileNotFoundError:
-#         lst = vars(args)
-#         dict_write(f"{args.WorkDir}{args.input}", lst)
-#     return args
 
 def QM_Gen(qmzone,wd):
     tcl = f"""
@@ -458,3 +443,101 @@ export OMP_PLACES=cores
 {Job}
 """
         file_write(path, [slurmScript])
+
+def mpi_gen(SLURM, Umbrella):
+
+    JobNumber = 0
+    for i in range(Umbrella.Bins):
+        subprocess.run([f"cp runORCA.py ./{i}"], shell=True,)
+        Cores = ""
+        if JobNumber < SLURM.JobsPerNode:
+            for j in range(SLURM.Cores):
+                Cores += f"{JobNumber*SLURM.Cores+j},"
+                print(Cores)
+            subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
+            JobNumber = JobNumber + 1
+        else:
+            JobNumber = 0
+            for j in range(SLURM.Cores):
+                Cores += f"{JobNumber*SLURM.Cores+j},"
+
+            subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
+            JobNumber = JobNumber + 1
+
+def get_cellVec(Job, MM):
+    data = file_read(f"{Job.WorkDir}{MM.ambercoor}")
+    length = len(data) #Get the last line
+    words = data[length-1].split() # Split the final line.
+    # print(words)
+    return float(words[0]) # return the first number
+
+MM_DefaultVars = {  "parmfile" : "complex.parm7",
+                    "ambercoor": "start.rst7",
+                    "bincoordinates" : None,
+                    "DCDfile" : "output",
+                    "DCDfreq" : 1,
+                    "restartname" : "output",
+                    "restartfreq" : 1,
+                    "outputname" : "output",
+                    "outputTiming" : "100",
+                    "amber" : "on",
+                    "switching" : "off",
+                    "exclude" : "scaled1-4",
+                    "1-4scaling" : 0.833333333,
+                    "scnb" : 2.0,
+                    "readexclusions" : "yes",
+                    "cutoff" : 8.0,
+                    "watermodel" : "tip3",
+                    "pairListdist" : 11,
+                    "LJcorrection" : "on",
+                    "ZeroMomentum" : "off",
+                    "rigidBonds" : "all",
+                    "rigidTolerance" : "1.0e-8",
+                    "rigidIterations" : 100,
+                    "timeStep" : 2,
+                    "fullElectFrequency" : 1,
+                    "nonBondedFreq" : 1,
+                    "stepspercycle" : 10,
+                    "PME" : "off",
+                    "PMEGridSizeX" : 300,
+                    "PMEGridSizeY" : 300,
+                    "PMEGridSizeZ" : 300,
+                    "PMETolerance" : "1.0e-6",
+                    "PMEInterpOrder" : 4,
+                    "cellBasisVector1" : "135.913174 0.0 0.0",
+                    "cellBasisVector2" : "-45.30439133333333 128.1401693173162 0.0",
+                    "cellBasisVector3" : "-45.30439133333333 -64.0700846586581 -110.97264187403509",
+                    "cellOrigin" : "0 0 0",
+                    "cellBasisVector" : 135.913174, #### Base if all 3 are calculated...
+                    "langevin" : "on",
+                    "langevinDamping" : 5,
+                    "langevinTemp" : 300,
+                    "langevinHydrogen" : "off",
+                    "temperature" : 300,
+                    "BerendsenPressure" : "off",
+                    "qmForces" : "off",
+                    "CUDASOAintegrate" : "off",
+                    "run" : 1000,
+                    "minimize" : 0,
+                    "qmParamPDB" : "syst-qm.pdb",
+                    "qmColumn" : "beta",
+                    "qmBondColumn" : "occ",
+                    "QMsimsPerNode" : 1,
+                    "QMElecEmbed" : "on",
+                    "QMSwitching" : "on",
+                    "QMSwitchingType" : "shift",
+                    "QMPointChargeScheme" : "round",
+                    "QMBondScheme" : "cs",
+                    "qmBaseDir" : "/dev/shm/NAMD",
+                    "qmConfigLine" : """! PBE 6-31G* EnGrad D3BJ TightSCF 
+%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end""",
+                    "qmMult" : "1 1",
+                    "qmCharge" : "1 0",
+                    "qmSoftware" : "orca",
+                    "qmExecPath" : "~/Software/ORCA/orca",
+                    "QMOutStride" : 1,
+                    "qmEnergyStride" : 1,
+                    "QMPositionOutStride" : 1,
+                    "colvars" : "off",
+                    "colvarsConfig" : "colvars.conf",
+                    }
