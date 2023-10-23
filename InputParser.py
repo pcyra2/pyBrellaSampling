@@ -9,32 +9,48 @@ import argparse as ap
 ### Argument priority: Commandline > Input file > default
 ### Final inputs are all combined into the "args" variable which is a argparse namespace.
 
-def VariableParser(sysargs):
-    JobDict = JobInput("./Job.conf")
-    WorkDir = JobDict["WorkDir"]
-    ComputeDict = ComputeInput(f"{WorkDir}Compute.conf")
-    MMDict = MMInput(f"{WorkDir}MM.conf")
-    QMDict = QMInput(f"{WorkDir}QM.conf")
-    UmbrellaDict = UmbrellaInput(f"{WorkDir}Umbrella.conf")
-    HPCDict = HPCInput(f"{WorkDir}HPC.conf")
-    StandaloneDict = StandaloneJobInput(f"{WorkDir}Standalone.conf")
-    if JobDict["JobType"].casefold() == "umbrella":
-        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict,
-                    **HPCDict, **StandaloneDict,**UmbrellaDict}
-    elif JobDict["JobType"].casefold() == "Inpfile":
-        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
-    elif JobDict["JobType"].casefold() == "mm" or JobDict["JobType"].casefold() == "qmmm":
-        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
-    else:
-        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
-    args = arg_parse(FileDict,sysargs)
-    if args.JobType.casefold() == "inpfile":
-        InputFileGen(args)
-    if args.Verbosity >= 2:
-        print(vars(args))
-    return args
+def VariableParser(sysargs, JT="Umbrella"):
+    if JT == "Umbrella":
+        JobDict = JobInput("./Job.conf")
+        WorkDir = JobDict["WorkDir"]
+        ComputeDict = ComputeInput(f"{WorkDir}Compute.conf")
+        MMDict = MMInput(f"{WorkDir}MM.conf")
+        QMDict = QMInput(f"{WorkDir}QM.conf")
+        UmbrellaDict = UmbrellaInput(f"{WorkDir}Umbrella.conf")
+        HPCDict = HPCInput(f"{WorkDir}HPC.conf")
+        StandaloneDict = StandaloneJobInput(f"{WorkDir}Standalone.conf")
+        if JobDict["JobType"].casefold() == "umbrella":
+            FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict,
+                        **HPCDict, **StandaloneDict,**UmbrellaDict}
+        elif JobDict["JobType"].casefold() == "Inpfile":
+            FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict, **StandaloneDict}
+        elif JobDict["JobType"].casefold() == "mm" or JobDict["JobType"].casefold() == "qmmm":
+            FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict,**StandaloneDict}
+        else:
+            FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **UmbrellaDict, **HPCDict,**StandaloneDict}
+        args = arg_parse_Umbrella(FileDict,sysargs)
+        if args.JobType.casefold() == "inpfile":
+            InputFileGen(args, JobType="Umbrella")
+        if args.Verbosity >= 2:
+            print(vars(args))
+        return args
+    elif JT == "Standalone":
+        JobDict = JobInput("./Job.conf")
+        WorkDir = JobDict["WorkDir"]
+        ComputeDict = ComputeInput(f"{WorkDir}Compute.conf")
+        MMDict = MMInput(f"{WorkDir}MM.conf")
+        QMDict = QMInput(f"{WorkDir}QM.conf")
+        HPCDict = HPCInput(f"{WorkDir}HPC.conf")
+        StandaloneDict = StandaloneJobInput(f"{WorkDir}Standalone.conf")
+        # print(StandaloneDict)
+        FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **HPCDict, **StandaloneDict}
+        args = arg_parse_Standalone(FileDict,sysargs)
+        # print(args)
+        if args.JobType.casefold() == "inpfile":
+            InputFileGen(args, JobType="Standalone")
+        return args
 
-def InputFileGen(args):
+def InputFileGen(args, JobType="Umbrella"):
     argsDict = vars(args)
     JobDict = JobInput(f"{args.WorkDir}Job.conf")
     with open(f"{args.WorkDir}Job.conf", "w") as f:
@@ -52,20 +68,22 @@ def InputFileGen(args):
     with open(f"{args.WorkDir}QM.conf", "w") as f:
         for i in QMDict.keys():
             print(f"{i}={argsDict[i]}", file=f)
-    UmbrellaDict = UmbrellaInput(f"{args.WorkDir}Umbrella.conf")
-    with open(f"{args.WorkDir}Umbrella.conf", "w") as f:
-        for i in UmbrellaDict.keys():
-            print(f"{i}={argsDict[i]}", file=f)
+    if JobType == "Umbrella":
+        UmbrellaDict = UmbrellaInput(f"{args.WorkDir}Umbrella.conf")
+        with open(f"{args.WorkDir}Umbrella.conf", "w") as f:
+            for i in UmbrellaDict.keys():
+                print(f"{i}={argsDict[i]}", file=f)
     HPCDict = HPCInput(f"{args.WorkDir}HPC.conf")
     with open(f"{args.WorkDir}HPC.conf", "w") as f:
         for i in HPCDict.keys():
             print(f"{i}={argsDict[i]}", file=f)
-    StandaloneDict = StandaloneJobInput(f"{args.WorkDir}Standalone.conf")
-    with open(f"{args.WorkDir}Standalone.conf", "w") as f:
-        for i in StandaloneDict.keys():
-            print(f"{i}={argsDict[i]}", file=f)
+    if JobType == "Standalone":
+        StandaloneDict = StandaloneJobInput(f"{args.WorkDir}Standalone.conf")
+        with open(f"{args.WorkDir}Standalone.conf", "w") as f:
+            for i in StandaloneDict.keys():
+                print(f"{i}={argsDict[i]}", file=f)
 
-def arg_parse(dict, sysargs):
+def arg_parse_Umbrella(dict, sysargs):
     parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
 It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
     ### Core Job arguments
@@ -153,6 +171,104 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                     help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
                     default=dict["SoftwareLines"], nargs="*")
 
+    # Standalone = parser.add_argument_group("Standalone Job arguments")
+    # Standalone.add_argument("--Name", type=str,
+    #                         default=dict["Name"], help="Name for the calculation")
+    # Standalone.add_argument("--Ensemble", type=str,
+    #                         choices=["min", "heat", "NVT", "NPT"],
+    #                         help="Ensemble for Calculation", default=dict["Ensemble"])
+    # Standalone.add_argument("--QM", type=str, choices=["True", "False"],
+    #                         default=dict["QM"], help="Whether this is a QMMM calculation or not.")
+    # Standalone.add_argument("-st", "--Steps", type=int,
+    #                         default=dict["Steps"], help="Number of simulation steps.")
+    # Standalone.add_argument("-dt", "--TimeStep", type=float,
+    #                         default=dict["TimeStep"], help="Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM")
+    # Standalone.add_argument("--ParmFile", type=str,
+    #                         default=dict["ParmFile"], help="Parameter file name")
+    # Standalone.add_argument("--AmberCoordinates", type=str,
+    #                         default=dict["AmberCoordinates"], help="Amber coordinate file name that relates to the parameter file")
+    # # Standalone.add_argument("--StartFile", type=str, default=dict["StartFile"], help="Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.")
+    # Standalone.add_argument("--RestartOut", type=int, default=dict["RestartOut"], help="Frequency to generate a restart file")
+    # Standalone.add_argument("--TrajOut", type=int, default=dict["TrajOut"], help="Frequency to add to the trajectory file")
+    # Standalone.add_argument("--SMD", type=str, choices=["off", "on"], default=dict["SMD"], help="Wheter to use steered molecular dynamics")
+    # Standalone.add_argument("--Force", type=float, default=dict["Force"], help="Force for Steered MD")
+    # Standalone.add_argument("--StartValue", type=float, default=dict["StartValue"], help="Start value for SMD")
+    # Standalone.add_argument("--EndValue", type=float, default=dict["EndValue"], help="End value for SMD. MAKE == Start if wanting constant.")
+
+    # Standalone.add_argument("", type=, default=dict[""], help="")
+
+    ### Parse commandline arguments
+    args = parser.parse_args(sysargs)
+    # print(vars(args))
+    return args
+
+
+def arg_parse_Standalone(dict, sysargs):
+    parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
+It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
+    ### Core Job arguments
+    Core = parser.add_argument_group("Core Job Arguments")
+    Core.add_argument('-wd', '--WorkDir', type=str,
+                        help="Home location for the calculations", default=dict["WorkDir"])
+    Core.add_argument('-jt', '--JobType', type=str,
+                        help="Type of calculation to run", default=dict["JobType"])
+    Core.add_argument('-v', '--Verbosity', type=int,
+                        help="Verbosity: 0 = none, 1 = info", default=dict["Verbosity"])
+    Core.add_argument('-dr', '--DryRun', type=str,
+                        help="Indicates whether programs are executed or not", default=dict["DryRun"])
+
+    Compute = parser.add_argument_group("Compute Arguments")
+    ### Compute Arguments
+    Compute.add_argument('-cores', '--CoresPerJob', type=int,
+                        help="Number of cores per individual calculation", default=dict["CoresPerJob"])
+    Compute.add_argument('-mem','--MemoryPerJob', type=int,
+                        help="Gb of memory per individual calculation", default=dict["MemoryPerJob"])
+    Compute.add_argument('-MaxCalc', '--MaxStepsPerCalc', type=int,
+                         help="The maximum number of steps per calculation. splits jobs into sub-steps. useful for short wall times. 0 == No cap.",
+                         default=dict["MaxStepsPerCalc"])
+
+    ### MM Arguments
+    MM = parser.add_argument_group("Molecular Dynamics Arguments")
+    MM.add_argument('-MDcpu', '--MDCPUPath', type=str,
+                        help="Path to NAMD CPU executable", default=dict["MDCPUPath"])
+    MM.add_argument('-MDgpu', '--MDGPUPath', type=str,
+                        help="Path to NAMD GPU executable", default=dict["MDGPUPath"])
+
+    ### QM Arguments
+    QM = parser.add_argument_group("QM Arguments")
+    QM.add_argument('-qp', '--QmPath', type=str,
+                        help="Path to QM software", default=dict["QmPath"])
+    QM.add_argument('-qsel', '--QmSelection', type=str,
+                        help="Selection algebra for QM atoms", default=dict["QmSelection"])
+    QM.add_argument('-qc', '--QmCharge', type=int,
+                        help="Charge of QM region", default=dict["QmCharge"])
+    QM.add_argument('-qspin', '--QmSpin', type=int,
+                        help="Spin of QM region", default=dict["QmSpin"])
+    QM.add_argument('-qm', '--QmMethod', type=str,
+                        help="Qm method", default=dict["QmMethod"])
+    QM.add_argument('-qb', '--QmBasis', type=str,
+                        help="QM basis set", default=dict["QmBasis"])
+    QM.add_argument('-qargs', '--QmArgs', type=str, help="Extra arguments for ORCA calculation", default=dict["QmArgs"])
+
+    ### HPC Arguments
+    HPC = parser.add_argument_group("HPC/SLURM arguments")
+    HPC.add_argument("-MaxTime", "--MaxWallTime", type=int,
+                     help="Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)",
+                     default=dict["MaxWallTime"])
+    HPC.add_argument("-Host", "--HostName", type=str,
+                     help="HostName of the HPC", default=dict["HostName"])
+    HPC.add_argument("--Partition", type=str, help="Calculation partition name",
+                     default=dict["Partition"])
+    HPC.add_argument("--MaxCores", type=int,
+                     help="Maximum number of cores available to a node (For array splitting)", default=dict["MaxCores"])
+    HPC.add_argument("-QoS", "--QualityofService", type=str,
+                     help="Slurm QoS, set to None if not relevant.", default=dict["QualityofService"])
+    HPC.add_argument("--Account", type=str,
+                     help="Slurm account, (Not username), Set to None if not relevant", default=dict["Account"])
+    HPC.add_argument("-Software", "--SoftwareLines", type=str,
+                    help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
+                    default=dict["SoftwareLines"], nargs="*")
+
     Standalone = parser.add_argument_group("Standalone Job arguments")
     Standalone.add_argument("--Name", type=str,
                             default=dict["Name"], help="Name for the calculation")
@@ -169,23 +285,15 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                             default=dict["ParmFile"], help="Parameter file name")
     Standalone.add_argument("--AmberCoordinates", type=str,
                             default=dict["AmberCoordinates"], help="Amber coordinate file name that relates to the parameter file")
-    # Standalone.add_argument("--StartFile", type=str, default=dict["StartFile"], help="Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.")
+    Standalone.add_argument("--StartFile", type=str, default=dict["StartFile"], help="Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.")
     Standalone.add_argument("--RestartOut", type=int, default=dict["RestartOut"], help="Frequency to generate a restart file")
     Standalone.add_argument("--TrajOut", type=int, default=dict["TrajOut"], help="Frequency to add to the trajectory file")
     Standalone.add_argument("--SMD", type=str, choices=["off", "on"], default=dict["SMD"], help="Wheter to use steered molecular dynamics")
     Standalone.add_argument("--Force", type=float, default=dict["Force"], help="Force for Steered MD")
     Standalone.add_argument("--StartValue", type=float, default=dict["StartValue"], help="Start value for SMD")
     Standalone.add_argument("--EndValue", type=float, default=dict["EndValue"], help="End value for SMD. MAKE == Start if wanting constant.")
-
-
-
-
-
-
-
-
-    # Standalone.add_argument("", type=, default=dict[""], help="")
-
+    Standalone.add_argument('-mask', '--AtomMask', type=str,
+                        help="Mask for the restrained atoms.", default=dict["AtomMask"])
     ### Parse commandline arguments
     args = parser.parse_args(sysargs)
     # print(vars(args))

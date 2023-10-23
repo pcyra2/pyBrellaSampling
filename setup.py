@@ -7,6 +7,7 @@ setup(
     entry_points={
         'console_scripts': [
             'pyBrella = pyBrellaSampling.pyBrella:main',
+            'Standalone = pyBrellaSampling.Standalone:main_cli',
         ],
     },
 )

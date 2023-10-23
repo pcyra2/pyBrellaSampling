@@ -5,7 +5,9 @@ import numpy as np
 from pyBrellaSampling.classes import BondClass, DihedralClass
 
 
+
 def tcl_bondPlot(bond):
+    """Creates a list of lines for an alaysis tcl script used by vmd which allows for the tracking of bonds."""
     lines = f"""label add Bonds 0/{bond.at1} 0/{bond.at2}
 label graph Bonds 0 {bond.name}.dat
 label delete Bonds 0
@@ -13,6 +15,7 @@ label delete Bonds 0
     return lines
 
 def tcl_bondAnalysis(bond, data, simulation):
+    """Runs analysis on 2d data file containing bond lengths and states whether they are within the expected threshold."""
     for i in range(len(data)):
         if i == 0:
             prevState = "None"
@@ -31,6 +34,7 @@ def tcl_bondAnalysis(bond, data, simulation):
     return State
 
 def tcl_dihedPlot(dihed):
+    """Creates a list of lines for an alaysis tcl script used by vmd which allows for the tracking of Dihedrals."""
     lines = f"""label add Dihedrals 0/{dihed.at1} 0/{dihed.at2} 0/{dihed.at3} 0/{dihed.at4}
 label graph Dihedrals 0 {dihed.name}.dat
 label delete Dihedrals 0
@@ -38,6 +42,7 @@ label delete Dihedrals 0
     return lines
 
 def tcl_dihedAnalysis(dihed, data, window):
+    """Runs analysis on 2d data file containing dihedral angles and states what state they are in."""
     for i in range(len(data)):
         if i == 0:
             prevState = "None"
@@ -56,6 +61,7 @@ def tcl_dihedAnalysis(dihed, data, window):
     return State
 
 def Label_Maker(Label, path):
+    """This generates the tcl script that automates the bond and dihedral analysis."""
     Bonds = [None] * len(Label.bond)
     Dihedrals = [None] * len(Label.dihedral)
     with open(path, 'w') as f:
@@ -86,6 +92,7 @@ def Label_Maker(Label, path):
     return Bonds, Dihedrals
 
 def Labal_Analysis(Bonds, Dihedrals, Path, window, dataframe):
+    """Saves bond and dihedral analysis, and controls errors for when files are missing ect."""
     for i in range(len(Bonds)):
         try:
             steps, data = utils.data_2d(f"{Path}{Bonds[i].name}.dat")
@@ -106,6 +113,7 @@ def Labal_Analysis(Bonds, Dihedrals, Path, window, dataframe):
     return dataframe
 
 def glue_stick(Umbrella, Job, NumJobs, file):
+    """Sticks split jobs back together for analysis."""
     for i in range(Umbrella.Bins):
         step, value = ["#Step"], ["Value"]
         for j in range(NumJobs):

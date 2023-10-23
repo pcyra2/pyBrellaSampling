@@ -5,6 +5,7 @@ from pyBrellaSampling.utils import MM_DefaultVars as MMVars
 import os
 
 class UmbrellaClass:
+    """Class for containing umbrella sampling information."""
     def __init__(self, args, Min, bins, Start, Width, ):
         self.atom1 = int(args.AtomMask.split(",")[0])
         self.atom2 = int(args.AtomMask.split(",")[1])
@@ -23,7 +24,9 @@ class UmbrellaClass:
     def set_force(self, Force): ### To combine Umbrella for use in Standalone calculations
         self.PullForce = Force
         self.ConstForce = Force
+
 class JobClass:
+    """Class for containing job specific information"""
     def __init__(self, args):
         self.WorkDir = args.WorkDir
         self.JobType = args.JobType.casefold()
@@ -31,6 +34,7 @@ class JobClass:
         self.Stage = args.Stage.casefold()
 
 class LabelClass:
+    """Class for containing bond and dihedral label information"""
     bond = []
     bondName = []
     bondThresh = []
@@ -57,6 +61,7 @@ class LabelClass:
         self.file = name
 
 class DataClass:
+    """Class for containing generic analysis data."""
     dat = []
     def __init__(self, Name, ):
         self.name = Name
@@ -67,6 +72,7 @@ class DataClass:
         return f"{self.name}: \n{self.dat}"
 
 class BondClass:
+    """Class for containing bond data"""
     def __init__(self, atom1, atom2, name, threshold):
         self.at1 = int(atom1)
         self.at2 = int(atom2)
@@ -76,6 +82,7 @@ class BondClass:
         return f"Atoms: {self.at1} {self.at2}, name: {self.name}, threshold: {self.thresh}"
 
 class DihedralClass:
+    """Class for containing dihedral data"""
     def __init__(self, atom1, atom2, atom3, atom4, name, target1, t1name, target2, t2name):
         self.at1 = int(atom1)
         self.at2 = int(atom2)
@@ -90,12 +97,15 @@ class DihedralClass:
         return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
 
 class WhamClass:
+    """Class for contining wham data"""
     def __init__(self, Name, Force, type="discrete"):
         self.Name = Name
         self.Force = Force
         self.Type = type
 
 class QMClass:
+    SelFile="../syst-qm.pdb"
+    """Class for containing quantum calculation information"""
     def __init__(self, args):
         self.QMpath = args.QmPath
         self.QMSel = args.QmSelection
@@ -104,8 +114,11 @@ class QMClass:
         self.Method = args.QmMethod
         self.Basis = args.QmBasis
         self.QMExtra = args.QmArgs
+    def set_selfile(self, File):
+        self.SelFile = File
 
 class MMClass:
+    """Class for containing molecular mechanics calculation information"""
     CellVec = 150.2205127
     CellShape = "oct"
     Temp = MMVars["temperature"]
@@ -139,6 +152,7 @@ class MMClass:
         self.ambercoor = ambercoor
 
 class CalcClass:
+    """Class for containing generic calculation information"""
     QM = "off"
     def __init__(self, args):
         self.Threads = args.CoresPerJob
@@ -155,6 +169,7 @@ class CalcClass:
 
 
 class NAMDClass:
+    """Class for containing NAMD Variables"""
     amber = MMVars["amber"]
     switching = MMVars["switching"]
     exclude = MMVars["exclude"]
@@ -264,7 +279,7 @@ langevin            off"""
 #
 # """
             self.qmLines = f"""
-            qmParamPDB              "../syst-qm.pdb"
+            qmParamPDB              "{QM.SelFile}"
             qmColumn                "beta"
             qmBondColumn            "occ"
             QMsimsPerNode           1
@@ -279,8 +294,8 @@ langevin            off"""
             qmConfigLine            "%PAL NPROCS {Calc.Threads} END"
             qmMult                  "1 {QM.Spin}"
             qmCharge                "1 {QM.Charge}"
-            qmSoftware              "custom"
-            qmExecPath              "WorkDir/{index}/runORCA.py"
+            qmSoftware              "orca"
+            qmExecPath              "{QM.QMpath}"
             QMOutStride             1
             qmEnergyStride          1
             QMPositionOutStride     1
@@ -298,6 +313,7 @@ colvarsConfig   {file}
         self.parm = parm
 
 class SLURMClass:
+    """Class for containing SLURM variables"""
     account = ""
     qos = ""
     dependency = ""

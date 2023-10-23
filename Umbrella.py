@@ -133,7 +133,7 @@ def main(args):
         # print(dataframe.dat)
         df = pd.concat(dataframe.dat)
         print(df.loc[df["Name"] == "c6Ring", "Data"].shape)
-        # reactioncoordinate = "C2-C7"
+        #reactioncoordinate = "C3-C8"
         print(type(Umbrella.atom1), Umbrella.atom2, Umbrella.atom3)
         for bond in Bonds:
             if ((bond.at1 == Umbrella.atom1) or (bond.at2 == Umbrella.atom1)) and ((bond.at1 == Umbrella.atom2) or (bond.at2 == Umbrella.atom2)) and (Umbrella.atom3 == 0):
@@ -310,6 +310,7 @@ def heat_setup(MM, Calc, Job):
     utils.file_write(f"{Job.WorkDir}heat.conf", [file])
 
 def heat_run(MM, Job,GPU=True):
+    print("TEST")
     if Job.Verbosity >= 1:
         print("Running the Heat script without checking!")
     print("Running the Heating Calculation")

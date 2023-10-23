@@ -11,7 +11,7 @@ import pyBrellaSampling.Standalone_New as Standalone1
 def main():
     starttime = time.time()
     ### Parse user inputs.
-    args = input.VariableParser(sys.argv[1:])
+    args = input.VariableParser(sys.argv[1:], JT="Umbrella")
     if args.JobType.casefold() == "umbrella":   #JobType is case insensitive
         UmbrellaRun.main(args)
     if args.JobType.casefold() == "mm" or args.JobType.casefold() == "qmmm":
@@ -20,3 +20,5 @@ def main():
         Standalone1.main(args)
     endtime = time.time()
     print(f"Total time is {endtime - starttime}")
+
+#
