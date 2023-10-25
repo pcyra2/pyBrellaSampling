@@ -14,15 +14,13 @@ $ cp pyBrellaSampling/requirements.txt .
 
 ### 4. Create an environment
 
-$ conda create -n pyBrellaSampling
+$ conda create -n pyBrellaSampling --file requirements.txt -c conda-forge
 
 $ conda activate pyBrellaSampling
 
 ### 5. install the environment.
 
-$ conda install pip
-
-$ pip install -e . -r requirements.txt
+$ pip install -e . 
 
 ## To use pyBrellaSampling:
 
