@@ -27,3 +27,7 @@ $ pip install -e .
 ### Umbrella Sampling:
 
 To generate input files for umbrella sampling, run "pyBrella -jt inpfile"
+Then edit all ".conf" files in order to set up your calculation, importantly:
+	"JobType" needs to be set to "umbrella"
+	"Stage" is the calculation stage, either "init", "min", "heat", "pull", "equil" or "prod".
+
