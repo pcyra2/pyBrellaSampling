@@ -42,12 +42,12 @@ def VariableParser(sysargs, JT="Umbrella"):
         QMDict = QMInput(f"{WorkDir}QM.conf")
         HPCDict = HPCInput(f"{WorkDir}HPC.conf")
         StandaloneDict = StandaloneJobInput(f"{WorkDir}Standalone.conf")
-        # print(StandaloneDict)
         FileDict = {**JobDict, **ComputeDict, **MMDict, **QMDict, **HPCDict, **StandaloneDict}
         args = arg_parse_Standalone(FileDict,sysargs)
-        # print(args)
         if args.JobType.casefold() == "inpfile":
             InputFileGen(args, JobType="Standalone")
+        if args.Verbosity >= 2:
+            print(vars(args))
         return args
 
 def InputFileGen(args, JobType="Umbrella"):
