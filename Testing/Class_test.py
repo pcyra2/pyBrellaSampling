@@ -83,6 +83,8 @@ def test_CalcClass():
 
 def test_WhamClass():
     GenWhamClass = WhamClass("Wham", 100)
+    # with open(f"{Test_Dir}WhamClass.pickle", "wb") as f:
+    #     pickle.dump(GenWhamClass, f)
     with open(f"{Test_Dir}WhamClass.pickle", "rb") as f:
         TestWhamClass = pickle.load(f)
     assert compare(GenWhamClass, TestWhamClass) == None, "WhamClass is incorrect"

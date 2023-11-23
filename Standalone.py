@@ -160,7 +160,3 @@ def InputFileRun(Path,args,Run=True):
             Calc.Set_Shake(MMVars["rigidBonds"])
 
     return FileNotFoundError
-
-
-
-

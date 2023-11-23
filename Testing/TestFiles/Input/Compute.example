@@ -1,3 +1,3 @@
 CoresPerJob=10
 MemoryPerJob=10
-MaxStepsPerCalc=0
+MaxStepsPerCalc=1000

@@ -21,7 +21,7 @@ cutoff              8.0
 watermodel          tip3
 pairListdist        11
 LJcorrection        on
-ZeroMomentum        on
+ZeroMomentum        off
 rigidBonds          none
 rigidTolerance      1.0e-8
 rigidIterations     100
@@ -58,28 +58,29 @@ BerendsenPressure   off
 # QMMM options:
 qmForces            on
 
-qmParamPDB              "../syst-qm.pdb"
-qmColumn                "beta"
-qmBondColumn            "occ"
-QMsimsPerNode           1
-QMElecEmbed             on
-QMSwitching             on
-QMSwitchingType         shift
-QMPointChargeScheme     round
-QMBondScheme            "cs"
-qmBaseDir               "/dev/shm/NAMD_0"
-qmConfigLine            "! FUNCTIONAL BASIS EnGrad D3BJ"
-qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
-qmConfigLine            "%PAL NPROCS 1 END"
-qmMult                  "1 1"
-qmCharge                "1 1"
-qmSoftware              "orca"
-qmExecPath              "ORCAPATH"
-QMOutStride             1
-qmEnergyStride          1
-QMPositionOutStride     1
+            qmParamPDB              "../syst-qm.pdb"
+            qmColumn                "beta"
+            qmBondColumn            "occ"
+            QMsimsPerNode           1
+            QMElecEmbed             on
+            QMSwitching             on
+            QMSwitchingType         shift
+            QMPointChargeScheme     round
+            QMBondScheme            "cs"
+            qmBaseDir               "/dev/shm/NAMD_0"
+            qmConfigLine            "! FUNCTIONAL BASIS EnGrad D3BJ"
+            qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
+            qmConfigLine            "%PAL NPROCS 1 END"
+            qmMult                  "1 1"
+            qmCharge                "1 1"
+            qmSoftware              "orca"
+            qmExecPath              "ORCAPATH"
+            QMOutStride             1
+            qmEnergyStride          1
+            QMPositionOutStride     1
 
-
+            
+#CUDAFAST
 
 # Colvar options:
 colvars         on

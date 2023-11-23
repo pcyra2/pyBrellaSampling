@@ -8,3 +8,6 @@ pandas
 pip
 setuptools
 subprocess32
+pytest
+pytest-html
+pytest-cov

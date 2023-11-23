@@ -394,6 +394,8 @@ def slurm_gen(JobName, SLURM, Job, path):
 #SBATCH --get-user-env
 #SBATCH --parsable
 
+#dep
+
 {SLURM.dependency}
 
 {SoftwareLines}
@@ -403,7 +405,7 @@ export OMP_NUM_THREADS=1
 export OMP_PLACES=cores
 
 export ARRAY_JOBFILE=array_job.sh
-export ARRAY_TASKFILE={SLURM.ArrayJob}
+export ARRAY_TASKFILE={JobName}.txt
 export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
 
 
@@ -541,3 +543,42 @@ MM_DefaultVars = {  "parmfile" : "complex.parm7",
                     "colvars" : "off",
                     "colvarsConfig" : "colvars.conf",
                     }
+
+def array_script(ntasks):
+    Script=f"""#!/bin/bash
+RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*{ntasks})) | tail -n {ntasks}))
+eval \"$RUNLINE wait\""""
+    file_write("./array_job.sh", [Script])
+
+def batch_sub(nequil=4, nprod=16):
+    script = f"""#!/bin/bash
+"""
+    script += f"""echo \"Submitting equil_1\"
+cp sub.sh run.sh
+sed -i \"s/NAME/equil_1/g\" run.sh
+ID=$(sbatch run.sh)
+echo \"equil_1 ID is $ID\"
+echo \"equil_1 ID is $ID\" >> SLURMID.dat
+
+    """
+    for i in range(1, nequil):
+        script += f"""echo  \"Submitting equil_{i+1}\"
+cp sub.sh run.sh
+sed -i \"s/NAME/equil_{i+1}/g\" run.sh
+sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
+ID=$(sbatch run.sh)
+echo \"equil_{i+1} ID is $ID\"
+echo \"equil_{i+1} ID is $ID\" >> SLURMID.dat
+
+"""
+    for i in range(nprod):
+        script += f"""echo  \"Submitting prod_{i+1}\"
+cp sub.sh run.sh
+sed -i \"s/NAME/prod_{i+1}/g\" run.sh
+sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
+ID=$(sbatch run.sh)
+echo \"prod_{i+1} ID is $ID\"
+echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
+
+"""
+    file_write("./runner.sh", [script])

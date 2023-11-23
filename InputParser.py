@@ -323,7 +323,7 @@ def JobInput(path):
 
 def ComputeInput(path):
     InpVars = ["CoresPerJob", "MemoryPerJob", "MaxStepsPerCalc"]
-    InpValues = [10, 10, 0]
+    InpValues = [10, 10, 1000]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)

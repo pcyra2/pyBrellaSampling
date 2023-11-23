@@ -31,6 +31,8 @@ MM = class_load("MMClass")
 
 
 def test_makeumbrelladirs():
+    # for i in range(args.UmbrellaBins):
+    #     os.rmdir(f"{Test_Dir}{i}")
     umbrella.make_umbrellaDirs(Umbrella, Job)
     for i in range(args.UmbrellaBins):
         assert os.path.isdir(f"{Test_Dir}{i}"), "Problem with generating paths"
@@ -61,7 +63,7 @@ def test_minsetup():
     umbrella.min_setup(MM, Calc, Job, startfile="start.rst7")
     GenFile = utils.file_read(f"{Test_Dir}min.conf")
     TestFile = utils.file_read(f"{Test_Dir}min.example")
-    assert GenFile == TestFile, "Array file doesnt work"
+    assert GenFile == TestFile, "Min file doesnt work"
     os.remove(f"{Test_Dir}min.conf")
 
 def test_heatsetup():

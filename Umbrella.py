@@ -69,7 +69,8 @@ def main(args):
         equil_setup(MM, QM, Job, Calc, Umbrella, "pull_1")
         SLURM.set_arrayJob("equil_1.txt", 54)
         print("gen slurm")
-        utils.slurm_gen("equil", SLURM, "sh array_job.sh", Job.WorkDir)
+        utils.slurm_gen("NAME", SLURM, "sh array_job.sh", Job.WorkDir)
+        utils.batch_sub(4,16)
         if args.DryRun == "False":
             equil_run(Job)
             # subprocess.run(["sh equil.sh"], shell=True, capture_output=True)
@@ -89,6 +90,8 @@ def main(args):
                 steps = prod_length
             elif "equil" in args.WhamFile.casefold():
                 steps = equil_length
+            else:
+                steps = 0
             NumJobs = math.ceil(steps / Calc.MaxSteps)
         if Job.Verbosity >= 1:
             print(f"Number of steps to glue together is {NumJobs}")
@@ -212,6 +215,8 @@ def main(args):
                 steps = prod_length
             elif "equil" in args.WhamFile.casefold():
                 steps = equil_length
+            else:
+                steps = 0
             NumJobs = math.ceil(steps / Calc.MaxSteps)
         if Job.Verbosity >= 1:
             print(f"Number of steps to glue together is {NumJobs}")
@@ -430,7 +435,7 @@ def equil_setup(MM, QM, Job, Calc, Umbrella, PreviousJob):
         for j in range(NumJobs):
             place = j * Umbrella.Bins + i
             JobList[
-                place] = f"( mkdir /dev/shm/NAMD_{i} ; cd ./{i} ; {MM.NamdPath} {Calc.Name}_{j+1}.conf > {Calc.Name}_{j+1}.{i}.out ; cd ../ ; rm -r /dev/shm/NAMD_{i} ) &"
+                place] = f"sleep 2 ; ( mkdir /dev/shm/NAMD_{i} ; cd ./{i} ; {MM.NamdPath} {Calc.Name}_{j+1}.conf > {Calc.Name}_{j+1}.{i}.out ; cd ../ ; rm -r /dev/shm/NAMD_{i} ) &"
             NAMD.set_qm(Calc, QM, i)
             if j == 0:
                 NAMD.set_startcoords(f"{PreviousJob}.{i}.restart.coor")

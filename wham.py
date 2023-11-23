@@ -11,6 +11,8 @@ def autocorrelate(data):
         integral_time = emcee.autocorr.integrated_time(data, c=1)
     except emcee.autocorr.AutocorrError:
         integral_time = 1
+    except IndexError:
+        integral_time = 1    
     return integral_time
 
 def Init_Wham(Job, Umbrella, Wham, Verbose=False):

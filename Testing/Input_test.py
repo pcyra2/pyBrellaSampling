@@ -3,21 +3,33 @@ import pyBrellaSampling.InputParser as input
 
 Test_Dir = "./Testing/TestFiles/Input/"
 
+### Default generate
+
+# with open(f"{Test_Dir}UmbrellaDefaults.pickle", "wb") as f:
+#     pickle.dump(DefInput,f)
+# with open(f"{Test_Dir}QMDefaults.pickle", "wb") as f:
+#     pickle.dump(DefInput,f)
+# with open(f"{Test_Dir}MMDefaults.pickle", "wb") as f:
+#     pickle.dump(DefInput,f)
+# with open(f"{Test_Dir}ComputeDefaults.pickle", "wb") as f:
+#     pickle.dump(DefInput,f)
+# with open(f"{Test_Dir}JobDefaults.pickle", "wb") as f:
+#     pickle.dump(DefInput,f)
+
+### Default load
+
 with open(f"{Test_Dir}UmbrellaDefaults.pickle", "rb") as f:
-    # pickle.dump(DefInput,f)
     UmbrellaDefaults = pickle.load(f)
 with open(f"{Test_Dir}QMDefaults.pickle", "rb") as f:
-    # pickle.dump(DefInput,f)
     QMDefaults = pickle.load(f)
 with open(f"{Test_Dir}MMDefaults.pickle", "rb") as f:
-    # pickle.dump(DefInput,f)
     MMDefaults = pickle.load(f)
 with open(f"{Test_Dir}ComputeDefaults.pickle", "rb") as f:
-    # pickle.dump(DefInput,f)
     ComputeDefaults = pickle.load(f)
 with open(f"{Test_Dir}JobDefaults.pickle", "rb") as f:
-    # pickle.dump(DefInput,f)
     JobDefaults = pickle.load(f)
+
+
 
 # def test_reset(): ### Run from pycharm.
 #     Test_Dir="./Testing/TestFiles/Input/"

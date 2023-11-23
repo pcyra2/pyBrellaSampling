@@ -21,7 +21,7 @@ cutoff              8.0
 watermodel          tip3
 pairListdist        11
 LJcorrection        on
-ZeroMomentum        on
+ZeroMomentum        off
 rigidBonds          none
 rigidTolerance      1.0e-8
 rigidIterations     100
@@ -58,6 +58,7 @@ BerendsenPressure   off
 # QMMM options:
 qmForces            off
 
+#CUDAFAST
 
 
 
