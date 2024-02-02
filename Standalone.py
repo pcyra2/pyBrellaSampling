@@ -41,8 +41,10 @@ def main_cli():
             Umbrella.add_start(0)
             Umbrella.set_force(args.Force)
             bincoor = args.StartFile
-            if bincoor == "None":
+            if bincoor == "None" or bincoor == "" or bincoor == MM.ambercoor:
                 bincoor = None
+            if ".ncrst" in str(bincoor) or ".rst7" in str(bincoor):
+                print("WARNING: Your Binary Coordinates look like amber coordinates... They should be NAMD coodinates (.coor). This may cause issues...")
             if args.QM.casefold() == "true":
                 QM = QMClass(args=args)
                 QM.set_selfile("syst-qm.pdb")
@@ -51,10 +53,10 @@ def main_cli():
             NAMD = calc_setup(Job=Job, Calc=Calc, MM=MM, Umbrella=Umbrella, QM=QM, SMD=args.SMD, Run=args.DryRun, bc=bincoor)
             if args.DryRun == "False":
                 if QM==False:
-                    if MM.Ensemble != "min" or MM.Ensemble != "heat":
-                        calc_run(Job=Job, MM=MM, Calc=Calc, CUDA="FAST")
-                    else:
+                    if MM.Ensemble.casefold() == "min" or MM.Ensemble.casefold() == "heat":
                         calc_run(Job=Job, MM=MM, Calc=Calc)
+                    else:
+                        calc_run(Job=Job, MM=MM, Calc=Calc, CUDA="FAST")
                 else:
                     calc_run(Job=Job, MM=MM, Calc=Calc, GPU=False)
     endtime = time.time()

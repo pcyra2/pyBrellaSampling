@@ -12,6 +12,8 @@ import matplotlib.pyplot as plt
 import os
 import os.path as path
 import math
+import threading
+
 def main(args):
     Umbrella = UmbrellaClass(args,args.UmbrellaMin, args.UmbrellaBins,
                              args.StartDistance, args.UmbrellaWidth,)
@@ -399,6 +401,8 @@ def pull_setup(Umbrella, MM, QM, Calc, Job, DryRun="False"):
         Joblist[i] = f"mkdir /dev/shm/NAMD_{i} ; cd ./{i} ; {MM.NamdPath} pull.conf > pull_1.{i}.out ; cd ../ ; rm -r /dev/shm/NAMD_{i}"
     utils.file_write(f"{Job.WorkDir}pull.txt",Joblist)
     make_runfile(Job, Umbrella, Joblist)
+    if DryRun == True:
+        run_pullScript_parallel(Umbrella, Joblist)
 # def run_setup(args, Umbrella, Calc, Job, MM, QM, DryRun=False):
 #     if Job.Verbosity >= 1:
 #         print("Setting up pulls")
@@ -415,6 +419,13 @@ def run_pullScript(loc="./"):
     print("Running pull command")
     run_out = subprocess.run([f"sh {loc}pull.sh"], shell=True, capture_output=True)
     return run_out
+
+def run_pullScript_parallel(umbrella, joblist):
+    run1 = subprocess.run([joblist[umbrella.StartBin]], shell=True, capture_output=True)
+
+
+def split_pull(Start, direction):
+    print("Not complete...")
 
 def equil_setup(MM, QM, Job, Calc, Umbrella, PreviousJob):
     MM.Set_Force(Umbrella.ConstForce)

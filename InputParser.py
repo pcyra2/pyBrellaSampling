@@ -49,7 +49,7 @@ def VariableParser(sysargs, JT="Umbrella"):
         if args.Verbosity >= 2:
             print(vars(args))
         return args
-
+        
 def InputFileGen(args, JobType="Umbrella"):
     argsDict = vars(args)
     JobDict = JobInput(f"{args.WorkDir}Job.conf")
@@ -202,7 +202,6 @@ It is recommended to use -jt inpfile to generate input file templates with defau
     # print(vars(args))
     return args
 
-
 def arg_parse_Standalone(dict, sysargs):
     parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
 It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
@@ -345,7 +344,7 @@ def ComputeInput(path):
 
 def MMInput(path):
     InpVars = ["MDCPUPath", "MDGPUPath"]
-    InpValues = ["/gpfs01/software/NAMD_2.13_Linux-x86_64-multicore/namd2", "/home/pcyra2/Downloads/NAMD_Git-2021-09-30_Linux-x86_64-multicore-CUDA/namd2"]
+    InpValues = ["/work/e280/e280-Hirst/pcyra2/Software/NAMD_3.0b3_Linux-x86_64-multicore/namd3", "/home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore-CUDA/namd3"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -367,7 +366,7 @@ def MMInput(path):
 
 def QMInput(path):
     InpVars = ["QmPath", "QmSelection", "QmCharge", "QmSpin", "QmMethod", "QmBasis", "QmArgs"]
-    InpValues = ["/gpfs01/home/pcyra2/Software/ORCA/orca", "resname CTN POP MG", 1, 1, "PBE", "6-31G*", "D3BJ TightSCF CFLOAT NormalSCF"]
+    InpValues = ["/work/y07/shared/apps/core/orca/5.0.3/orca", "resname CTN POP MG", 3, 1, "PBE", "6-31G*", "D3BJ TightSCF CFLOAT "]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -389,7 +388,7 @@ def QMInput(path):
 
 def UmbrellaInput(path):
     InpVars = ["UmbrellaMin", "UmbrellaWidth", "UmbrellaBins", "PullForce", "ConstForce", "StartDistance", "AtomMask", "Stage", "WhamFile", "StartFile"]
-    InpValues = [1.3, 0.05, 54, 5000, 150, 1.4, "0,0,0,0", "Setup", "prod", "start.rst7"]
+    InpValues = [1.3, 0.05, 54, 5000, 300, 1.4, "0,0,0,0", "Setup", "prod", "start.rst7"]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)
@@ -497,3 +496,26 @@ def DihedralInput(path, Labels):
                         name=variables[0], target1=float(variables[6]), t1name=variables[5],
                         target2=float(variables[8]), t2name=variables[7])
     return Labels
+
+def Benchmark_input(sysargs):
+    parser = ap.ArgumentParser(description=f"""CLI interface for running a QM benchmark in ORCA""")
+    gen = parser.add_argument_group("Generic Inputs")
+    gen.add_argument("-v", "--verbosity", type=int, help="Control the verbosity of the job", choices=[0,1,2], default=1)
+    gen.add_argument("-wd","--WorkDir", type=str, help="Working directory path", default="./")
+    gen.add_argument("-c", "--Cores", type=int, help="The number of CPU cores to give each ORCA Job.", default=10)
+    gen.add_argument("-dr", "--DryRun", type=str, help="Should the calculation be performed?", default="False")
+    gen.add_argument("-stg", "--Stage", type=str, help="The stage of the calculation",choices=["init", "calc", "analysis",], default="analysis")
+    bench = parser.add_argument_group("Benchmark Inputs")
+    bench.add_argument("-type", "--BenchmarkType", type=str, help="Define the type of benchmark to perform", choices=["Energy", "Gradient", "Structure"], default="Energy")
+    bench.add_argument("-cd", "--CoordinateLoc", type=str, help="Location for the structures to perform the benchmark on", default="./Coordinates")
+    bench.add_argument("-reactions", "--ReactionList", type=str, help="Name of the file containing the list of reaction steps. This must be line delimited single step reactions with the name of the structure being identical of that to the file in the coordinates folder.", default="reactions.dat")
+    qm = parser.add_argument_group("ORCA specific inputs")
+    qm.add_argument("--Path", type=str, help="Path to ORCA executable", default="/home/pcyra2/Software/ORCA/5.0.4/orca")
+    qm.add_argument("--SCF",type=str, help="The orca scf convergence setting", choices=["NORMALSCF", "TIGHTSCF", "VERYTIGHTSCF", "EXTREMESCF"], default="TIGHTSCF")
+    qm.add_argument("--Grid", type=str, help="Specify the orca integration grid", choices=["DEFGRID1", "DEFGRID2", "DEFGRID3"], default="DEFGRID3")
+    qm.add_argument("--Restart", type=str, help="Togle whether to use a restart file or not", choices=["AUTOSTART", "NOAUTOSTART"], default="NOAUTOSTART")
+    qm.add_argument("--Convergence", type=str, help="Chose th orca convergence stratergy", choices=["EasyConv", "NormalConv", "SlowConv", "VerySlowConv", "ForceConv"], default="EasyConv")
+    qm.add_argument("--Extras", type=str, help="Extra ORCA commands to use for all calculations (default is \"MINIPRINT\")", default="MINIPRINT")
+    args = parser.parse_args(sysargs)
+    return args
+    

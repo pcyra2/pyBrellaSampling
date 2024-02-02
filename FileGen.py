@@ -248,3 +248,14 @@ exit(0)
 
 """
     return file
+
+def ORCA_FileGen(Molecule, ORCA):
+    file = f"""! {ORCA.method} {ORCA.basis} {ORCA.dispersion} {ORCA.dificulty} {ORCA.convergence} {ORCA.grid} {ORCA.restart} {ORCA.calculation} {ORCA.extras}
+%PAL NPROCS {ORCA.cores} END
+
+*xyz {Molecule.charge} {Molecule.spin}
+"""
+    for i in range(Molecule.nat):
+        file += f"{Molecule.element[i]} {round(float(Molecule.x[i]),4)} {round(float(Molecule.y[i]),4)} {round(float(Molecule.z[i]),4)} \n"
+    file += "*"
+    return file

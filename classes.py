@@ -4,6 +4,7 @@ import math as math
 from pyBrellaSampling.utils import MM_DefaultVars as MMVars
 import os
 
+
 class UmbrellaClass:
     """Class for containing umbrella sampling information."""
     def __init__(self, args, Min, bins, Start, Width, ):
@@ -325,9 +326,9 @@ class SLURMClass:
         self.k = args.HostName
         self.Partition = args.Partition
         self.NodeCores = args.MaxCores
-        if args.Account != "None":
+        if args.Account.casefold() != "none":
             self.account = f"#SBATCH --account={args.Account}"
-        if args.QualityofService != "None":
+        if args.QualityofService.casefold() != "none":
             self.qos = f"#SBATCH --qos={args.QualityofService}"
         self.Software = args.SoftwareLines
     def set_dependancy(self, ID):
@@ -347,3 +348,87 @@ class SLURMClass:
         self.qos = Qos
         self.account = Account
 
+class MolClass:
+    """Class for containing molecular information including coordinates and charges"""
+    def __init__(self, name):
+        self.name = name
+    def set_charge(self, charge, spin):
+        assert type(charge) is int, "Charge must be an integer, partial charges are not supported"
+        self.charge = charge
+        assert type(spin) is int, "Spin must be an integer, partial spins are not supported"
+        self.spin = spin
+    def add_coordinates(self, at, x, y, z, nat):
+        assert len(x) == len(y) == len(z) == len(at) == nat, "Coordinates are broken... x,y&z coordinates are different lengths"
+        self.element = at
+        self.x = x
+        self.y = y
+        self.z = z
+        self.nat = nat
+
+
+class ORCAClass:
+    """Class for ORCA input information"""
+    dispersion = ""
+    restart = "NOAUTOSTART"
+    def __init__(self, path):
+        self.path = path
+    def set_method(self, method):
+        self.method = method
+    def set_basis(self, basis):
+        self.basis = basis
+    def set_dispersion(self, disp):
+        self.dispersion = disp
+    def set_cores(self, cores):
+        self.cores = cores
+    def set_convergence(self, conv):
+        self.convergence = conv
+    def change_autostart(self, restart):
+        self.restart = restart
+    def set_grid(self, grid):
+        self.grid = grid
+    def set_dificulty(self, diff):
+        self.dificulty = diff
+    def set_type(self, caltype):
+        self.calculation = caltype
+    def set_extras(self, extras):
+        self.extras = extras
+
+class QMCalcClass:
+    SCFEnergy = 0
+    vdw = 0
+    TotalEnergy = 0
+    def __init__(self, molecule, method, basis, dispersion):
+        self.molecule = molecule
+        self.functional = method
+        self.basis = basis
+        self.dispersion = dispersion
+    def set_path(self, path): 
+        self.path = path
+    def set_time(self, time):
+        self.time = time
+    def set_scfenergy(self, scfenergy):
+        self.SCFEnergy = scfenergy
+    def set_vdw(self, vdwenergy):
+        self.vdw = vdwenergy
+    def set_TotalEnergy(self, totenergy):
+        self.TotalEnergy = totenergy
+    def set_reason(self, reason):
+        self.reason = reason
+    def set_runline(self, line):
+        self.runline = line
+
+class ReactionClass:
+    def __init__(self, name1, energy1, name2, energy2, method, basis, dispersion):
+        self.Reactant = name1
+        self.Reactant_Energy = energy1
+        self.Product = name2
+        self.Product_Energy = energy2
+        self.functional = method
+        self.basis = basis
+        self.dispersion = dispersion
+        self.deltaE = energy2 - energy1
+    def add_timings(self, Time1, Time2):
+        self.Timing = Time1 + Time2
+    def add_Error(self, err):
+        self.error = err
+    
