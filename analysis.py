@@ -14,7 +14,7 @@ label delete Bonds 0
 """
     return lines
 
-def tcl_bondAnalysis(bond, data, simulation):
+def tcl_bondAnalysis(bond, data, simulation, Error_Anal=False):
     """Runs analysis on 2d data file containing bond lengths and states whether they are within the expected threshold."""
     for i in range(len(data)):
         if i == 0:
@@ -24,14 +24,20 @@ def tcl_bondAnalysis(bond, data, simulation):
         if data[i] <= 0.8 * bond.thresh:
             # log.warning(f"{bond.name} is short ({data[i]}) for window {simulation}, on trajectory {i}")
             State = "Short"
+            if Error_Anal == True:
+                print(f"BondLength = {data[i]}")
+                return i
         elif data[i] >= 1.2 * bond.thresh:
             # log.warning(f"{bond.name} is long ({data[i]}) for window {simulation}, on trajectory {i}")
             State = "Long"
         else:
             State = "Normal"
-        if State !=  prevState:
-            log.warning(f"{bond.name} has changed to {State} for window {simulation} on step {i}")
-    return State
+        # if State !=  prevState:
+        #     log.warning(f"{bond.name} has changed to {State} for window {simulation} on step {i}")
+    if Error_Anal == False:
+        return State
+    else:
+        return len(data)
 
 def tcl_dihedPlot(dihed):
     """Creates a list of lines for an alaysis tcl script used by vmd which allows for the tracking of Dihedrals."""
@@ -41,7 +47,7 @@ label delete Dihedrals 0
 """
     return lines
 
-def tcl_dihedAnalysis(dihed, data, window):
+def tcl_dihedAnalysis(dihed, data, window, Error_Anal=False):
     """Runs analysis on 2d data file containing dihedral angles and states what state they are in."""
     for i in range(len(data)):
         if i == 0:
@@ -55,10 +61,15 @@ def tcl_dihedAnalysis(dihed, data, window):
         if Dist1 < Dist2:
             State = dihed.target1Name
         elif Dist2 < Dist1:
+            if Error_Anal == True:
+                return i
             State = dihed.target2Name
-        if prevState != State:
-            log.warning(f"Dihedral flip from {dihed.name} {prevState} to {State} for window {window}, on step {i}")
-    return State
+        # if prevState != State:
+        #     log.warning(f"Dihedral flip from {dihed.name} {prevState} to {State} for window {window}, on step {i}")
+    if Error_Anal == False:
+        return State
+    else:
+        return len(data)
 
 def Label_Maker(Label, path):
     """This generates the tcl script that automates the bond and dihedral analysis."""

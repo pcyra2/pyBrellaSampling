@@ -7,22 +7,26 @@ import numpy as np
 
 
 def file_read(path):
+    """Reads in the file in the path as a 1D array of lines"""
     with open(path, 'r') as file:
         data = file.readlines()
     return data
 
 def file_write(path, lines):
+    """Writes a 1D array of lines to a file in the path"""
     with open(path, 'w') as f:
         for i in lines:
             print(i,file=f)
 
 def file_2dwrite(path, x, y):
+    """Writes a 2D array as a tab delimited file"""
     assert len(x) == len(y), f"Column 1 length is {len(x)} but column 2 length is{len(y)}. They need to be equal to work"
     with open(path, 'w') as f:
         for i in range(len(x)):
             print(f"{x[i]}\t{y[i]}", file=f)
 
 def data_2d(path):
+    """Reads in a 2D data file. This ignores lines starting with # """
     data0 = file_read(path)
     data = []
     for i in data0:
@@ -39,15 +43,18 @@ def data_2d(path):
     return col1, col2
 
 def dict_read(path):
+    """Reads a json dictionary and returns as a variable"""
     with open(path, "r") as f:
         data = json.load(f)
     return data
 
 def dict_write(path, dict):
+    """Writes a dictionary to a json file"""
     with open(path,"w") as f:
         json.dump(dict, f)
 
 def QM_Gen(qmzone,wd):
+    """Creates a tcl script file for generating the syst-qm.pdb."""    
     tcl = f"""
 mol new complex.parm7
 mol addfile start.rst7
@@ -184,6 +191,7 @@ quit
         print(tcl, file=f)
 
 def ColVarPDB_Gen(Umbrella, Job):
+    """tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling."""
     if Umbrella.atom3 == 0:
         tcl = f"""mol new complex.parm7
 mol addfile start.rst7
@@ -256,7 +264,9 @@ $sel writepdb $colPDB
 quit
 """
     file_write(f"{Job.WorkDir}Colvar_prep.tcl", [tcl])
+
 def colvar_gen(Umbrella, i, type, force):
+    """Generates colective variables and parses them into the Umbrella class. This also generates the colvar files."""
     if type == "pull":
         freq = 1
         Stages = 100
@@ -366,6 +376,7 @@ harmonic {"{"}
     return file
 
 def init_bins(num, step, start):
+    """Calculates the bins and their values for umbrella sampling"""
     bins = np.zeros(num)
     bins_min = np.zeros(num)
     bins_max = np.zeros(num)
@@ -374,6 +385,7 @@ def init_bins(num, step, start):
     return bins
 
 def slurm_gen(JobName, SLURM, Job, path):
+    """Generates the slurm file that is used by HPC's."""
     SoftwareLines = ""
     for i in SLURM.Software:
         SoftwareLines=SoftwareLines+"\n"+i
@@ -447,7 +459,7 @@ export OMP_PLACES=cores
         file_write(path, [slurmScript])
 
 def mpi_gen(SLURM, Umbrella):
-
+    """Depreciated. Used originally for running efficient orca calculations on HPC systems that dont assign cores correctly."""
     JobNumber = 0
     for i in range(Umbrella.Bins):
         subprocess.run([f"cp runORCA.py ./{i}"], shell=True,)
@@ -467,96 +479,28 @@ def mpi_gen(SLURM, Umbrella):
             JobNumber = JobNumber + 1
 
 def get_cellVec(Job, MM):
+    """Gets the cell vectors required by NAMD from the AMBER param file"""
     data = file_read(f"{Job.WorkDir}{MM.ambercoor}")
     length = len(data) #Get the last line
     words = data[length-1].split() # Split the final line.
     # print(words)
     return float(words[0]) # return the first number
 
-MM_DefaultVars = {  "parmfile" : "complex.parm7",
-                    "ambercoor": "start.rst7",
-                    "bincoordinates" : None,
-                    "DCDfile" : "output",
-                    "DCDfreq" : 1,
-                    "restartname" : "output",
-                    "restartfreq" : 1,
-                    "outputname" : "output",
-                    "outputTiming" : "100",
-                    "amber" : "on",
-                    "switching" : "off",
-                    "exclude" : "scaled1-4",
-                    "1-4scaling" : 0.833333333,
-                    "scnb" : 2.0,
-                    "readexclusions" : "yes",
-                    "cutoff" : 8.0,
-                    "watermodel" : "tip3",
-                    "pairListdist" : 11,
-                    "LJcorrection" : "on",
-                    "ZeroMomentum" : "off",
-                    "rigidBonds" : "all",
-                    "rigidTolerance" : "1.0e-8",
-                    "rigidIterations" : 100,
-                    "timeStep" : 2,
-                    "fullElectFrequency" : 1,
-                    "nonBondedFreq" : 1,
-                    "stepspercycle" : 10,
-                    "PME" : "off",
-                    "PMEGridSizeX" : 300,
-                    "PMEGridSizeY" : 300,
-                    "PMEGridSizeZ" : 300,
-                    "PMETolerance" : "1.0e-6",
-                    "PMEInterpOrder" : 4,
-                    "cellBasisVector1" : "135.913174 0.0 0.0",
-                    "cellBasisVector2" : "-45.30439133333333 128.1401693173162 0.0",
-                    "cellBasisVector3" : "-45.30439133333333 -64.0700846586581 -110.97264187403509",
-                    "cellOrigin" : "0 0 0",
-                    "cellBasisVector" : 135.913174, #### Base if all 3 are calculated...
-                    "langevin" : "on",
-                    "langevinDamping" : 5,
-                    "langevinTemp" : 300,
-                    "langevinHydrogen" : "off",
-                    "temperature" : 300,
-                    "BerendsenPressure" : "off",
-                    "qmForces" : "off",
-                    "CUDASOAintegrate" : "off",
-                    "run" : 1000,
-                    "minimize" : 0,
-                    "qmParamPDB" : "syst-qm.pdb",
-                    "qmColumn" : "beta",
-                    "qmBondColumn" : "occ",
-                    "QMsimsPerNode" : 1,
-                    "QMElecEmbed" : "on",
-                    "QMSwitching" : "on",
-                    "QMSwitchingType" : "shift",
-                    "QMPointChargeScheme" : "round",
-                    "QMBondScheme" : "cs",
-                    "qmBaseDir" : "/dev/shm/NAMD",
-                    "qmConfigLine" : """! PBE 6-31G* EnGrad D3BJ TightSCF 
-%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end""",
-                    "qmMult" : "1 1",
-                    "qmCharge" : "1 0",
-                    "qmSoftware" : "orca",
-                    "qmExecPath" : "~/Software/ORCA/orca",
-                    "QMOutStride" : 1,
-                    "qmEnergyStride" : 1,
-                    "QMPositionOutStride" : 1,
-                    "colvars" : "off",
-                    "colvarsConfig" : "colvars.conf",
-                    }
-
 def array_script(ntasks):
+    """Required for generating slurm array jobs."""
     Script=f"""#!/bin/bash
 RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*{ntasks})) | tail -n {ntasks}))
 eval \"$RUNLINE wait\""""
     file_write("./array_job.sh", [Script])
 
-def batch_sub(nequil=4, nprod=16):
+def batch_sub(nequil=4, nprod=16, ID_NUMBER=1): steps
+    """Generates a runner.sh script that can be run on a login node within a HPC. This can automate the linking of multiple dependant array jobs."""
     script = f"""#!/bin/bash
 """
     script += f"""echo \"Submitting equil_1\"
 cp sub.sh run.sh
 sed -i \"s/NAME/equil_1/g\" run.sh
-ID=$(sbatch run.sh)
+ID=$(sbatch run.sh | awk {"{print $"+ID_NUMBER+"}"}'')
 echo \"equil_1 ID is $ID\"
 echo \"equil_1 ID is $ID\" >> SLURMID.dat
 
@@ -566,7 +510,7 @@ echo \"equil_1 ID is $ID\" >> SLURMID.dat
 cp sub.sh run.sh
 sed -i \"s/NAME/equil_{i+1}/g\" run.sh
 sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
-ID=$(sbatch run.sh)
+ID=$(sbatch run.sh | awk '{"{print $"+ID_NUMBER+"}"}'))
 echo \"equil_{i+1} ID is $ID\"
 echo \"equil_{i+1} ID is $ID\" >> SLURMID.dat
 
@@ -576,7 +520,7 @@ echo \"equil_{i+1} ID is $ID\" >> SLURMID.dat
 cp sub.sh run.sh
 sed -i \"s/NAME/prod_{i+1}/g\" run.sh
 sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
-ID=$(sbatch run.sh)
+ID=$(sbatch run.sh | awk '{"{print $"+ID_NUMBER+"}"}')
 echo \"prod_{i+1} ID is $ID\"
 echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
 
@@ -584,8 +528,4 @@ echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
     file_write("./runner.sh", [script])
 
 
-Functionals_list = ["PBE", "PBE0", "B3LYP", "HF", "M062X", "wB97M-V", "wB97X-D3", "MP2"]
-Basis_list = ["6-31G", "6-31G*", "6-31+G*", "cc-pVDZ", "cc-pVTZ",  "def2-SVP"]
-Dispersion_list = ["D3BJ", "D3ZERO", ""] ## "" blank is for no dispersion to be benchmarked
-DispersionCorrFunc = ["wB97M-V", "wB97X-D3"]
 kcal = 627.51 ### a.u. to kcal/mol conversion 

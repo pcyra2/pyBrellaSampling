@@ -1,6 +1,7 @@
 import pyBrellaSampling.InputParser as input
 import pyBrellaSampling.FileGen as FileGen
 import pyBrellaSampling.utils as utils
+from pyBrellaSampling.UserVars.QM_Methods import *
 from pyBrellaSampling.classes import *
 import sys
 import time
@@ -18,9 +19,6 @@ def main_cli():
 def Benchmark(args):
     verbosity = args.verbosity
     print("Welcome to the Benchmark suite \n" if verbosity > 1 else "",end="")
-    Functionals = utils.Functionals_list
-    Basis_Sets = utils.Basis_list
-    Dispersion_Corrections = utils.Dispersion_list
     WorkDir = args.WorkDir
     BenchType = args.BenchmarkType
     Stage=args.Stage
@@ -93,7 +91,8 @@ def Benchmark(args):
             print("Running fix")
             run_benchmark(WorkDir = WorkDir, verbosity=verbosity, file="job_fix.dat")
         Reactions = Benchmark_Energy(Finished, args.ReactionList)
-        Error_Gen(Method_list=Functionals, Basis_list=Basis_Sets, Dispersion_list=Dispersion_Corrections, Reactions=Reactions)
+        df = Error_Gen(Method_list=Functionals, Basis_list=Basis_Sets, Dispersion_list=Dispersion_Corrections, Reactions=Reactions)
+        Error_Anal(df,Method_list=Functionals, Basis_list=Basis_Sets, Dispersion_list=Dispersion_Corrections,)
         
 
 
@@ -296,3 +295,41 @@ def Error_Gen(Method_list, Basis_list, Dispersion_list, Reactions):
     dictionary = {"Method" : mList, "Basis" : bList, "Dispersion" : dList, "MAE" : MAE_list, "MaxError" : MaxE_list, "Average Time" : TimeList}
     df = pandas.DataFrame(dictionary)
     df.to_csv("Errors.dat", sep="\t")
+    return df
+
+def Error_Anal(df,Method_list, Basis_list, Dispersion_list,):
+    for i in Method_list:
+        Errors = numpy.average(df[df["Method"] == i]["MAE"])
+        Time = numpy.average(df[df["Method"] == i]["Average Time"])
+        print(f"{i} average MAE is {Errors}")
+        print(f"{i} average Time is {Time}")
+        Score = Errors * Time
+        print(f"{i} average Score is {Score}")
+        print("\n")
+    for i in Basis_list:
+        Errors = numpy.average(df[df["Basis"] == i]["MAE"])
+        Time = numpy.average(df[df["Basis"] == i]["Average Time"])
+        print(f"{i} average MAE is {Errors}")
+        print(f"{i} average Time is {Time}")
+        Score = Errors * Time
+        print(f"{i} average Score is {Score}")
+        print("\n")
+    for i in Dispersion_list:
+        print(str(i))
+        Errors = numpy.average(df[df["Dispersion"] == str(i)]["MAE"])
+        Time = numpy.average(df[df["Dispersion"] == str(i)]["Average Time"])
+        print(f"{i} average MAE is {Errors}")
+        print(f"{i} average Time is {Time}")
+        Score = Errors * Time
+        print(f"{i} average Score is {Score}")
+        print("\n")
+    i = "NONE"
+    print(str(i))
+    Errors = numpy.average(df[df["Dispersion"] == str(i)]["MAE"])
+    Time = numpy.average(df[df["Dispersion"] == str(i)]["Average Time"])
+    print(f"{i} average MAE is {Errors}")
+    print(f"{i} average Time is {Time}")
+    Score = Errors * Time
+    print(f"{i} average Score is {Score}")
+    print("\n")
+    df.sort_values("MAE").to_csv("Errors_Ranked.dat", sep="\t")

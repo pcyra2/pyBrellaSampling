@@ -151,6 +151,8 @@ It is recommended to use -jt inpfile to generate input file templates with defau
     Umbrella.add_argument('-wf', '--WhamFile', type=str,
                         help="Name prefix of wham data.(XXX.i.colvars.traj", default=dict["WhamFile"])
     Umbrella.add_argument("--StartFile", default=dict["StartFile"], type=str, help="Initial coordinate file if not starting from \"start.rst7\"")
+    Umbrella.add_argument("-exclude", "--WhamExclude", type=str, help="Comma delimited list of umbrella windows to exclude from Wham calculations", 
+                          default=dict["WhamExclude"])
 
     ### HPC Arguments
     HPC = parser.add_argument_group("HPC/SLURM arguments")
@@ -387,8 +389,8 @@ def QMInput(path):
     return Dict
 
 def UmbrellaInput(path):
-    InpVars = ["UmbrellaMin", "UmbrellaWidth", "UmbrellaBins", "PullForce", "ConstForce", "StartDistance", "AtomMask", "Stage", "WhamFile", "StartFile"]
-    InpValues = [1.3, 0.05, 54, 5000, 300, 1.4, "0,0,0,0", "Setup", "prod", "start.rst7"]
+    InpVars = ["UmbrellaMin", "UmbrellaWidth", "UmbrellaBins", "PullForce", "ConstForce", "StartDistance", "AtomMask", "Stage", "WhamFile", "StartFile", "WhamExclude"]
+    InpValues = [1.3, 0.05, 54, 5000, 300, 1.4, "0,0,0,0", "Setup", "prod", "start.rst7",""]
     assert len(InpVars) == len(InpValues)
     try:
         lines = utils.file_read(path)

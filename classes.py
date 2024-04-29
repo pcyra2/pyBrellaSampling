@@ -60,6 +60,16 @@ class LabelClass:
         self.dihedralTarget2Name.append(t2name)
     def file_name(self, name):
         self.file = name
+    def clear_Vars(self):
+        self.bond = []
+        self.bondName = []
+        self.bondThresh = []
+        self.dihedral = []
+        self.dihedralName = []
+        self.dihedralTarget1 = []
+        self.dihedralTarget2 = []
+        self.dihedralTarget1Name = []
+        self.dihedralTarget2Name = []
 
 class DataClass:
     """Class for containing generic analysis data."""
@@ -347,6 +357,18 @@ class SLURMClass:
     def set_accountInfo(self, Qos, Account):
         self.qos = Qos
         self.account = Account
+    def set_IDNumber(self, ):
+        if "archer" in self.HostName.casefold():
+            Number = 1
+        elif "sulis" in self.HostName.casefold():
+            Number = 4
+        elif "ada" in self.HostName.casefold():
+            Number = 4
+        else:
+            Number = 1
+            print("WARNING, The HPC that you are using is not in my database... ")
+            print("The runnner.sh script may not work as intended and so you may have to tune the sed command to grab the slurm ID")
+        self.ID_Number = Number
 
 class MolClass:
     """Class for containing molecular information including coordinates and charges"""

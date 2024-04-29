@@ -15,7 +15,7 @@ def autocorrelate(data):
         integral_time = 1    
     return integral_time
 
-def Init_Wham(Job, Umbrella, Wham, Verbose=False):
+def Init_Wham(Job, Umbrella, Wham, Verbose=False, WhamIgnore=[]):
     hist_bar = []
     hist_count = []
     try:
@@ -25,6 +25,8 @@ def Init_Wham(Job, Umbrella, Wham, Verbose=False):
     if os.path.exists(f"{Job.WorkDir}/WHAM/{Wham.Name}metadata.dat"):
         os.remove(f"{Job.WorkDir}/WHAM/{Wham.Name}metadata.dat")
     for i in range(0,Umbrella.Bins):    # Ignore line 1...
+        if i in WhamIgnore:
+            continue
         time, value = utils.data_2d(f"{Job.WorkDir}{i}/{Wham.Name}.{i}.colvars.traj")
         integral_time = autocorrelate(value)
         counts, bins, bars = plt.hist(value, 100)
@@ -56,12 +58,12 @@ def Init_Wham(Job, Umbrella, Wham, Verbose=False):
             max = Umbrella.BinVals[Umbrella.Bins-1]
             min = Umbrella.BinVals[0]
         text = f"""#!/bin/bash
-wham {P} {min} {max} {Umbrella.Bins-1} 1e-06 300 0 {Wham.Name}metadata.dat out.pmf 10 60
+wham {P} {min} {max} {Umbrella.Bins-1 - len(WhamIgnore)} 1e-06 300 0 {Wham.Name}metadata.dat out.pmf 10 60
 sed '1d' out.pmf | awk '{"{"}print $1,"",$2{"}"}' > plot_free_energy.dat
 """
         print(text, file=f)
 
-def Run_Wham(Job,Umbrella, Verbose=False):# Umbrella, Wham):
+def Run_Wham(Job,Umbrella, Verbose=False, WhamIgnore=[]):# Umbrella, Wham):
     print("Running WHAM")
     out = subprocess.run(f"cd {Job.WorkDir}WHAM ; sh wham.sh ; cd ../", shell=True, capture_output=True)
     if "wham.sh" in out.stderr.decode():
@@ -70,16 +72,16 @@ def Run_Wham(Job,Umbrella, Verbose=False):# Umbrella, Wham):
         print(out.stdout.decode())
         raise Exception("metadata file not found when runnning wham.sh")
     data = utils.file_read(path=f"{Job.WorkDir}WHAM/out.pmf")
-    array = [data[i] for i in range(1,Umbrella.Bins) ]
-    # print(array)
+    array = [data[i] for i in range(1,Umbrella.Bins-len(WhamIgnore)) ]
     x = np.zeros(len(array))
     y = np.zeros(len(array))
     err = np.zeros(len(array))
-    for line in range(len(array)):
+    for line in range(0, len(array)):
         columns = array[line].split()
         x[line] = columns[0]
         y[line] = columns[1]
         err[line] = columns[2]
+    #print(y)
     # plt.plot(x,y,)
     plt.errorbar(x,y,yerr=err, c="black", capsize=5)
     plt.xlabel("Reaction coordinate")
@@ -106,3 +108,4 @@ def Run_Wham(Job,Umbrella, Verbose=False):# Umbrella, Wham):
     subprocess.run(
         f"sed -i \"s/#Coor/Coor/g\" {Job.WorkDir}WHAM/PMF.dat",
         shell=True)
+    return y, err

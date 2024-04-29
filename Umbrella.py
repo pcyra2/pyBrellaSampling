@@ -13,6 +13,7 @@ import os
 import os.path as path
 import math
 import threading
+import numpy
 
 def main(args):
     Umbrella = UmbrellaClass(args,args.UmbrellaMin, args.UmbrellaBins,
@@ -27,6 +28,13 @@ def main(args):
     equil_length = 2000
     prod_length = 8000
     SLURM = SLURMClass(args)
+    SLURM.set_IDNumber()
+    WhamIgnore = args.WhamExclude.split(",") #Hacky fix to remove specific umbrella windows.
+    for i in range(len(WhamIgnore)): #Convert to integers
+        if WhamIgnore[i] == "":
+            WhamIgnore = []
+        else:
+            WhamIgnore[i] = int(WhamIgnore[i])
     # UmbrellaCalculation()
     if path.isdir(f"{Job.WorkDir}setup") == False: ### Make setup directory. Not essential but makes dirs cleaner
         os.mkdir(f"{Job.WorkDir}setup")
@@ -72,7 +80,7 @@ def main(args):
         SLURM.set_arrayJob("equil_1.txt", 54)
         print("gen slurm")
         utils.slurm_gen("NAME", SLURM, "sh array_job.sh", Job.WorkDir)
-        utils.batch_sub(4,16)
+        utils.batch_sub(4,16, )
         if args.DryRun == "False":
             equil_run(Job)
             # subprocess.run(["sh equil.sh"], shell=True, capture_output=True)
@@ -95,16 +103,17 @@ def main(args):
             else:
                 steps = 0
             NumJobs = math.ceil(steps / Calc.MaxSteps)
-        if Job.Verbosity >= 1:
-            print(f"Number of steps to glue together is {NumJobs}")
-        Anal.glue_stick(Umbrella, Job, NumJobs=NumJobs, file=args.WhamFile)
+        if "_" not in args.WhamFile.casefold():
+            if Job.Verbosity >= 1:
+                print(f"Number of steps to glue together is {NumJobs}")
+            Anal.glue_stick(Umbrella, Job, NumJobs=NumJobs, file=args.WhamFile)
         if Umbrella.atom3 != 0:
             periodicity = "Periodic"
         else:
             periodicity = "discrete"
         wham = WhamClass(args.WhamFile, Umbrella.ConstForce, periodicity)
-        Wham.Init_Wham(Job, Umbrella, wham)
-        Wham.Run_Wham(Job, Umbrella)
+        Wham.Init_Wham(Job, Umbrella, wham, WhamIgnore=WhamIgnore)
+        Wham.Run_Wham(Job, Umbrella, WhamIgnore=WhamIgnore)
     if Job.Stage == "analysis" or Job.Stage == "full":
         Labels = LabelClass("../complex.parm7")
         Labels = input.BondsInput(f"{Job.WorkDir}Bonds.dat", Labels)
@@ -174,7 +183,7 @@ def main(args):
                 plt.show()
             else:
                 plt.clf()
-            plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == bond.name, "Data"],
+            d = plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == bond.name, "Data"],
                        100, cmap="binary")
             # for i in Umbrella.BinVals:
             #     plt.axvline(i, color="red", linestyle="dashed", linewidth=0.2)
@@ -182,6 +191,11 @@ def main(args):
             plt.ylabel(f"{bond.name} bond distance")
             plt.xlabel("Reaction coordinate")
             plt.savefig(f"{Job.WorkDir}Figures/{bond.name}_2d.eps",transparent=True)
+            with open(f"{Job.WorkDir}Figures/{bond.name}_2d.dat", 'w') as f:
+                print(f"x\ty\tcount", file=f)
+                for i in range(len(d[0])):
+                    for j in range(len(d[0])):
+                        print(f"{d[1][i]}\t{d[2][j]}\t{d[0][i][j]}",file=f )
             if args.Verbosity >= 1:
                 plt.show()
             else:
@@ -196,13 +210,20 @@ def main(args):
                 plt.show()
             else:
                 plt.clf()
-            plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == dihed.name, "Data"],100, cmap="binary")
+            # h, xedges, yedges = plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == dihed.name, "Data"],100, cmap="binary")
+            d = plt.hist2d(df.loc[df["Name"] == reactioncoordinate, "Data"], df.loc[df["Name"] == dihed.name, "Data"],100, cmap="binary")    
+            # print(h, xedges, yedges)
             # for i in Umbrella.BinVals:
             #     plt.axvline(i, color="red", linestyle="dashed", linewidth=0.2)
             plt.title(f"Reaction coordinate vs. {dihed.name} dihedral")
             plt.ylabel(f"{dihed.name} dihedral angle")
             plt.xlabel("Reaction coordinate")
             plt.savefig(f"{Job.WorkDir}Figures/{dihed.name}_2d.eps",transparent=True)
+            with open(f"{Job.WorkDir}Figures/{dihed.name}_2d.dat", 'w') as f:
+                print(f"x\ty\tcount", file=f)
+                for i in range(len(d[0])):
+                    for j in range(len(d[0])):
+                        print(f"{d[1][i]}\t{d[2][j]}\t{d[0][i][j]}",file=f )
             if args.Verbosity >= 1:
                 plt.show()
             else:
@@ -230,14 +251,40 @@ def main(args):
             else:
                 pass
         for i in range(1,NumJobs+1):
+            print(f"Performing WHAM on step {i}")
+            WhamIgnore = Error_Check(Job=Job, Umbrella=Umbrella, Errors=WhamIgnore, Step=i)
+            print(f"WARNING: Error windows are: {WhamIgnore}")
+            if i > 1:
+                prev_y = y
+                #prev_Err = Err
             Anal.glue_stick(Umbrella, Job, NumJobs=i, file=args.WhamFile)
             if Umbrella.atom3 != 0:
                 periodicity = "Periodic"
             else:
                 periodicity = "discrete"
             wham = WhamClass(args.WhamFile, Umbrella.ConstForce, periodicity)
-            Wham.Init_Wham(Job, Umbrella, wham)
-            Wham.Run_Wham(Job, Umbrella)
+            Wham.Init_Wham(Job, Umbrella, wham, WhamIgnore=WhamIgnore)
+            y, Err = Wham.Run_Wham(Job, Umbrella, WhamIgnore=WhamIgnore)
+            convergence=False
+            if i > 1:
+                Diffs = numpy.zeros(len(y))
+                for j in range(len(y)):
+                    if y[j] == numpy.inf or prev_y[j] == numpy.inf:
+                        diff = 0
+                    else:
+                        diff = abs(y[j]-prev_y[j])
+                    if diff == "nan":
+                        diff = 0
+                    Diffs[j] = diff
+                if numpy.max(Diffs) <= 0.1:
+                    convergence = True
+                print(f"Maximum difference = {numpy.max(Diffs)}")
+                if convergence == True:
+                    print(f"SUCCESS: Convergence achieved")
+                    if numpy.max(Err) > 0.10:
+                        print(f"Error bars still too large: {numpy.max(Err)}")
+                    else:
+                        break
             subprocess.run(f"head -n {Umbrella.Bins} {Job.WorkDir}WHAM/out.pmf > {Job.WorkDir}WHAM/Conv/{i}.pmf", shell=True)
             subprocess.run(f"mv {Job.WorkDir}WHAM/PMF.eps {Job.WorkDir}WHAM/Conv/{i}.eps", shell=True)
             subprocess.run(f"sed -i \"0,/+\/-/s/+\/-/Err1/\" {Job.WorkDir}WHAM/Conv/{i}.pmf " , shell=True)
@@ -523,3 +570,55 @@ def VisInit(Job, Umbrella, File, extension="restart.coor"):
 def VisLoad(File):
     subprocess.run([f"vmd -e {File}_load.tcl"], shell=True, capture_output=True)
 
+def Error_Check(Job, Umbrella, Errors, Step=0, ):
+    """Identifies whether a window should be used for wham calculation."""
+    print(f"Checking for errors in step {Step}")
+    Labels = LabelClass("../complex.parm7")
+    Labels.clear_Vars()
+    Labels = input.BondsInput(f"{Job.WorkDir}BondErrors.dat", Labels)
+    Labels = input.DihedralInput(f"{Job.WorkDir}DihedralErrors.dat", Labels)
+    core_load = []
+    core_load.append("mol new complex.parm7")
+    dataframe = DataClass("Production")
+    for i in range(Umbrella.Bins):
+        Path = f"{Job.WorkDir}{i}/"
+        # print(Labels.bond)
+        if i in Errors:
+            continue
+        Labels.file_name([f"prod_{Step}.{i}.dcd"])
+        Bonds, Dihedrals = Anal.Label_Maker(Labels, f"{Job.WorkDir}{i}/label_maker.tcl")
+        subprocess.run([f"cd {Job.WorkDir}{i} ; vmd -dispdev text -e label_maker.tcl ; cd ../"], shell=True, capture_output=True)
+        dataframe = Anal.Labal_Analysis(Bonds, Dihedrals, f"{Job.WorkDir}{i}/", i, dataframe)
+        if len(Dihedrals) > 0:
+            Error = True
+        else:
+            Error = False
+        for j in range(len(Dihedrals)):
+            steps, data = utils.data_2d(f"{Path}{Dihedrals[j].name}.dat")
+            break_point = Anal.tcl_dihedAnalysis(Dihedrals[j], data, i, Error_Anal=True)
+            if break_point == len(data):
+                Error = False
+            elif break_point >= 0.9*len(data):
+                Error = False
+                print(f"WARNING: There are some problems with window {i}, They are near the end so ignoring.")
+            else:
+                Error = True
+                Errors.append(i)
+                print(f"WARNING: Error identified in step {Step} of window {i}, Dihedral Error")
+                print(f"Breakpoint is: {break_point} out of {len(data)} steps")
+                break
+        if Error != True:
+            for j in range(len(Bonds)):
+                steps, data = utils.data_2d(f"{Path}{Bonds[j].name}.dat")
+                break_point = Anal.tcl_bondAnalysis(Bonds[j], data, i, Error_Anal=True)
+                if break_point == len(data):
+                    Error = False
+                elif break_point >= 0.5*len(data):
+                    Error = False
+                    print(f"WARNING: There are some problems with step {Step}, They are near the end so ignoring.")
+                else:
+                    Error = True
+                    Errors.append(i)
+                    print(f"WARNING: Error identified in step {Step} of window {i}, Bond Error")
+                    break
+    return Errors
