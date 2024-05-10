@@ -1,0 +1,10 @@
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_0 ; cd ./0 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.0.out ; cd ../ ; rm -r /dev/shm/RUNDIR_0 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_1 ; cd ./1 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.1.out ; cd ../ ; rm -r /dev/shm/RUNDIR_1 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_2 ; cd ./2 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.2.out ; cd ../ ; rm -r /dev/shm/RUNDIR_2 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_3 ; cd ./3 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.3.out ; cd ../ ; rm -r /dev/shm/RUNDIR_3 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_4 ; cd ./4 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.4.out ; cd ../ ; rm -r /dev/shm/RUNDIR_4 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_5 ; cd ./5 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.5.out ; cd ../ ; rm -r /dev/shm/RUNDIR_5 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_6 ; cd ./6 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.6.out ; cd ../ ; rm -r /dev/shm/RUNDIR_6 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_7 ; cd ./7 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.7.out ; cd ../ ; rm -r /dev/shm/RUNDIR_7 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_8 ; cd ./8 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.8.out ; cd ../ ; rm -r /dev/shm/RUNDIR_8 ) &
+sleep 2 ; ( mkdir /dev/shm/RUNDIR_9 ; cd ./9 ; /home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3 prod_1.conf > prod_1.9.out ; cd ../ ; rm -r /dev/shm/RUNDIR_9 ) &

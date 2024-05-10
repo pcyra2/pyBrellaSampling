@@ -1,33 +1,36 @@
 import logging as log
 import numpy
-import Tools.utils as utils
+import pyBrellaSampling.Tools.utils as utils
 import pandas as pd
 import subprocess
 import os
 import matplotlib.pyplot as plt
 
-from pyBrellaSampling.Tools.classes import BondClass, DihedralClass, DataClass, LabelClass
-from pyBrellaSampling.Tools.globals import verbosity, WorkDir, DryRun, parmfile
+from pyBrellaSampling.Tools.classes import BondClass, DihedralClass, DataClass, LabelClass, UmbrellaClass
+# from pyBrellaSampling.Tools.globals import globals.verbosity, globals.WorkDir, globals.DryRun, globals.parmfile
+import pyBrellaSampling.Tools.globals as globals
+# from pyBrellaSampling.Tools.globals import *
 import pyBrellaSampling.Tools.InputParser as input
+import pyBrellaSampling.Tools.analysis as Anal
 
 def analysis(Umbrella: UmbrellaClass):
-    Labels = LabelClass(f"../{parmfile}")
-    Labels = input.BondsInput(f"{WorkDir}Bonds.dat", Labels)
-    Labels = input.DihedralInput(f"{WorkDir}Dihedral.dat", Labels)
+    Labels = LabelClass(f"../{globals.parmfile}")
+    Labels = input.BondsInput(f"{globals.WorkDir}Bonds.dat", Labels)
+    Labels = input.DihedralInput(f"{globals.WorkDir}Dihedral.dat", Labels)
     core_load = []
-    core_load.append(f"mol new {parmfile}")
+    core_load.append(f"mol new {globals.parmfile}")
     dataframe = DataClass("Production")
     for i in range(Umbrella.Bins):
         FileNames = []
         for j in range(1,20):
             FileNames.append(f"prod_{j}.{i}.dcd")
         Labels.file_name(FileNames)
-        Bonds, Dihedrals = Anal.Label_Maker(Labels, f"{WorkDir}{i}/label_maker.tcl")
-        if DryRun == False:
-            subprocess.run([f"cd {WorkDir}{i} ; vmd -dispdev text -e label_maker.tcl ; cd ../"], shell=True, capture_output=True)
-        dataframe = Anal.Labal_Analysis(Bonds, Dihedrals, f"{WorkDir}{i}/", i, dataframe)
+        Bonds, Dihedrals = Anal.Label_Maker(Labels, f"{globals.WorkDir}{i}/label_maker.tcl")
+        if globals.DryRun == False:
+            subprocess.run([f"cd {globals.WorkDir}{i} ; vmd -dispdev text -e label_maker.tcl ; cd ../"], shell=True, capture_output=True)
+        dataframe = Anal.Labal_Analysis(Bonds, Dihedrals, f"{globals.WorkDir}{i}/", i, dataframe)
         core_load.append(f"mol addfile ./{i}/equil.{i}.restart.coor ")
-    with open(f"{WorkDir}prod_load.tcl",'w') as f:
+    with open(f"{globals.WorkDir}prod_load.tcl",'w') as f:
         for i in range(len(core_load)):
             print(core_load[i], file=f)
     df = pd.concat(dataframe.dat)
@@ -36,22 +39,22 @@ def analysis(Umbrella: UmbrellaClass):
     for bond in Bonds:
         if ((bond.at1 == Umbrella.atom1) or (bond.at2 == Umbrella.atom1)) and ((bond.at1 == Umbrella.atom2) or (bond.at2 == Umbrella.atom2)) and (Umbrella.atom3 == 0):
             reactioncoordinate = bond.name
-            print(f"INFO: Reaction coordinate is {reactioncoordinate}" if verbosity >=2 else "", end="")
+            print(f"INFO: Reaction coordinate is {reactioncoordinate}" if globals.verbosity >=2 else "", end="")
     for dihed in Dihedrals:
         if ((dihed.at1 == Umbrella.atom1) or (dihed.at4 == Umbrella.atom1)) and ((dihed.at2 == Umbrella.atom2) or (dihed.at3 == Umbrella.atom2)) and ((dihed.at3 == Umbrella.atom3) or (dihed.at2 == Umbrella.atom3)) and ((dihed.at4 == Umbrella.atom4) or (dihed.at1 == Umbrella.atom4)):
             reactioncoordinate = dihed.name
-            print(f"INFO: Reaction coordinate is {reactioncoordinate}" if verbosity >=2 else "", end="")
+            print(f"INFO: Reaction coordinate is {reactioncoordinate}" if globals.verbosity >=2 else "", end="")
     try:
-        os.mkdir(f"{WorkDir}Figures/")
+        os.mkdir(f"{globals.WorkDir}Figures/")
     except:
-        print("INFO: Figures directory already exists"if verbosity >=2 else "", end="")
+        print("INFO: Figures directory already exists"if globals.verbosity >=2 else "", end="")
     for bond in Bonds:
         plt.hist(df.loc[df["Name"] == bond.name, "Data",], 100,color="black")
         plt.title(f"{bond.name} bond")
         plt.xlabel("Distance")
         plt.ylabel("Count")
-        plt.savefig(f"{WorkDir}Figures/{bond.name}.eps",transparent=True)
-        if verbosity >= 2:
+        plt.savefig(f"{globals.WorkDir}Figures/{bond.name}.eps",transparent=True)
+        if globals.verbosity >= 2:
             plt.show()
         else:
             plt.clf()
@@ -60,13 +63,13 @@ def analysis(Umbrella: UmbrellaClass):
         plt.title(f"Reaction coordinate vs. {bond.name} bond")
         plt.ylabel(f"{bond.name} bond distance")
         plt.xlabel("Reaction coordinate")
-        plt.savefig(f"{WorkDir}Figures/{bond.name}_2d.eps",transparent=True)
-        with open(f"{WorkDir}Figures/{bond.name}_2d.dat", 'w') as f:
+        plt.savefig(f"{globals.WorkDir}Figures/{bond.name}_2d.eps",transparent=True)
+        with open(f"{globals.WorkDir}Figures/{bond.name}_2d.dat", 'w') as f:
             print(f"x\ty\tcount", file=f)
             for i in range(len(d[0])):
                 for j in range(len(d[0])):
                     print(f"{d[1][i]}\t{d[2][j]}\t{d[0][i][j]}",file=f )
-        if verbosity >= 2:
+        if globals.verbosity >= 2:
             plt.show()
         else:
             plt.clf()
@@ -75,8 +78,8 @@ def analysis(Umbrella: UmbrellaClass):
         plt.title(f"{dihed.name} dihedral")
         plt.xlabel("Angle")
         plt.ylabel("Count")
-        plt.savefig(f"{WorkDir}Figures/{dihed.name}.eps",transparent=True)
-        if verbosity >= 2:
+        plt.savefig(f"{globals.WorkDir}Figures/{dihed.name}.eps",transparent=True)
+        if globals.verbosity >= 2:
             plt.show()
         else:
             plt.clf()
@@ -84,17 +87,17 @@ def analysis(Umbrella: UmbrellaClass):
         plt.title(f"Reaction coordinate vs. {dihed.name} dihedral")
         plt.ylabel(f"{dihed.name} dihedral angle")
         plt.xlabel("Reaction coordinate")
-        plt.savefig(f"{WorkDir}Figures/{dihed.name}_2d.eps",transparent=True)
-        with open(f"{WorkDir}Figures/{dihed.name}_2d.dat", 'w') as f:
+        plt.savefig(f"{globals.WorkDir}Figures/{dihed.name}_2d.eps",transparent=True)
+        with open(f"{globals.WorkDir}Figures/{dihed.name}_2d.dat", 'w') as f:
             print(f"x\ty\tcount", file=f)
             for i in range(len(d[0])):
                 for j in range(len(d[0])):
                     print(f"{d[1][i]}\t{d[2][j]}\t{d[0][i][j]}",file=f )
-        if verbosity >= 1:
+        if globals.verbosity >= 1:
             plt.show()
         else:
             plt.clf()
-    df.to_csv(f"{WorkDir}Figures/Data.csv")
+    df.to_csv(f"{globals.WorkDir}Figures/Data.csv")
     
 def tcl_bondPlot(bond):
     """Creates a list of lines for an alaysis tcl script used by vmd which allows for the tracking of bonds."""
@@ -219,35 +222,34 @@ def glue_stick(Umbrella, NumJobs, file):
         step, value = ["#Step"], ["Value"]
         for j in range(NumJobs):
             try:
-                coords, datay = utils.data_2d(f"{WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj")
+                coords, datay = utils.data_2d(f"{globals.WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj")
             except FileNotFoundError:
-                print(f"{WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj is not found. moving on...")
+                print(f"{globals.WorkDir}{i}/{file}_{j+1}.{i}.colvars.traj is not found. moving on...")
                 pass
             step = step + [int(k+(len(step)-1)) for k in coords if k != 0]      # NAMD prints state 0 at the start so will need to remove repeats.
             value = value + [datay[k] for k in range(len(coords)) if k != 0]
-        utils.file_2dwrite(path=f"{WorkDir}{i}/{file}.{i}.colvars.traj",
+        utils.file_2dwrite(path=f"{globals.WorkDir}{i}/{file}.{i}.colvars.traj",
                            x=step, y=value)
-
 
 def Error_Check(Umbrella, Errors, Step=0, ):
     """Identifies whether a window should be used for wham calculation."""
     print(f"Checking for errors in step {Step}")
-    Labels = LabelClass(f"../{parmfile}")
+    Labels = LabelClass(f"../{globals.parmfile}")
     Labels.clear_Vars()
-    Labels = input.BondsInput(f"{WorkDir}BondErrors.dat", Labels)
-    Labels = input.DihedralInput(f"{WorkDir}DihedralErrors.dat", Labels)
+    Labels = input.BondsInput(f"{globals.WorkDir}BondErrors.dat", Labels)
+    Labels = input.DihedralInput(f"{globals.WorkDir}DihedralErrors.dat", Labels)
     core_load = []
-    core_load.append(f"mol new {parmfile}")
+    core_load.append(f"mol new {globals.parmfile}")
     dataframe = DataClass("Production")
     for i in range(Umbrella.Bins):
-        Path = f"{WorkDir}{i}/"
+        Path = f"{globals.WorkDir}{i}/"
         # print(Labels.bond)
         if i in Errors:
             continue
         Labels.file_name([f"prod_{Step}.{i}.dcd"])
-        Bonds, Dihedrals = Label_Maker(Labels, f"{WorkDir}{i}/label_maker.tcl")
-        subprocess.run([f"cd {WorkDir}{i} ; vmd -dispdev text -e label_maker.tcl ; cd ../"], shell=True, capture_output=True)
-        dataframe = Labal_Analysis(Bonds, Dihedrals, f"{WorkDir}{i}/", i, dataframe)
+        Bonds, Dihedrals = Label_Maker(Labels, f"{globals.WorkDir}{i}/label_maker.tcl")
+        subprocess.run([f"cd {globals.WorkDir}{i} ; vmd -dispdev text -e label_maker.tcl ; cd ../"], shell=True, capture_output=True)
+        dataframe = Labal_Analysis(Bonds, Dihedrals, f"{globals.WorkDir}{i}/", i, dataframe)
         if len(Dihedrals) > 0:
             Error = True
         else:
@@ -259,12 +261,12 @@ def Error_Check(Umbrella, Errors, Step=0, ):
                 Error = False
             elif break_point >= 0.9*len(data):
                 Error = False
-                print(f"WARNING: There are some problems with window {i}, They are near the end so ignoring." if verbosity >=1 else "", end="")
+                print(f"WARNING: There are some problems with window {i}, They are near the end so ignoring." if globals.verbosity >=1 else "", end="")
             else:
                 Error = True
                 Errors.append(i)
-                print(f"WARNING: Error identified in step {Step} of window {i}, Dihedral Error" if verbosity >=1 else "", end="")
-                print(f"Breakpoint is: {break_point} out of {len(data)} steps" if verbosity >=1 else "", end="")
+                print(f"WARNING: Error identified in step {Step} of window {i}, Dihedral Error" if globals.verbosity >=1 else "", end="")
+                print(f"Breakpoint is: {break_point} out of {len(data)} steps" if globals.verbosity >=1 else "", end="")
                 break
         if Error != True:
             for j in range(len(Bonds)):
@@ -274,10 +276,10 @@ def Error_Check(Umbrella, Errors, Step=0, ):
                     Error = False
                 elif break_point >= 0.5*len(data):
                     Error = False
-                    print(f"WARNING: There are some problems with step {Step}, They are near the end so ignoring." if verbosity >=1 else "", end="")
+                    print(f"WARNING: There are some problems with step {Step}, They are near the end so ignoring." if globals.verbosity >=1 else "", end="")
                 else:
                     Error = True
                     Errors.append(i)
-                    print(f"WARNING: Error identified in step {Step} of window {i}, Bond Error" if verbosity >=1 else "", end="")
+                    print(f"WARNING: Error identified in step {Step} of window {i}, Bond Error" if globals.verbosity >=1 else "", end="")
                     break
     return Errors

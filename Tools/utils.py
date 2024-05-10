@@ -4,7 +4,9 @@ import argparse as ap
 import json
 import subprocess
 import numpy as np
-from pyBrellaSampling.Tools.globals import verbosity, WorkDir, DryRun, parmfile
+from pyBrellaSampling.Tools.classes import *
+# from pyBrellaSampling.Tools.globals import verbosity, globals.WorkDir, DryRun, globals.parmfile
+import pyBrellaSampling.Tools.globals as globals
 
 def file_read(path):
     """Reads in the file in the path as a 1D array of lines"""
@@ -56,7 +58,7 @@ def dict_write(path, dict):
 def QM_Gen(qmzone,):
     """Creates a tcl script file for generating the syst-qm.pdb."""    
     tcl = f"""
-mol new {parmfile}
+mol new {globals.parmfile}
 mol addfile start.rst7
 
 set qmPDB "syst-qm.pdb"
@@ -187,13 +189,13 @@ close $fileId
   
 quit
 """
-    with open(f"{WorkDir}qm_prep.tcl", "w") as f:
+    with open(f"{globals.WorkDir}qm_prep.tcl", "w") as f:
         print(tcl, file=f)
 
 def ColVarPDB_Gen(Umbrella, ):
     """tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling."""
     if Umbrella.atom3 == 0:
-        tcl = f"""mol new {parmfile}
+        tcl = f"""mol new {globals.parmfile}
 mol addfile start.rst7
 
 set colPDB "syst-col.pdb"
@@ -213,7 +215,7 @@ $sel writepdb $colPDB
 quit
 """
     elif Umbrella.atom4 == 0:
-        tcl = f"""mol new {parmfile}
+        tcl = f"""mol new {globals.parmfile}
 mol addfile start.rst7
 
 set colPDB "syst-col.pdb"
@@ -238,7 +240,7 @@ $sel writepdb $colPDB
 quit
 """
     else:
-        tcl = f"""mol new {parmfile}
+        tcl = f"""mol new {globals.parmfile}
 mol addfile start.rst7
 
 set colPDB "syst-col.pdb"
@@ -263,7 +265,7 @@ $sel writepdb $colPDB
 
 quit
 """
-    file_write(f"{WorkDir}Colvar_prep.tcl", [tcl])
+    file_write(f"{globals.WorkDir}Colvar_prep.tcl", [tcl])
 
 def colvar_gen(Umbrella, i, type, force):
     """Generates colective variables and parses them into the Umbrella class. This also generates the colvar files."""
@@ -458,36 +460,35 @@ export OMP_PLACES=cores
 """
         file_write(f"{path}sub.sh", [slurmScript])
 
-def mpi_gen(SLURM, Umbrella):
-    """Depreciated. Used originally for running efficient orca calculations on HPC systems that dont assign cores correctly."""
-    JobNumber = 0
-    for i in range(Umbrella.Bins):
-        subprocess.run([f"cp runORCA.py ./{i}"], shell=True,)
-        Cores = ""
-        if JobNumber < SLURM.JobsPerNode:
-            for j in range(SLURM.Cores):
-                Cores += f"{JobNumber*SLURM.Cores+j},"
-                print(Cores)
-            subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
-            JobNumber = JobNumber + 1
-        else:
-            JobNumber = 0
-            for j in range(SLURM.Cores):
-                Cores += f"{JobNumber*SLURM.Cores+j},"
+# def mpi_gen(SLURM, Umbrella):
+#     """Depreciated. Used originally for running efficient orca calculations on HPC systems that dont assign cores correctly."""
+#     JobNumber = 0
+#     for i in range(Umbrella.Bins):
+#         subprocess.run([f"cp runORCA.py ./{i}"], shell=True,)
+#         Cores = ""
+#         if JobNumber < SLURM.JobsPerNode:
+#             for j in range(SLURM.Cores):
+#                 Cores += f"{JobNumber*SLURM.Cores+j},"
+#                 print(Cores)
+#             subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
+#             JobNumber = JobNumber + 1
+#         else:
+#             JobNumber = 0
+#             for j in range(SLURM.Cores):
+#                 Cores += f"{JobNumber*SLURM.Cores+j},"
 
-            subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
-            JobNumber = JobNumber + 1
+#             subprocess.run([f"""sed -i "s/CPUS/{Cores}/g"  ./{i}/runORCA.py"""], shell=True)
+#             JobNumber = JobNumber + 1
 
-def get_cellVec(MM):
-    global WorkDir
+def get_cellVec(MM: MMClass):
     """Gets the cell vectors required by NAMD from the AMBER param file"""
-    data = file_read(f"{WorkDir}{MM.ambercoor}")
+    data = file_read(f"{globals.WorkDir}{MM.ambercoor}")
     length = len(data) #Get the last line
     words = data[length-1].split() # Split the final line.
     # print(words)
     return float(words[0]) # return the first number
 
-def array_script(ntasks):
+def array_script(ntasks: int):
     """Required for generating slurm array jobs."""
     Script=f"""#!/bin/bash
 RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*{ntasks})) | tail -n {ntasks}))
@@ -501,7 +502,7 @@ def batch_sub(nequil=4, nprod=16, ID_NUMBER=1):
     script += f"""echo \"Submitting equil_1\"
 cp sub.sh run.sh
 sed -i \"s/NAME/equil_1/g\" run.sh
-ID=$(sbatch run.sh | awk {"{print $"+ID_NUMBER+"}"}'')
+ID=$(sbatch run.sh | awk {"{print $"+str(ID_NUMBER)+"}"}'')
 echo \"equil_1 ID is $ID\"
 echo \"equil_1 ID is $ID\" >> SLURMID.dat
 
@@ -511,7 +512,7 @@ echo \"equil_1 ID is $ID\" >> SLURMID.dat
 cp sub.sh run.sh
 sed -i \"s/NAME/equil_{i+1}/g\" run.sh
 sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
-ID=$(sbatch run.sh | awk '{"{print $"+ID_NUMBER+"}"}'))
+ID=$(sbatch run.sh | awk '{"{print $"+str(ID_NUMBER)+"}"}'))
 echo \"equil_{i+1} ID is $ID\"
 echo \"equil_{i+1} ID is $ID\" >> SLURMID.dat
 
@@ -521,12 +522,12 @@ echo \"equil_{i+1} ID is $ID\" >> SLURMID.dat
 cp sub.sh run.sh
 sed -i \"s/NAME/prod_{i+1}/g\" run.sh
 sed -i \"s/#dep/#SBATCH --dependency=afterok:$ID/g\" run.sh
-ID=$(sbatch run.sh | awk '{"{print $"+ID_NUMBER+"}"}')
+ID=$(sbatch run.sh | awk '{"{print $"+str(ID_NUMBER)+"}"}')
 echo \"prod_{i+1} ID is $ID\"
 echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
 
 """
-    file_write("./runner.sh", [script])
+    file_write(f"{globals.WorkDir}/runner.sh", [script])
 
 
 kcal = 627.51 ### a.u. to kcal/mol conversion 

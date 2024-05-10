@@ -1,0 +1,5 @@
+name		atom1	atom2	atom3	atom4	t1name	t1val	t2name	t2val
+SobVert		13741	13738	13735	13730	Sob	50	Vert	-60
+C8Methyl	13761	13756	13730	13731	up	30	down	180
+C4Methyl	13761	13756	13717	13718	up	50	down	180
+c6Ring		13715	13730	13728	13725	Chair	-55	Boat	-20

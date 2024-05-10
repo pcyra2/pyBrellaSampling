@@ -25,9 +25,9 @@ colvarsTrajFrequency     1
         harmonic {
             name dihedpot
             colvars dihedral
-            centers 1
+            centers 1.0
             forceConstant 150.0
-            targetCenters 1
+            targetCenters 1.0
             outputCenters on
             targetNumSteps 50
             outputAccumulatedWork on

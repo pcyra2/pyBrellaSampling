@@ -37,7 +37,7 @@
 #         Rest_Lines = "# No Restraints applied"
 #     file = f"""## Umbrella {Calc.OutFile} input file
 # # File Options
-# parmfile        {parm}
+# globals.parmfile        {parm}
 # ambercoor       {coord1}
 # bincoordinates  {coord2}
 # DCDfile         {Calc.OutFile}.dcd
@@ -139,7 +139,7 @@
 #     log.info(f"QM config line is {qm_config}")
 #     file = f"""## Minimisation file:
 # # File Options
-# parmfile        complex.parm7
+# globals.parmfile        complex.parm7
 # ambercoor       start.rst7
 # restartname     min.restart
 # restartfreq     100

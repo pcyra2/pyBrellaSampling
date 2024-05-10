@@ -1,7 +1,7 @@
-import numpy
-
-import pyBrellaSampling.wham as wham
+import pyBrellaSampling.Umbrella.wham as wham
 import numpy as numpy
+
+
 def sin(x):
     y = numpy.sinh(x)
     return y

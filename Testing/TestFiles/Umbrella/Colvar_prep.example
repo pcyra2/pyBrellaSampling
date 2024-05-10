@@ -1,0 +1,25 @@
+mol new complex.parm7
+mol addfile start.rst7
+
+set colPDB "syst-col.pdb"
+
+set sel [atomselect 0 all]
+$sel set beta 0
+$sel set occupancy 0
+
+set seltext "(index 0)"
+[atomselect 0 "$seltext"] set beta 1
+
+set seltext "(index 1)"
+[atomselect 0 "$seltext"] set beta 2
+
+set seltext "(index 2)"
+[atomselect 0 "$seltext"] set beta 3
+
+set seltext "(index 3)"
+[atomselect 0 "$seltext"] set beta 4
+
+$sel writepdb $colPDB
+
+quit
+

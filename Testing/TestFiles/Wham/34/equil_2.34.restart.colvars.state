@@ -1,0 +1,18 @@
+configuration {
+  step          500
+  dt 5.000000e-01
+  version 2023-01-31
+}
+
+colvar {
+  name length
+  x  3.02529252441806e+00
+}
+
+restraint {
+  configuration {
+    step 500
+    name lenpot
+  }
+}
+

@@ -11,3 +11,4 @@ subprocess32
 pytest
 pytest-html
 pytest-cov
+testfixtures

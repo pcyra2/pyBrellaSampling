@@ -3,8 +3,8 @@ import numpy as np
 import math as math
 from pyBrellaSampling.UserVars.MM_Variables import MM_DefaultVars as MMVars
 from pyBrellaSampling.UserVars.SoftwarePaths import NAMD_CPU, NAMD_GPU, ORCA_PATH
-from pyBrellaSampling.Tools.globals import verbosity, WorkDir, DryRun
-from argparse import Namespace
+# from pyBrellaSampling.Tools.globals import globals.verbosity, WorkDir, globals.DryRun, globals.parmfile
+import pyBrellaSampling.Tools.globals as globals
 
 class UmbrellaClass:
     """Class for containing umbrella sampling information.
@@ -83,7 +83,7 @@ class UmbrellaClass:
 #     Attributes:
 #         WorkDir (str): Path to location of calculation
 #         JobType (str): Type of calculation to perform
-#         Verbosity (int): Level of verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
+#         globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
 #         Stage (str): Stage of calculation.
 
 #     TODO:
@@ -99,12 +99,12 @@ class UmbrellaClass:
 #         Attributes:
 #             WorkDir (str): Path to location of calculation
 #             JobType (str): Type of calculation to perform
-#             Verbosity (int): Level of verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
+#             globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
 #             Stage (str): Stage of calculation.
 #         """
 #         self.WorkDir = args.WorkDir
 #         self.JobType = args.JobType.casefold()
-#         self.Verbosity = args.Verbosity
+#         self.globals.verbosity = args.globals.verbosity
 #         self.Stage = args.Stage.casefold()
 
 class LabelClass:
@@ -204,7 +204,6 @@ class LabelClass:
         self.dihedralTarget2 = []
         self.dihedralTarget1Name = []
         self.dihedralTarget2Name = []
-
 class DataClass:
     """Class for containing generic analysis data.
     Attributes:
@@ -232,7 +231,6 @@ class DataClass:
             data={"Name": name, "Window": window, "Data": data}))
     def __repr__(self):
         return f"{self.name}: \n{self.dat}"
-
 class BondClass:
     """Class for containing bond data
     Attributes:
@@ -301,7 +299,7 @@ class DihedralClass:
         return f"Atoms: {self.at1} {self.at2} {self.at3} {self.at4}, Name: {self.name}, {self.target1Name} = {self.target1}, {self.target2Name} = {self.target2}"
 
 class WhamClass:
-    """Class for controling WHAM calculation information
+    """Class for controlling WHAM calculation information
     Attributes:
         Name: Name of wham calculation
         Force: Force for biasing windows
@@ -317,7 +315,7 @@ class WhamClass:
         """
         self.Name = Name
         self.Force = Force
-        assert type == "discrete" | "continuous", "ERROR: Wham type not supported. Should be either discrete or continuous"
+        assert type == "discrete"  or type == "periodic", f"ERROR: {type} Wham type not supported. Should be either discrete or continuous"
         self.Type = type
 
 class QMClass:
@@ -395,7 +393,7 @@ class MMClass:
     Temp = MMVars["temperature"]
     CutOff = MMVars["cutoff"]
     PME = "off"
-    parmfile = f"../{parmfile}"
+    parmfile = f"../{globals.parmfile}"
     ambercoor = "../start.rst7"
     Shake = "none"
     def __init__(self, ):
@@ -802,7 +800,7 @@ langevin            off"""
 colvars         {toggle}
 colvarsConfig   {file}
 """
-    def set_startcoords(self, bincoor:str, ambercoor:str ="../start.rst7", parm:str =f"../{parmfile}"):
+    def set_startcoords(self, bincoor:str, ambercoor:str ="../start.rst7", parm:str =f"../{globals.parmfile}"):
         """
         Controls the coordinate files
         Args:
@@ -909,22 +907,22 @@ class SLURMClass:
         """
         self.qos = Qos
         self.account = Account
-    # def set_IDNumber(self, ):
-    #     """_summary_
-    #     Attribute:
-    #         ID_Number (int): 
-    #     """
-    #     if "archer" in self.HostName.casefold():
-    #         Number = 1
-    #     elif "sulis" in self.HostName.casefold():
-    #         Number = 4
-    #     elif "ada" in self.HostName.casefold():
-    #         Number = 4
-    #     else:
-    #         Number = 1
-    #         print("WARNING, The HPC that you are using is not in my database... ")
-    #         print("The runnner.sh script may not work as intended and so you may have to tune the sed command to grab the slurm ID")
-    #     self.ID_Number = Number
+    def set_IDNumber(self, ):
+        """_summary_
+        Attribute:
+            ID_Number (int): 
+        """
+        if "archer" in self.HostName.casefold():
+            Number = 1
+        elif "sulis" in self.HostName.casefold():
+            Number = 4
+        elif "ada" in self.HostName.casefold():
+            Number = 4
+        else:
+            Number = 1
+            print("WARNING, The HPC that you are using is not in my database... ")
+            print("The runnner.sh script may not work as intended and so you may have to tune the sed command to grab the slurm ID")
+        self.ID_Number = Number
 
 class MolClass:
     """Class for containing molecular information including coordinates and charges. This is used for benchmarking only
@@ -961,7 +959,7 @@ class MolClass:
         self.charge = charge
         assert type(spin) is int, "Spin must be an integer, partial spins are not supported"
         self.spin = spin
-    def add_coordinates(self, at: [str], x: list, y: list, z: list, nat: int):
+    def add_coordinates(self, at: list, x: list, y: list, z: list, nat: int):
         """
         Adds all structural information to the molecule
         Args:

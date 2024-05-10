@@ -3,6 +3,7 @@ from pyBrellaSampling.UserVars.QM_Methods import * # End User can change this.
 # from pyBrellaSampling.UserVars.Defaultinputs import Benchmark_Inp
 # from pyBrellaSampling.UserVars.SoftwarePaths import ORCA_PATH
 from pyBrellaSampling.Tools.classes import *
+import pyBrellaSampling.Tools.globals as globals
 from pyBrellaSampling.Tools.InputParser import BenchmarkInput as Input_Parser
 import sys
 import time
@@ -16,25 +17,23 @@ from pyBrellaSampling.Tools.utils import kcal
 def main_cli():
     starttime = time.time()
     args = Input_Parser(sys.argv[1:])
-    global verbosity
-    verbosity = args["verbosity"]
-    global WorkDir
+    verbosity = args["Verbosity"]
     WorkDir = args["WorkDir"]
-    global DryRun
     DryRun = args["DryRun"]
     Stage=args["Stage"]
-    print("Welcome to the Benchmark suite \n" if verbosity >= 2 else "",end="")
+    globals.init(v=verbosity, wd=WorkDir,dr=DryRun,)
+    print("Welcome to the Benchmark suite \n" if globals.verbosity >= 2 else "",end="")
     ORCA = ORCA_init(args)
     Structures = Get_Structures(args)
     calcs = init_benchmark(Structures=Structures, ORCA=ORCA, )
-    if Stage == "run" and DryRun == False:
+    if Stage == "run" and globals.DryRun == False:
         Finished, Failed = get_energy(calcs)
         if len(Finished) == 0: ### No jobs have started therefore a clean run.
             run_benchmark("jobfile.dat")
         else: ## Some jobs are complete, therefore a re-run to fix calculations or add to the dataset.
             print(f"WARNING: Some jobs have already completed. If you wish to overwrite them, please delete the outputs. \n" 
-                  if verbosity >= 1 else "", end="")
-            print(f"WARNING: Running jobs that have not completed \n" if verbosity >= 1 else "", end = "")
+                  if globals.verbosity >= 1 else "", end="")
+            print(f"WARNING: Running jobs that have not completed \n" if globals.verbosity >= 1 else "", end = "")
             time.sleep(10)
             for i in Failed:
                 fix_script = []
@@ -50,14 +49,14 @@ def main_cli():
         print(f"REPORT: Total number of completed jobs is {len(Finished)}, {len(Failed)} have failed... \n")
         fix_script = []
         for i in Failed:
-            print(f"REPORT: Failed Job is {i.path}\n" if verbosity >= 2 else "", end="")
-            print(f"REPORT: Reason is {i.reason}\n" if verbosity >= 2 else "", end="")
+            print(f"REPORT: Failed Job is {i.path}\n" if globals.verbosity >= 2 else "", end="")
+            print(f"REPORT: Reason is {i.reason}\n" if globals.verbosity >= 2 else "", end="")
             fix_script.append(i.runline)
         Reactions = Benchmark_Energy(Finished, args["ReactionList"])
         df = Error_Gen(Reactions=Reactions)
         Error_Anal(df)
     endtime = time.time()
-    print(f"INFO: Calculation time is {endtime - starttime} \n" if verbosity >=2 else "", end="")
+    print(f"INFO: Calculation time is {endtime - starttime} \n" if globals.verbosity >=2 else "", end="")
     
 def ORCA_init(args: dict):
     """
@@ -72,7 +71,7 @@ def ORCA_init(args: dict):
     Returns:
         ORCA (ORCAClass): Initialised ORCA class
     """
-    print("DEBUG: ORCA init \n" if verbosity >= 3 else "", end="")
+    print("DEBUG: ORCA init \n" if globals.verbosity >= 3 else "", end="")
     BenchType = args["BenchmarkType"]
     ORCA = ORCAClass(args["Path"])
     if BenchType.casefold() == "energy":
@@ -102,13 +101,13 @@ def Get_Structures(args: dict):
         Structures (list): List of Stuctures and their coordinates. 
 
     """
-    print("DEBUG: Get_Structures \n" if verbosity >= 3 else "", end="")
+    print("DEBUG: Get_Structures \n" if globals.verbosity >= 3 else "", end="")
     mols = get_molecules(args["ReactionList"])
     Structures = []
     coordloc=args["CoordinateLoc"]
     for i in range(len(mols)):
         molecule = MolClass(str(mols[i]))
-        data = utils.file_read(f"{WorkDir}/{coordloc}/{mols[i]}.xyz")
+        data = utils.file_read(f"{globals.WorkDir}/{coordloc}/{mols[i]}.xyz")
         nat = int(data[0])
         info = data[1].split() ## Charge, Spin
         molecule.set_charge(int(info[0]), int(info[1]))
@@ -116,12 +115,12 @@ def Get_Structures(args: dict):
         x = numpy.zeros(nat)
         y = numpy.zeros(nat)
         z = numpy.zeros(nat)
-        print(f"DEBUG: Number of atoms for {mols[i]} is {nat} \n" if verbosity >= 3 else "",end="")
+        print(f"DEBUG: Number of atoms for {mols[i]} is {nat} \n" if globals.verbosity >= 3 else "",end="")
         for j in range(2,len(data)):
             cols = data[j].split()
-            # print(f"DEBUG: Atom line is {cols}\n" if verbosity >= 3 else "",end="")
+            # print(f"DEBUG: Atom line is {cols}\n" if globals.verbosity >= 3 else "",end="")
             if len(cols) != 4:
-                print("WARNING: There is more than 4 columns in this coordinate file, you should check that they are correct." if verbosity >= 1 else "", end="")
+                print("WARNING: There is more than 4 columns in this coordinate file, you should check that they are correct." if globals.verbosity >= 1 else "", end="")
             a[j-2] = str(cols[0])
             x[j-2] = float(cols[1])
             y[j-2] = float(cols[2])
@@ -165,26 +164,26 @@ def init_benchmark(Structures: list, ORCA: ORCAClass):
     Returns:
         calculations (list[QMCalcClass]): Returns a list of calculations
     """
-    print("INFO: Setting up benchmark\n" if verbosity >= 1 else "", end="")    
+    print("INFO: Setting up benchmark\n" if globals.verbosity >= 1 else "", end="")    
     jobfile=[]
     calculations = []
     for i in Functionals:
         try:
-            os.mkdir(f"{WorkDir}/{i}")
+            os.mkdir(f"{globals.WorkDir}/{i}")
         except FileExistsError:
-            print(f"WARNING: {i} directory exists, skipping \n" if verbosity >= 1 else "", end="")
+            print(f"WARNING: {i} directory exists, skipping \n" if globals.verbosity >= 1 else "", end="")
         ORCA.set_method(i)
         if i in DispersionCorrFunc:
-            print(f"WARNING: {i} contains a dispersion correction, therefore skipping other corrections. \n" if verbosity > 1 else "", end="")
+            print(f"WARNING: {i} contains a dispersion correction, therefore skipping other corrections. \n" if globals.verbosity > 1 else "", end="")
             dispersion = [""]
         else:
             dispersion = Dispersion_Corrections
         for j in Basis_Sets:
             ORCA.set_basis(j)
             try:
-                os.mkdir(f"""{WorkDir}/{i}/{j.replace("*","s")}""")
+                os.mkdir(f"""{globals.WorkDir}/{i}/{j.replace("*","s")}""")
             except FileExistsError:
-                print(f"WARNING: {i} {j} directory exists, skipping \n" if verbosity >= 1 else "", end="")
+                print(f"WARNING: {i} {j} directory exists, skipping \n" if globals.verbosity >= 1 else "", end="")
             for k in dispersion:
                 if i == "HF" and k == "D3ZERO":
                     continue
@@ -194,17 +193,17 @@ def init_benchmark(Structures: list, ORCA: ORCAClass):
                 else:
                     directory = k
                 try:
-                    os.mkdir(f"""{WorkDir}/{i}/{j.replace("*","s")}/{directory}""")
+                    os.mkdir(f"""{globals.WorkDir}/{i}/{j.replace("*","s")}/{directory}""")
                 except FileExistsError:
-                    print(f"WARNING: {i} {j} {directory} directory exists, skipping \n" if verbosity >= 1 else "", end="")
+                    print(f"WARNING: {i} {j} {directory} directory exists, skipping \n" if globals.verbosity >= 1 else "", end="")
                 for l in range(len(Structures)):
-                    path = f"""{WorkDir}/{i}/{j.replace("*","s")}/{directory}/{Structures[l].name}"""
+                    path = f"""{globals.WorkDir}/{i}/{j.replace("*","s")}/{directory}/{Structures[l].name}"""
                     try:
                         os.mkdir(path)
                     except FileExistsError:
-                        print(f"WARNING: {i} {j} {directory} {Structures[l].name} directory exists, skipping \n" if verbosity > 1 else "", end="")
+                        print(f"WARNING: {i} {j} {directory} {Structures[l].name} directory exists, skipping \n" if globals.verbosity > 1 else "", end="")
                     file = FileGen.ORCA_FileGen(Structures[l], ORCA) 
-                    if DryRun == False:
+                    if globals.DryRun == False:
                         utils.file_write(f"{path}/ORCA.inp", [file])
                     jobfile.append(f"cd {path} ; WD=$PWD ; cp * /dev/shm/QM ; cd /dev/shm/QM ;  {ORCA.path} ORCA.inp '--use-hwthread-cpus --bind-to hwthread' > ORCA.out ; mv * $WD ; cd $WD ; cd ../../../../")
                     calculation = QMCalcClass(Structures[l].name, i, j, directory)
@@ -222,12 +221,12 @@ def run_benchmark(file:str = "jobfile.dat"):
 
     """
 
-    jobs = utils.file_read(f"{WorkDir}{file}")
-    print(f"INFO: Running Jobs \n" if verbosity >= 2 else "", end="")
+    jobs = utils.file_read(f"{globals.WorkDir}{file}")
+    print(f"INFO: Running Jobs \n" if globals.verbosity >= 2 else "", end="")
     for lines in jobs:
-        print(f"INFO: Running {lines} \n" if verbosity >= 2 else "", end="")
+        print(f"INFO: Running {lines} \n" if globals.verbosity >= 2 else "", end="")
         runout = subprocess.run([f"{lines}"], shell=True, capture_output=True)
-        print(f"{runout.stdout}\n " if verbosity >= 2 else "", end="")
+        print(f"{runout.stdout}\n " if globals.verbosity >= 2 else "", end="")
 
 def get_energy(calculations: list):
     """

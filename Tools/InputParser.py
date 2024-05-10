@@ -111,29 +111,31 @@ It is recommended to use --Stage inpfile to generate input file templates with d
                               help="Amber parameter file")
     Umbrella.add_argument("--EquilLength", default=defaults["EquilLength"], type=int, 
                           help="Length of equilibration in ps (per window)")
-    Umbrella.add_argument("--ProdLength", type=int, default=defaults,
+    Umbrella.add_argument("--ProdLength", type=int, default=defaults["ProdLength"],
                           help="Length of production umbrellasampling per window in ps.")
     if HPC != "None":
     ### HPC Arguments
         HPC = parser.add_argument_group("HPC/SLURM arguments")
         HPC.add_argument("-MaxTime", "--MaxWallTime", type=int,
                         help="Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)",
-                        default=defaults["MaxWallTime"])
+                        default=HPC_Conf["MaxWallTime"])
         HPC.add_argument("-Host", "--HostName", type=str,
-                        help="HostName of the HPC", default=defaults["HostName"])
+                        help="HostName of the HPC", default=HPC_Conf["HostName"])
         HPC.add_argument("--Partition", type=str, help="Calculation partition name",
-                        default=defaults["Partition"])
+                        default=HPC_Conf["Partition"])
         HPC.add_argument("--MaxCores", type=int,
-                        help="Maximum number of cores available to a node (For array splitting)", default=defaults["MaxCores"])
+                        help="Maximum number of cores available to a node (For array splitting)", default=HPC_Conf["MaxCores"])
         HPC.add_argument("-QoS", "--QualityofService", type=str,
-                        help="Slurm QoS, set to None if not relevant.", default=defaults["QualityofService"])
+                        help="Slurm QoS, set to None if not relevant.", default=HPC_Conf["QualityofService"])
         HPC.add_argument("--Account", type=str,
-                        help="Slurm account, (Not username), Set to None if not relevant", default=defaults["Account"])
+                        help="Slurm account, (Not username), Set to None if not relevant", default=HPC_Conf["Account"])
         HPC.add_argument("-Software", "--SoftwareLines", type=str,
                         help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
-                        default=defaults["SoftwareLines"], nargs="*")
+                        default=HPC_Conf["SoftwareLines"], nargs="*")
     args = parser.parse_args(sysargs)
     arg_dict = vars(args)
+    if HPC == "None":
+        arg_dict = arg_dict | HPC_Conf
     workdir = arg_dict["WorkDir"]
     qmfile = arg_dict["QmFile"]
     umbfile = arg_dict["UmbrellaFile"]

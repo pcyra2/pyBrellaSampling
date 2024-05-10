@@ -1,10 +1,12 @@
-import pyBrellaSampling.utils as Utils
+import pyBrellaSampling.Tools.utils as Utils
 import os
 import numpy as numpy
 import argparse as ap
+import pyBrellaSampling.Tools.globals as globals
+from pyBrellaSampling.Tools.classes import MMClass
 
 Test_Dir = "./Testing/TestFiles/Utils/"
-
+globals.init(wd=Test_Dir) # inits global vars.
 Data_1D = numpy.array([0,1,2,3,4,5,6,7,8,9])
 
 Test_args = {"input": "TestOut.tmp",
@@ -12,8 +14,8 @@ Test_args = {"input": "TestOut.tmp",
              "NamdPath": "PATH/TO/namd3",
              "NumCores": 1,
              "JobType": "TEST",
-             "Verbosity": 1,
-             "DryRun": True,
+             "globals.verbosity": 1,
+             "globals.DryRun": True,
              "UmbrellaMin": 1,
              "UmbrellaWidth": 1,
              "UmbrellaBins": 1,
@@ -58,9 +60,9 @@ def test_Read2D():
     assert col1.any() == Data_1D.any(), "Cannot read 2D data file column 1"
     assert col2.any() == Data_1D.any(), "Cannot read 2D data file column 2"
 
-# def test_InputParser():
-#     test_input = Utils.dict_read(f"{Test_Dir}input.example")
-#     args = ap.Namespace(**test_input)
-#     returned_args = Utils.input_parser(args)
-#     true_input = ap.Namespace(**Test_args)
-#     assert true_input == returned_args, "Something wrong with the input parser."
+def test_getCellVec():
+    globals.init(wd=Test_Dir)
+    MM = MMClass()
+    MM.Set_Files(parm="TestParm", ambercoor="Fake_AmberCoordinates.example")
+    CellVec = Utils.get_cellVec(MM)
+    assert CellVec == 102.4, "Cannot attain Cell vector"

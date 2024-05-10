@@ -2,28 +2,27 @@ import pyBrellaSampling.Tools.InputParser as input
 import pyBrellaSampling.Tools.utils as utils
 import pyBrellaSampling.Tools.FileGen as FileGen
 from pyBrellaSampling.Tools.classes import *
-from pyBrellaSampling.Tools.globals import verbosity, WorkDir, DryRun
+import pyBrellaSampling.Tools.globals as globals
 import subprocess
 import sys
 import time
+import os.path as path
 
 def main_cli():
     starttime = time.time()
     args = input.StandaloneInput(sys.argv[1:],)
-    # global verbosity
     verbosity = args["Verbosity"]
-    # global WorkDir
     WorkDir = args["WorkDir"]
-    # global DryRun
     dr = args["DryRun"]
     if dr == "True" or dr == True:
         DryRun = True
     elif dr == "False" or dr == False:
         DryRun = False
+    parmfile = args["ParmFile"]
+    assert path.isfile(f"{WorkDir}{parmfile}"), f"ERROR: {parmfile} does not exist in the working directory!"
+    globals.init(v=verbosity,wd=WorkDir,dr=DryRun, parm=parmfile)
     Calc, MM, QM = calc_setup(args)
-    print(DryRun)
-    print(verbosity)
-    if DryRun == False:
+    if globals.DryRun == False:
         calc_run(Calc=Calc, MM=MM, QM=QM, )
     endtime = time.time()
     print(f"Total time is {endtime - starttime}")
@@ -64,15 +63,15 @@ def Class_init(args: dict):
     if bincoor == "None" or bincoor == "" or bincoor == MM.ambercoor:
                 bincoor = None
     if ".ncrst" in str(bincoor) or ".rst7" in str(bincoor):
-        print("WARNING: Your Binary Coordinates look like amber coordinates... They should be NAMD coodinates (.coor). This may cause issues...\n" if verbosity >= 1 else "", end="")
+        print("WARNING: Your Binary Coordinates look like amber coordinates... They should be NAMD coodinates (.coor). This may cause issues...\n" if globals.verbosity >= 1 else "", end="")
     if args["QM"] == True or args["QM"] == "True":
-        print("INFO: Running a QMMM calculation \n" if verbosity >= 2 else "", end="")
+        print("INFO: Running a QMMM calculation \n" if globals.verbosity >= 2 else "", end="")
         QM = QMClass(args=args)
         QM.set_selfile("syst-qm.pdb")
     else:
         QM = False
     if MM.TimeStep > 1:
-        print("WARNING: TimeStep is greater than 1 fs. Setting Rattle to True\n" if verbosity >=1 else "", end="")
+        print("WARNING: TimeStep is greater than 1 fs. Setting Rattle to True\n" if globals.verbosity >=1 else "", end="")
         MM.Set_Shake("all")
     NAMD = NAMDClass(Calc=Calc, MM=MM)
     return Calc, MM, QM, Umbrella, NAMD
@@ -94,31 +93,31 @@ def calc_setup(args: dict):
     NAMD.set_cellvectors(MM.CellVec)
     NAMD.set_startcoords(args["StartFile"], ambercoor=MM.ambercoor, parm=MM.parmfile)
     if QM != False:
-        print("INFO: Setting up a QMMM calculation\n" if verbosity >= 2 else "", end="")
+        print("INFO: Setting up a QMMM calculation\n" if globals.verbosity >= 2 else "", end="")
         NAMD.set_qm(Calc=Calc, QM=QM, index="QMMM")
-        utils.QM_Gen(QM.QMSel, Job.WorkDir)
-        if DryRun == False:
-            print("INFO: Setting up the QM pdb file.\n" if verbosity >=2 else "", end="")
+        utils.QM_Gen(QM.QMSel, globals.WorkDir)
+        if globals.DryRun == False:
+            print("INFO: Setting up the QM pdb file.\n" if globals.verbosity >=2 else "", end="")
             logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "qm_prep.tcl"],
                                      text = True, capture_output = True) # Generates sys-qm.pdb using vmd
-            with open(f"{Job.WorkDir}tcl-qm.log","w") as f:
+            with open(f"{globals.WorkDir}tcl-qm.log","w") as f:
                 print(logfile, file=f)
     else:
         NAMD.set_pme("on")
         # pass
     if args["SMD"] == True:
-        print(f"WARNING: SMD method is currently untested... " if verbosity >=1 else "", end="")
+        print(f"WARNING: SMD method is currently untested... " if globals.verbosity >=1 else "", end="")
         NAMD = init_SMD(NAMD=NAMD,Umbrella=Umbrella )
         utils.ColVarPDB_Gen(Umbrella,)
-        if DryRun == False:
-            print("INFO: Setting up the Colvar pdb file.\n" if verbosity >=2 else "", end="")
+        if globals.DryRun == False:
+            print("INFO: Setting up the Colvar pdb file.\n" if globals.verbosity >=2 else "", end="")
             logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "Colvar_prep.tcl"],
                                      text = True, capture_output = True) # Generates sys-col.pdb using vmd. 
-            with open(f"{WorkDir}tcl-colvar.log","w") as f:
+            with open(f"{globals.WorkDir}tcl-colvar.log","w") as f:
                 print(logfile, file=f)
-    print("INFO: Setting up the conf file\n" if verbosity >=2 else "", end="")
+    print("INFO: Setting up the conf file\n" if globals.verbosity >=2 else "", end="")
     file = FileGen.Namd_File(NAMD)
-    utils.file_write(f"{WorkDir}{Calc.Name}.conf", [file]) # Outputs the calculation file for namd. 
+    utils.file_write(f"{globals.WorkDir}{Calc.Name}.conf", [file]) # Outputs the calculation file for namd. 
     return Calc, MM, QM
 
 def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
@@ -130,17 +129,17 @@ def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
         QM (QMClass): Gets wheter to use the GPU.
 
     """
-    print(f"INFO: Running the {Calc.Name} Calculation.\n" if verbosity >=2 else "", end="")
+    print(f"INFO: Running the {Calc.Name} Calculation.\n" if globals.verbosity >=2 else "", end="")
     if  QM == False:
-        print(f"INFO: {MM.GPUNamd} +oneWthPerCore +setcpuaffinity +devices 0 +cs {WorkDir}{Calc.Name}.conf > {WorkDir}{Calc.Name}_1.0.out\n" 
-              if verbosity >=2 else "", end="")
+        print(f"INFO: {MM.GPUNamd} +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_1.0.out\n" 
+              if globals.verbosity >=2 else "", end="")
         subprocess.run([MM.GPUNamd +
-                        f" +oneWthPerCore +setcpuaffinity +devices 0 +cs {WorkDir}{Calc.Name}.conf > {WorkDir}{Calc.Name}_1.0.out"],
+                        f" +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_1.0.out"],
                        shell=True, capture_output=True)
     else:
         subprocess.run(["mkdir /dev/shm/NAMD_QMMM"], shell=True)
         subprocess.run([MM.CPUNamd +
-                        f" +p1 {WorkDir}{Calc.Name}.conf > {WorkDir}{Calc.Name}_1.0.out"],
+                        f" +p1 {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_1.0.out"],
                        shell=True, capture_output=True)
         subprocess.run(["rm -r /dev/shm/NAMD_QMMM"], shell=True)
 
@@ -161,7 +160,7 @@ def init_SMD(NAMD: NAMDClass, Umbrella: UmbrellaClass):
         Type = "constant"
     NAMD.set_colvars(file="colvars.conf", toggle="on")
     colvarfile = utils.colvar_gen(Umbrella, i=0,type=Type, force=Umbrella.ConstForce)
-    utils.file_write(path=f"{WorkDir}colvars.conf", lines=[colvarfile])
+    utils.file_write(path=f"{globals.WorkDir}colvars.conf", lines=[colvarfile])
     return NAMD
 
 # def InputFileRun(Path,args,Run=True):

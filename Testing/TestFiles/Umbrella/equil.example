@@ -2,13 +2,14 @@
 # File options:
 parmfile            ../complex.parm7
 ambercoor           ../start.rst7
-bincoordinates      prevJob.0.restart.coor
+bincoordinates      pull_1.0.restart.coor
 DCDfile             equil_1.0.dcd
-DCDfreq             100
+DCDfreq             80
 restartname         equil_1.0.restart
-restartfreq         10
+restartfreq         100
 outputname          equil_1.0
-outputTiming        200
+outputTiming        100
+outputEnergies      1
 
 # Calculation options:
 amber               on
@@ -25,7 +26,7 @@ ZeroMomentum        off
 rigidBonds          none
 rigidTolerance      1.0e-8
 rigidIterations     100
-timeStep            0.05
+timeStep            0.5
 fullElectFrequency  1
 nonBondedFreq       1
 stepspercycle       10
@@ -40,16 +41,17 @@ PMETolerance        1.0e-6
 PMEInterpOrder      4
 
 # Cell options:
-cellBasisVector1    10 0.0 0.0
-cellBasisVector2    -3.333333333333333 9.428090415820634 0.0
-cellBasisVector3    -3.333333333333333 -4.714045207910317 -8.164965809277259
+cellBasisVector1    150.2205127 0.0 0.0
+cellBasisVector2    -50.07350423333333 141.6292576046532 0.0
+cellBasisVector3    -50.07350423333333 -70.8146288023266 -122.65453500476004
 cellOrigin          0 0 0
 
 # Temperature options:
-temperature         0
-reassignFreq        6
-reassignIncr        0.2
-reassignHold        300
+langevin            on
+langevinDamping     5
+langevinTemp        300
+langevinHydrogen    off
+temperature         300
 
 
 # Pressure options:
@@ -67,7 +69,7 @@ qmForces            on
             QMSwitchingType         shift
             QMPointChargeScheme     round
             QMBondScheme            "cs"
-            qmBaseDir               "/dev/shm/NAMD_0"
+            qmBaseDir               "/dev/shm/RUNDIR_0"
             qmConfigLine            "! FUNCTIONAL BASIS EnGrad D3BJ"
             qmConfigLine            "%%output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end"
             qmConfigLine            "%PAL NPROCS 1 END"
@@ -87,5 +89,5 @@ colvars         on
 colvarsConfig   colvars.const.conf
 
 
-run                 10000
+run                 2000
 
