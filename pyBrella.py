@@ -14,6 +14,8 @@ import pyBrellaSampling.Umbrella.wham as Wham
 import pyBrellaSampling.Tools.analysis as Anal
 
 def main():
+    """Main Umbrella sampling executable. This deals with everything and can be run from the command line. 
+    """
     starttime = time.time()
     args = input.UmbrellaInput(sys.argv[1:],) 
     verbosity = args["Verbosity"]

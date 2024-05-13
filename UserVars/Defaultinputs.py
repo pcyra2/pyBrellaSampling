@@ -57,7 +57,7 @@ Standalone_Inp = {
     "StartFile" : "start.rst7", # str: Amber or NAMD coordinates, start coordinates for THIS simulation.
     "RestartOut" : 10, # int: frequency of updating the restart file.
     "TrajOut" : 50, # int: frequency of updating the trajectory file.
-    "SMD" : False, # bool: Whether to use Steered MD.
+    "SMD" : "False", # bool: Whether to use Steered MD.
     "SMDFile" : None, # str: Name of file containing SMD parms
     "Force" : 0, # float: Force to perform SMD
     "StartValue" : 0, # float: start value for SMD

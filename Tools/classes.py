@@ -78,35 +78,6 @@ class UmbrellaClass:
         self.PullForce = Force
         self.ConstForce = Force
 
-# class JobClass:
-#     """Class for containing job specific information
-#     Attributes:
-#         WorkDir (str): Path to location of calculation
-#         JobType (str): Type of calculation to perform
-#         globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
-#         Stage (str): Stage of calculation.
-
-#     TODO:
-#         Need to depreciate this class..     
-#     """
-#     def __init__(self, args: Namespace):
-#         """
-#         JobClass init.
-
-#         Args:
-#             args (Namespace): ArgParse user inputs to contain the Job information
-
-#         Attributes:
-#             WorkDir (str): Path to location of calculation
-#             JobType (str): Type of calculation to perform
-#             globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
-#             Stage (str): Stage of calculation.
-#         """
-#         self.WorkDir = args.WorkDir
-#         self.JobType = args.JobType.casefold()
-#         self.globals.verbosity = args.globals.verbosity
-#         self.Stage = args.Stage.casefold()
-
 class LabelClass:
     """Class for containing bond and dihedral label information (For structure analysis)
     Attributes:
@@ -411,7 +382,7 @@ class MMClass:
         Defines the shake/rattle state. (For restraining bonds during large time steps.)
 
         Args:
-            Shake (str): NAMD shake settings, usually all or none
+            Shake (str): NAMD shake settings, usually all, water or none
         """
         self.Shake = Shake
     def Set_Outputs(self, TimeOut: int, RestOut: int, TrajOut: int):
@@ -450,7 +421,7 @@ class MMClass:
             Steps (int): Number of steps in the simulation
             TimeStep (float=0.05): Time step in fs
         """
-        self.Steps = Steps
+        self.Steps = int(Steps)
         self.TimeStep = float(TimeStep)
     def Change_Cell(self, CellVec: float):
         """
@@ -1229,3 +1200,31 @@ class ReactionClass:
         """
         self.error = err
     
+# class JobClass:
+#     """Class for containing job specific information
+#     Attributes:
+#         WorkDir (str): Path to location of calculation
+#         JobType (str): Type of calculation to perform
+#         globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
+#         Stage (str): Stage of calculation.
+
+#     TODO:
+#         Need to depreciate this class..     
+#     """
+#     def __init__(self, args: Namespace):
+#         """
+#         JobClass init.
+
+#         Args:
+#             args (Namespace): ArgParse user inputs to contain the Job information
+
+#         Attributes:
+#             WorkDir (str): Path to location of calculation
+#             JobType (str): Type of calculation to perform
+#             globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
+#             Stage (str): Stage of calculation.
+#         """
+#         self.WorkDir = args.WorkDir
+#         self.JobType = args.JobType.casefold()
+#         self.globals.verbosity = args.globals.verbosity
+#         self.Stage = args.Stage.casefold()

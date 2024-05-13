@@ -3,7 +3,7 @@ import pyBrellaSampling.UserVars.Defaultinputs as UserVars
 from pyBrellaSampling.UserVars.HPC_Config import HPC_Config
 from pyBrellaSampling.UserVars.SoftwarePaths import ORCA_PATH, NAMD_CPU, NAMD_GPU
 from pyBrellaSampling.Tools.classes import LabelClass
-import argparse as ap
+import argparse as argparse
 import socket
 
 ### Aim to use case insensitive variables for the end user, especially in the input files.
@@ -34,7 +34,7 @@ def UmbrellaInput(sysargs):
             continue
     defaults = UserVars.Umbrella_Inp
     HPC_Conf = HPC_Config[HPC]
-    parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
+    parser = argparse.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
 It is recommended to use --Stage inpfile to generate input file templates with default values that you can then edit.""")
     ### Core Job arguments
     Core = parser.add_argument_group("Core Job Arguments")
@@ -234,8 +234,49 @@ def StandaloneInput(sysargs: list):
     Controls the inputs of a standalone calculation. 
 
     Args:
-        sysargs (list): CLI inputs
+        sysargs (list): CLI inputs (see attributes)
     
+    Attributes:
+        --WorkDir (str): Working Directory
+        --Verbosity (int): Verbosity: 0 = none, 1 = info
+        --DryRun (str):  Indicates whether programs are executed or not
+        --CoresPerJob (int): Number of cores per individual calculation
+        --MemoryPerJob (int): Gb of memory per individual calculation
+        --MDCPUPath (str): Path to NAMD CPU executable
+        --MDGPUPath (str): Path to NAMD GPU executable
+        --QmFile (str): Name of file containing QM information.
+        --QmPath (str): Path to QM software
+        --QmSelection (str): Selection algebra for QM atoms
+        --QmCharge (int): Charge of QM region
+        --QmSpin (int): Spin of QM region
+        --QmMethod (str): Qm method
+        --QmBasis (str): QM basis set
+        --QmArgs (str): Extra arguments for ORCA calculation
+        --HPC (bool): Whether to run on a HPC
+        --MaxWallTime (int): Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)
+        --HostName (str): HostName of the HPC
+        --Partition (str): Calculation partition name
+        --MaxCores (int): Maximum number of cores available to a node (For array splitting)
+        --QualityofService (str): Slurm QoS, set to None if not relevant.
+        --Account (str): Slurm account, (Not username), Set to None if not relevant
+        --SoftwareLines (list): List of commands like "module load XXX" to load software. Keep each line surrounded by quotes.
+        --MMFile (str): Name of input file containing MD information
+        --Name (str): Name for the calculation
+        --Ensemble (str): Ensemble for Calculation
+        --QM (bool): Whether this is a QMMM calculation or not.
+        --Steps (int): Number of simulation steps.
+        --TimeStep (float): Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM
+        --ParmFile (str): Parameter file name
+        --AmberCoordinates (str): Amber coordinate file name that relates to the parameter file
+        --StartFile (str): Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.
+        --RestartOut (int): Frequency to generate a restart file
+        --TrajOut (int): Frequency to add to the trajectory file
+        --SMD (bool): Whether to use steered molecular dynamics
+        --Force (int): Force for Steered MD
+        --StartValue (int): Start value for SMD
+        --EndValue (int): End value for SMD. MAKE == Start if wanting constant.
+        --AtomMask (str): Mask for the restrained atoms.
+
     Raises:
         ValueError: If an unknown variable is parsed
     
@@ -250,7 +291,7 @@ def StandaloneInput(sysargs: list):
             continue
     defaults = UserVars.Standalone_Inp
     HPC_Conf = HPC_Config[HPC]
-    parser = ap.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
+    parser = argparse.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
 It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
     ### Core Job arguments
     Core = parser.add_argument_group("Core Job Arguments")
@@ -338,7 +379,7 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                             help="Frequency to generate a restart file")
     Standalone.add_argument("--TrajOut", type=int, default=defaults["TrajOut"], 
                             help="Frequency to add to the trajectory file")
-    Standalone.add_argument("--SMD", type=bool, choices=[True, False], default=defaults["SMD"], 
+    Standalone.add_argument("--SMD", type=str, choices=["True", "False"], default=defaults["SMD"], 
                             help="Wheter to use steered molecular dynamics")
     Standalone.add_argument("--Force", type=float, default=defaults["Force"], 
                             help="Force for Steered MD")
@@ -348,7 +389,6 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                             help="End value for SMD. MAKE == Start if wanting constant.")
     Standalone.add_argument('-mask', '--AtomMask', type=str,
                         help="Mask for the restrained atoms.", default=defaults["AtomMask"])
-    ### Parse commandline arguments
     args = parser.parse_args(sysargs)
     arg_dict = vars(args)
     workdir = arg_dict["WorkDir"]
@@ -379,6 +419,7 @@ It is recommended to use -jt inpfile to generate input file templates with defau
                 arg_dict[var] = val
             else:
                 raise ValueError(f"ERROR: Unknown variable: {var} provided in {mmfile}")
+    # utils.print_attributes(arg_dict) # Prints out all vars for use in docstring generation
     return arg_dict
     
 def BenchmarkInput(sysargs: list):
@@ -392,7 +433,7 @@ def BenchmarkInput(sysargs: list):
         args (dict): Dictionary containing all user-defined variables.
     """
     Benchmark_Inp = UserVars.Benchmark_Inp
-    parser = ap.ArgumentParser(description=f"""CLI interface for running a QM benchmark in ORCA""")
+    parser = argparse.ArgumentParser(description=f"""CLI interface for running a QM benchmark in ORCA""")
     gen = parser.add_argument_group("Generic Inputs")
     gen.add_argument("-v", "--verbosity", type=int, help="Control the verbosity of the job", choices=[0,1,2,3 ], default=Benchmark_Inp["Verbosity"])
     gen.add_argument("-wd","--WorkDir", type=str, help="Working directory path", default=Benchmark_Inp["WorkDir"])
@@ -420,7 +461,123 @@ def BenchmarkInput(sysargs: list):
     return arg_dict
 
 
+# def argStandalone(sysargs: list):
+#     """Parses the cli variables for a standalone calculation
+    
+#     Args: 
+#         sysargs (list):
+        
+#     Returns:
+#         parser (argparse.ArgumentParser):
+#     """
+#     HPC = "None"
+#     HostName = socket.gethostname()
+#     for alias, data in HPC_Config.items():
+#         if HostName == data["HostName"]:
+#             HPC = alias
+#             continue
+#     defaults = UserVars.Standalone_Inp
+#     HPC_Conf = HPC_Config[HPC]
+#     parser = argparse.ArgumentParser(description=f"""Commandline arguments. This method of calculation input is being deprecated. Please do not use.
+# It is recommended to use -jt inpfile to generate input file templates with default values that you can then edit.""")
+#     ### Core Job arguments
+#     Core = parser.add_argument_group("Core Job Arguments")
+#     Core.add_argument('-wd', '--WorkDir', type=str,
+#                         help="Home location for the calculations", default=defaults["WorkDir"])
+#     Core.add_argument('-v', '--Verbosity', type=int,
+#                         help="Verbosity: 0 = none, 1 = info", default=defaults["Verbosity"])
+#     Core.add_argument('-dr', '--DryRun', type=str,
+#                         help="Indicates whether programs are executed or not", default=defaults["DryRun"])
 
+#     Compute = parser.add_argument_group("Compute Arguments")
+#     ### Compute Arguments
+#     Compute.add_argument('-c', '--CoresPerJob', type=int,
+#                         help="Number of cores per individual calculation", default=defaults["CoresPerJob"])
+#     Compute.add_argument('-m','--MemoryPerJob', type=int,
+#                         help="Gb of memory per individual calculation", default=defaults["MemoryPerJob"])
+
+#     ### MM Arguments
+#     MM = parser.add_argument_group("Molecular Dynamics Arguments")
+#     MM.add_argument('-MDcpu', '--MDCPUPath', type=str,
+#                         help="Path to NAMD CPU executable", default=NAMD_CPU)
+#     MM.add_argument('-MDgpu', '--MDGPUPath', type=str,
+#                         help="Path to NAMD GPU executable", default=NAMD_GPU)
+
+#     ### QM Arguments
+#     QM = parser.add_argument_group("QM Arguments")
+#     QM.add_argument("-qf", "--QmFile", type=str, default=defaults["QmFile"],
+#                     help="Name of file containing QM information.")
+#     QM.add_argument('-qp', '--QmPath', type=str,
+#                         help="Path to QM software", default=ORCA_PATH)
+#     QM.add_argument('-qsel', '--QmSelection', type=str,
+#                         help="Selection algebra for QM atoms", default=defaults["QmSelection"])
+#     QM.add_argument('-qc', '--QmCharge', type=int,
+#                         help="Charge of QM region", default=defaults["QmCharge"])
+#     QM.add_argument('-qspin', '--QmSpin', type=int,
+#                         help="Spin of QM region", default=defaults["QmSpin"])
+#     QM.add_argument('-qm', '--QmMethod', type=str,
+#                         help="Qm method", default=defaults["QmMethod"])
+#     QM.add_argument('-qb', '--QmBasis', type=str,
+#                         help="QM basis set", default=defaults["QmBasis"])
+#     QM.add_argument('-qargs', '--QmArgs', type=str, 
+#                     help="Extra arguments for ORCA calculation", default=defaults["QmArgs"])
+
+#     ### HPC Arguments
+#     HPC = parser.add_argument_group("HPC/SLURM arguments")
+#     HPC.add_argument("--HPC", type=bool, default=defaults["HPC"], help="Whether to run on a HPC")
+#     HPC.add_argument("-MaxTime", "--MaxWallTime", type=int,
+#                      help="Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)",
+#                      default=HPC_Conf["MaxWallTime"])
+#     HPC.add_argument("-Host", "--HostName", type=str,
+#                      help="HostName of the HPC", default=HPC_Conf["HostName"])
+#     HPC.add_argument("--Partition", type=str, help="Calculation partition name",
+#                      default=HPC_Conf["Partition"])
+#     HPC.add_argument("--MaxCores", type=int,
+#                      help="Maximum number of cores available to a node (For array splitting)", default=HPC_Conf["MaxCores"])
+#     HPC.add_argument("-QoS", "--QualityofService", type=str,
+#                      help="Slurm QoS, set to None if not relevant.", default=HPC_Conf["QualityofService"])
+#     HPC.add_argument("--Account", type=str,
+#                      help="Slurm account, (Not username), Set to None if not relevant", default=HPC_Conf["Account"])
+#     HPC.add_argument("-Software", "--SoftwareLines", type=str,
+#                     help="List of commands like \"module load XXX\" to load software. Keep each line surrounded by quotes.",
+#                     default=HPC_Conf["SoftwareLines"], nargs="*")
+
+#     Standalone = parser.add_argument_group("Standalone Job arguments")
+#     Standalone.add_argument("-i", "--MMFile", type=str, default=defaults["MMFile"],
+#                             help="Name of input file containing MD information")
+#     Standalone.add_argument("--Name", type=str,
+#                             default=defaults["Name"], help="Name for the calculation")
+#     Standalone.add_argument("--Ensemble", type=str,
+#                             choices=["min", "heat", "NVT", "NPT"],
+#                             help="Ensemble for Calculation", default=defaults["Ensemble"])
+#     Standalone.add_argument("--QM", type=str, choices=["True", "False"],
+#                             default=defaults["QM"], help="Whether this is a QMMM calculation or not.")
+#     Standalone.add_argument("-st", "--Steps", type=int,
+#                             default=defaults["Steps"], help="Number of simulation steps.")
+#     Standalone.add_argument("-dt", "--TimeStep", type=float,
+#                             default=float(defaults["TimeStep"]), help="Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM")
+#     Standalone.add_argument("--ParmFile", type=str,
+#                             default=defaults["ParmFile"], help="Parameter file name")
+#     Standalone.add_argument("--AmberCoordinates", type=str,
+#                             default=defaults["AmberCoordinates"], help="Amber coordinate file name that relates to the parameter file")
+#     Standalone.add_argument("--StartFile", type=str, default=defaults["StartFile"], 
+#                             help="Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.")
+#     Standalone.add_argument("--RestartOut", type=int, default=defaults["RestartOut"], 
+#                             help="Frequency to generate a restart file")
+#     Standalone.add_argument("--TrajOut", type=int, default=defaults["TrajOut"], 
+#                             help="Frequency to add to the trajectory file")
+#     Standalone.add_argument("--SMD", type=bool, choices=[True, False], default=defaults["SMD"], 
+#                             help="Wheter to use steered molecular dynamics")
+#     Standalone.add_argument("--Force", type=float, default=defaults["Force"], 
+#                             help="Force for Steered MD")
+#     Standalone.add_argument("--StartValue", type=float, default=defaults["StartValue"], 
+#                             help="Start value for SMD")
+#     Standalone.add_argument("--EndValue", type=float, default=defaults["EndValue"], 
+#                             help="End value for SMD. MAKE == Start if wanting constant.")
+#     Standalone.add_argument('-mask', '--AtomMask', type=str,
+#                         help="Mask for the restrained atoms.", default=defaults["AtomMask"])
+#     return parser
+    
 # def VariableParser(sysargs, JT="Umbrella"):
 #     if JT == "Umbrella":
 #         JobDict = JobInput("./Job.conf")

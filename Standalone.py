@@ -29,8 +29,7 @@ def main_cli():
 
         
 def Class_init(args: dict):
-    """
-    Initialises some of the main classes used by the calculation. 
+    """Initialises some of the main classes used by the calculation. 
 
     Args:
         args (dict): User defined variables.
@@ -53,12 +52,12 @@ def Class_init(args: dict):
                    TrajOut=args["TrajOut"]) ### Output timings when trajectory is printed.
     args["PullForce"] = args["Force"]
     args["ConstForce"] = args["Force"]
-    Umbrella = UmbrellaClass(args, Min=args["StartValue"], bins=0,
-                            Start=args["StartValue"],
-                            Width=(args["EndValue"] - args["StartValue"]))
+    Umbrella = UmbrellaClass(args, Min=float(args["StartValue"]), bins=0,
+                            Start=float(args["StartValue"]),
+                            Width=(float(args["EndValue"]) - float(args["StartValue"])))
     Umbrella.add_start(0)
     Umbrella.set_force(args["Force"])
-    Umbrella.add_bins(str(args["EndValue"]))
+    Umbrella.add_bins([str(args["EndValue"])])
     bincoor = args["StartFile"]
     if bincoor == "None" or bincoor == "" or bincoor == MM.ambercoor:
                 bincoor = None
@@ -105,10 +104,10 @@ def calc_setup(args: dict):
     else:
         NAMD.set_pme("on")
         # pass
-    if args["SMD"] == True:
+    if args["SMD"].casefold() == "true":
         print(f"WARNING: SMD method is currently untested... " if globals.verbosity >=1 else "", end="")
         NAMD = init_SMD(NAMD=NAMD,Umbrella=Umbrella )
-        utils.ColVarPDB_Gen(Umbrella,)
+        utils.ColVarPDB_Gen(Umbrella)
         if globals.DryRun == False:
             print("INFO: Setting up the Colvar pdb file.\n" if globals.verbosity >=2 else "", end="")
             logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "Colvar_prep.tcl"],
@@ -122,7 +121,7 @@ def calc_setup(args: dict):
 
 def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
     """
-    Handles the running of the calculations. Chosing the right version of NAMD
+    Handles the running of the calculations. Choosing the right version of NAMD
     Args:
         Calc (CalcClass): Gets the name of the calculation
         MM (MMClass): Gets the path to executables
@@ -159,7 +158,7 @@ def init_SMD(NAMD: NAMDClass, Umbrella: UmbrellaClass):
     else:
         Type = "constant"
     NAMD.set_colvars(file="colvars.conf", toggle="on")
-    colvarfile = utils.colvar_gen(Umbrella, i=0,type=Type, force=Umbrella.ConstForce)
+    colvarfile = utils.colvar_gen(Umbrella, i=0,type=Type, force=Umbrella.ConstForce, relLoc="./")
     utils.file_write(path=f"{globals.WorkDir}colvars.conf", lines=[colvarfile])
     return NAMD
 

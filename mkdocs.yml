@@ -1,0 +1,36 @@
+site_name: "pyBrellaSampling Docs"
+
+theme:
+        name: "material"
+
+plugins:
+- search
+- autorefs
+- mkdocstrings:
+    handlers:
+      python:
+        options:
+          heading_level: 2
+          show_source: true
+          show_if_no_docstring: true
+          parameter_headings: true
+          show_root_heading: true
+          show_submodules: true
+- coverage:
+    page_name: coverage  # default
+    html_report_dir: coverage_rep  # default
+
+nav:
+    - Home: index.md
+    - pyBrellaSampling: 
+        - Overview: Umbrella/pyBrellaSampling.md
+        - Usage: Umbrella/usage.md
+        - User Inputs: Umbrella/Inputs.md
+        - Code: Umbrella/CodeReference.md
+    - Standalone: 
+        - Usage: Standalone/usage.md
+        - Code: Standalone/CodeReference.md
+        - Examples: Standalone/Examples.md
+    - Testing: coverage.md
+
+repo_url: https://github.com/pcyra2/pyBrellaSampling

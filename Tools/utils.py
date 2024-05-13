@@ -192,7 +192,7 @@ quit
     with open(f"{globals.WorkDir}qm_prep.tcl", "w") as f:
         print(tcl, file=f)
 
-def ColVarPDB_Gen(Umbrella, ):
+def ColVarPDB_Gen(Umbrella: UmbrellaClass, ):
     """tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling."""
     if Umbrella.atom3 == 0:
         tcl = f"""mol new {globals.parmfile}
@@ -267,8 +267,8 @@ quit
 """
     file_write(f"{globals.WorkDir}Colvar_prep.tcl", [tcl])
 
-def colvar_gen(Umbrella, i, type, force):
-    """Generates colective variables and parses them into the Umbrella class. This also generates the colvar files."""
+def colvar_gen(Umbrella, i, type, force, relLoc="../"):
+    """Generates collective variables and parses them into the Umbrella class. This also generates the colvar files."""
     if type == "pull":
         freq = 1
         Stages = 100
@@ -300,11 +300,11 @@ colvar {"{"}
     name length
     distance {"{"}
 
-        group1 {"{"}  atomsFile ../syst-col.pdb
+        group1 {"{"}  atomsFile {relLoc}syst-col.pdb
                       atomsCol B
                       atomsColValue 1.00
                {"}"}
-        group2 {"{"}  atomsFile ../syst-col.pdb
+        group2 {"{"}  atomsFile {relLoc}syst-col.pdb
                       atomsCol B
                       atomsColValue 2.00
                {"}"}
@@ -345,19 +345,19 @@ harmonic {"{"}
         colvar {"{"}
             name dihedral
             dihedral {"{"}
-                group1 {"{"}  atomsFile ../syst-col.pdb
+                group1 {"{"}  atomsFile {relLoc}syst-col.pdb
                               atomsCol B
                               atomsColValue 1.00
                        {"}"}
-                group2 {"{"}  atomsFile ../syst-col.pdb
+                group2 {"{"}  atomsFile {relLoc}syst-col.pdb
                               atomsCol B
                               atomsColValue 2.00
                        {"}"}
-                group3 {"{"}  atomsFile ../syst-col.pdb
+                group3 {"{"}  atomsFile {relLoc}syst-col.pdb
                               atomsCol B
                               atomsColValue 3.00
                        {"}"}
-                group4 {"{"}  atomsFile ../syst-col.pdb
+                group4 {"{"}  atomsFile {relLoc}syst-col.pdb
                               atomsCol B
                               atomsColValue 4.00
                        {"}"}
@@ -531,3 +531,7 @@ echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
 
 
 kcal = 627.51 ### a.u. to kcal/mol conversion 
+
+def print_attributes(argdict: dict):
+    for i in argdict:
+        print(f"--{i} ({type(argdict[i])}):")
