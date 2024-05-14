@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for Tools/utils.py: 90%</title>
+    <title>Coverage for Tools/utils.py: 89%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>Tools/utils.py</b>:
-            <span class="pc_cov">90%</span>
+            <span class="pc_cov">89%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -54,9 +54,9 @@
             </div>
         </aside>
         <h2>
-            <span class="text">113 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">102<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">11<span class="text"> missing</span></button>
+            <span class="text">116 statements &nbsp;</span>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">103<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">13<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">0<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_d64ec4e644af80aa_wham_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.2">coverage.py v7.3.2</a>,
-            created at 2024-05-13 11:12 +0100
+            created at 2024-05-14 11:53 +0100
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -274,7 +274,7 @@
     <p class="run"><span class="n"><a id="t192" href="#t192">192</a></span><span class="t">    <span class="key">with</span> <span class="nam">open</span><span class="op">(</span><span class="str">f"{globals.WorkDir}qm_prep.tcl"</span><span class="op">,</span> <span class="str">"w"</span><span class="op">)</span> <span class="key">as</span> <span class="nam">f</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t193" href="#t193">193</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="nam">tcl</span><span class="op">,</span> <span class="nam">file</span><span class="op">=</span><span class="nam">f</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t194" href="#t194">194</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="key">def</span> <span class="nam">ColVarPDB_Gen</span><span class="op">(</span><span class="nam">Umbrella</span><span class="op">,</span> <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t195" href="#t195">195</a></span><span class="t"><span class="key">def</span> <span class="nam">ColVarPDB_Gen</span><span class="op">(</span><span class="nam">Umbrella</span><span class="op">:</span> <span class="nam">UmbrellaClass</span><span class="op">,</span> <span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t196" href="#t196">196</a></span><span class="t">    <span class="str">"""tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t197" href="#t197">197</a></span><span class="t">    <span class="key">if</span> <span class="nam">Umbrella</span><span class="op">.</span><span class="nam">atom3</span> <span class="op">==</span> <span class="num">0</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t198" href="#t198">198</a></span><span class="t">        <span class="nam">tcl</span> <span class="op">=</span> <span class="str">f"""mol new {globals.parmfile}</span>&nbsp;</span><span class="r"></span></p>
@@ -349,8 +349,8 @@
     <p class="pln"><span class="n"><a id="t267" href="#t267">267</a></span><span class="t"><span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t268" href="#t268">268</a></span><span class="t">    <span class="nam">file_write</span><span class="op">(</span><span class="str">f"{globals.WorkDir}Colvar_prep.tcl"</span><span class="op">,</span> <span class="op">[</span><span class="nam">tcl</span><span class="op">]</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t269" href="#t269">269</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t"><span class="key">def</span> <span class="nam">colvar_gen</span><span class="op">(</span><span class="nam">Umbrella</span><span class="op">,</span> <span class="nam">i</span><span class="op">,</span> <span class="nam">type</span><span class="op">,</span> <span class="nam">force</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t">    <span class="str">"""Generates colective variables and parses them into the Umbrella class. This also generates the colvar files."""</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t270" href="#t270">270</a></span><span class="t"><span class="key">def</span> <span class="nam">colvar_gen</span><span class="op">(</span><span class="nam">Umbrella</span><span class="op">,</span> <span class="nam">i</span><span class="op">,</span> <span class="nam">type</span><span class="op">,</span> <span class="nam">force</span><span class="op">,</span> <span class="nam">relLoc</span><span class="op">=</span><span class="str">"../"</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t271" href="#t271">271</a></span><span class="t">    <span class="str">"""Generates collective variables and parses them into the Umbrella class. This also generates the colvar files."""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t272" href="#t272">272</a></span><span class="t">    <span class="key">if</span> <span class="nam">type</span> <span class="op">==</span> <span class="str">"pull"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t273" href="#t273">273</a></span><span class="t">        <span class="nam">freq</span> <span class="op">=</span> <span class="num">1</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t">        <span class="nam">Stages</span> <span class="op">=</span> <span class="num">100</span>&nbsp;</span><span class="r"></span></p>
@@ -382,11 +382,11 @@
     <p class="pln"><span class="n"><a id="t300" href="#t300">300</a></span><span class="t"><span class="str">    name length</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t301" href="#t301">301</a></span><span class="t"><span class="str">    distance {"{"}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t302" href="#t302">302</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t"><span class="str">        group1 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t303" href="#t303">303</a></span><span class="t"><span class="str">        group1 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t304" href="#t304">304</a></span><span class="t"><span class="str">                      atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t305" href="#t305">305</a></span><span class="t"><span class="str">                      atomsColValue 1.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t306" href="#t306">306</a></span><span class="t"><span class="str">               {"}"}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t"><span class="str">        group2 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t307" href="#t307">307</a></span><span class="t"><span class="str">        group2 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t308" href="#t308">308</a></span><span class="t"><span class="str">                      atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t309" href="#t309">309</a></span><span class="t"><span class="str">                      atomsColValue 2.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t310" href="#t310">310</a></span><span class="t"><span class="str">               {"}"}</span>&nbsp;</span><span class="r"></span></p>
@@ -427,19 +427,19 @@
     <p class="pln"><span class="n"><a id="t345" href="#t345">345</a></span><span class="t"><span class="str">        colvar {"{"}</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t346" href="#t346">346</a></span><span class="t"><span class="str">            name dihedral</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t347" href="#t347">347</a></span><span class="t"><span class="str">            dihedral {"{"}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t348" href="#t348">348</a></span><span class="t"><span class="str">                group1 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t348" href="#t348">348</a></span><span class="t"><span class="str">                group1 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t349" href="#t349">349</a></span><span class="t"><span class="str">                              atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t350" href="#t350">350</a></span><span class="t"><span class="str">                              atomsColValue 1.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t351" href="#t351">351</a></span><span class="t"><span class="str">                       {"}"}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t352" href="#t352">352</a></span><span class="t"><span class="str">                group2 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t352" href="#t352">352</a></span><span class="t"><span class="str">                group2 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t353" href="#t353">353</a></span><span class="t"><span class="str">                              atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t354" href="#t354">354</a></span><span class="t"><span class="str">                              atomsColValue 2.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t355" href="#t355">355</a></span><span class="t"><span class="str">                       {"}"}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t356" href="#t356">356</a></span><span class="t"><span class="str">                group3 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t356" href="#t356">356</a></span><span class="t"><span class="str">                group3 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t357" href="#t357">357</a></span><span class="t"><span class="str">                              atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t358" href="#t358">358</a></span><span class="t"><span class="str">                              atomsColValue 3.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t359" href="#t359">359</a></span><span class="t"><span class="str">                       {"}"}</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t360" href="#t360">360</a></span><span class="t"><span class="str">                group4 {"{"}  atomsFile ../syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t360" href="#t360">360</a></span><span class="t"><span class="str">                group4 {"{"}  atomsFile {relLoc}syst-col.pdb</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t361" href="#t361">361</a></span><span class="t"><span class="str">                              atomsCol B</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t362" href="#t362">362</a></span><span class="t"><span class="str">                              atomsColValue 4.00</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t363" href="#t363">363</a></span><span class="t"><span class="str">                       {"}"}</span>&nbsp;</span><span class="r"></span></p>
@@ -613,6 +613,10 @@
     <p class="pln"><span class="n"><a id="t531" href="#t531">531</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t532" href="#t532">532</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t533" href="#t533">533</a></span><span class="t"><span class="nam">kcal</span> <span class="op">=</span> <span class="num">627.51</span> <span class="com">### a.u. to kcal/mol conversion </span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t534" href="#t534">534</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t535" href="#t535">535</a></span><span class="t"><span class="key">def</span> <span class="nam">print_attributes</span><span class="op">(</span><span class="nam">argdict</span><span class="op">:</span> <span class="nam">dict</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t536" href="#t536">536</a></span><span class="t">    <span class="key">for</span> <span class="nam">i</span> <span class="key">in</span> <span class="nam">argdict</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t537" href="#t537">537</a></span><span class="t">        <span class="nam">print</span><span class="op">(</span><span class="str">f"--{i} ({type(argdict[i])}):"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
 </main>
 <footer>
     <div class="content">
@@ -622,7 +626,7 @@
             <a id="nextFileLink" class="nav" href="d_d64ec4e644af80aa_wham_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.3.2">coverage.py v7.3.2</a>,
-            created at 2024-05-13 11:12 +0100
+            created at 2024-05-14 11:53 +0100
         </p>
     </div>
 </footer>
