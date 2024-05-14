@@ -529,6 +529,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#wham" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wham
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Convergence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analysis
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -996,6 +1023,33 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#wham" class="md-nav__link">
+    <span class="md-ellipsis">
+      Wham
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#convergence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Convergence
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Analysis
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1071,7 +1125,7 @@ If this does not exist, edit the file around the QM zone, the elements should be
 <div class="language-text highlight"><pre><span></span><code>&quot;Stage&quot; : min
 </code></pre></div>
 <h4 id="run_1">Run:</h4>
-<div class="language-sh highlight"><span class="filename">Running a minimisation</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>min<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span><span class="c1"># (1)</span>
+<div class="language-sh highlight"><span class="filename">Running a minimization</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>min<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span><span class="c1"># (1)</span>
 </span></code></pre></div>
 <ol>
 <li>It is important that the GPU version of NAMD is loaded and that the path has been defined.</li>
@@ -1142,7 +1196,7 @@ If this does not exist, edit the file around the QM zone, the elements should be
 </span></code></pre></div>
 <details class="warning" open="open">
 <summary>Warning</summary>
-<p>At this point, you should <strong>ALWAYS</strong> check the generated structures. You can do this quickly by using the <a href="../CodeReference/#pyBrellaSampling.pyBrella.VisLoad">visualisation script</a> which is called using :</p>
+<p>At this point, you should <strong>ALWAYS</strong> check the generated structures. You can do this quickly by using the <a href="../CodeReference/#pyBrellaSampling.pyBrella.VisLoad">visualization script</a> which is called using :</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>vis<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>-af<span class="w"> </span>pull_1
 </span></code></pre></div>
 <p>This will open up the final structure from each window as a new frame in a single trajectory in vmd. You can then use vmd to plot the collective variable against frame to ensure a linear distribution and that the collective variables are at the correct value.</p>
@@ -1162,8 +1216,8 @@ If this does not exist, edit the file around the QM zone, the elements should be
 </span></code></pre></div>
 <ol>
 <li>Blank SLURM submission file that is used as a template by runner.sh. You can also manually use this to sumbit your equil scripts.</li>
-<li>File used by SLURM to run the array file. You shouldnt need to edit this.</li>
-<li>File used to link and submit all simulations to SLURM with dependancies... This may or may not work so use with caution. Also it will likely max out your maximum queue allowance so will have to comment lines out and run multiple times. Good Luck! </li>
+<li>File used by SLURM to run the array file. You shouldn't need to edit this.</li>
+<li>File used to link and submit all simulations to SLURM with dependencies... This may or may not work so use with caution. Also it will likely max out your maximum queue allowance so will have to comment lines out and run multiple times. Good Luck! </li>
 <li>Text file with each line being a self-contained command to run each window in the umbrella sampling simulation. This is used by SLURM as the array file which runs each line as an independent simulation. There will be multiple of these if you have set <strong>MaxStepsPerCalc</strong> &gt; 0 and they <strong>MUST</strong> be run in order. </li>
 </ol>
 <h3 id="production">Production</h3>
@@ -1172,6 +1226,146 @@ If this does not exist, edit the file around the QM zone, the elements should be
 <div class="language-sh highlight"><span class="filename">Setting up production</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>prod<span class="w"> </span>-dr<span class="w"> </span>True<span class="w"> </span>-i<span class="w"> </span>Umbrella.inp
 </span></code></pre></div>
 <p>Like the equilibration stage, this will generate the <code>prod_X.txt</code> files that contain commands for running each step in the production run. Submit them in order otherwise they <strong>will</strong> break!</p>
+<h3 id="wham">Wham</h3>
+<p>You can perform a WHAM calculation at any stage after the windows are pulled. This is done through the <a href="../CodeReference/#wham-code">WHAM code</a>. This is not the best way to run a WHAM calculation however, and <a href="#convergence">convergence</a> is a more robust implementation of this method.</p>
+<p>You can run a WHAM calculation using:</p>
+<div class="language-sh highlight"><span class="filename">performing WHAM on the prod_1 stage of calculations</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>wham<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>-af<span class="w"> </span>Prod_1
+</span></code></pre></div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Ensure wham.sh is in the $PATH otherwise this will not work! This can be found <a href="http://membrane.urmc.rochester.edu/?page_id=126">here</a></p>
+</div>
+<p>This will generate a sub-directory called WHAM. Within this, it generates:</p>
+<ul>
+<li><code>AnalysisFile</code>metadata.dat : Contains the list of files containing colvar values</li>
+<li><code>AnalysisFile</code>UmbrellaHist.dat : produces a histogram of the distribution of colvar values (can be plotted in LaTex using Tikz)</li>
+<li>PMF.dat : File containing PMF information</li>
+<li>PMF.eps : EPS plot of the PMF</li>
+<li>plot_free_energy.dat : data that can be plotted using xmgrace</li>
+<li>wham.sh : script file that runs the wham calculation.</li>
+</ul>
+<h3 id="convergence">Convergence</h3>
+<p>This is the better way of running the WHAM calculation. It iterates through each of the sub-steps, in order for you to understand how well your calculation is converging.</p>
+<p>To run a convergence calculation, run:</p>
+<div class="language-sh highlight"><span class="filename">Running a convergence calculation</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>convergence<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>-af<span class="w"> </span>prod
+</span></code></pre></div>
+<p>The Convergence calculation outputs files to WHAM/Conv. For each of the sub-steps, it calculates the PMF using all previous sub-steps and outputs these to:</p>
+<ul>
+<li><code>sub-step</code>.dat : Raw PMF data</li>
+<li><code>sub-step</code>.eps : Plot of PMF data</li>
+</ul>
+<details class="tips" open="open">
+<summary>Advanced error checking</summary>
+<p>If you have a complex potential energy surface, sometimes umbrella bins fail during the umbrella sampling simulation through moving to a different area along the potential energy surface. This can be problematic as it often causes a sudden shift in the relative energies of that bin. We have implemented an error checking tool that uses extra input files (See below) to identify know problematic structures. Use at your own risk! </p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>BondErrors.dat<span class="w"> </span><span class="c1"># (1)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>DihedralErrors.dat<span class="w"> </span><span class="c1"># (2)</span>
+</span></code></pre></div>
+<ol>
+<li>File containing known bonds that form when they shouldn't. It requires 4 colummns: Name, Atom1, Atom2, Value. The name is a pseudonym to identify the bond, the two atom columns are the atomic index' of the atoms in the bond, and the value is the standard bond length. If this new bond is formed during a bin, the bin shall be excluded from the WHAM calculation.</li>
+<li>File containing known problematic dihedral angles. tval1 is the acceptable dihedral angle, t2val is the problematic value. If the dihedral is closer to the problematic value then the bin will be ignored.</li>
+</ol>
+<p>BondErrors.dat</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Atom1</th>
+<th style="text-align: left;">Atom2</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pseudonym</td>
+<td style="text-align: left;">index of atom1</td>
+<td style="text-align: left;">index of atom2</td>
+<td style="text-align: left;">Value that classes the bond as formed</td>
+</tr>
+</tbody>
+</table>
+<p>DihedralErrors.dat </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Atom1</th>
+<th style="text-align: left;">Atom2</th>
+<th style="text-align: left;">Atom3</th>
+<th style="text-align: left;">Atom4</th>
+<th style="text-align: left;">t1name</th>
+<th style="text-align: left;">t1val</th>
+<th style="text-align: left;">t2name</th>
+<th style="text-align: left;">t2val</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pseudonym</td>
+<td style="text-align: left;">index of atom1</td>
+<td style="text-align: left;">index of atom2</td>
+<td style="text-align: left;">index of atom3</td>
+<td style="text-align: left;">index of atom4</td>
+<td style="text-align: left;">pseudonym of accepted dihedral</td>
+<td style="text-align: left;">Accepted value</td>
+<td style="text-align: left;">pseudonym of problematic dihedral</td>
+<td style="text-align: left;">problematic value</td>
+</tr>
+</tbody>
+</table>
+</details>
+<h3 id="analysis">Analysis</h3>
+<p>Using further configuration files, you can also perform analysis and track other variables of the system throughout the simulation. This uses the <a href="../CodeReference/#pyBrellaSampling.Tools.analysis.analysis">analysis code</a> and reads in data files to configure states to track. (See below)</p>
+<div class="language-sh highlight"><span class="filename">Running analysis</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>analysis<span class="w"> </span>-dr<span class="w"> </span>False
+</span></code></pre></div>
+<p>Bonds.dat</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Atom1</th>
+<th style="text-align: left;">Atom2</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pseudonym</td>
+<td style="text-align: left;">index of atom1</td>
+<td style="text-align: left;">index of atom2</td>
+<td style="text-align: left;">Standard bond length</td>
+</tr>
+</tbody>
+</table>
+<p>Dihedrals.dat </p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Name</th>
+<th style="text-align: left;">Atom1</th>
+<th style="text-align: left;">Atom2</th>
+<th style="text-align: left;">Atom3</th>
+<th style="text-align: left;">Atom4</th>
+<th style="text-align: left;">t1name</th>
+<th style="text-align: left;">t1val</th>
+<th style="text-align: left;">t2name</th>
+<th style="text-align: left;">t2val</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;">pseudonym</td>
+<td style="text-align: left;">index of atom1</td>
+<td style="text-align: left;">index of atom2</td>
+<td style="text-align: left;">index of atom3</td>
+<td style="text-align: left;">index of atom4</td>
+<td style="text-align: left;">pseudonym of state 1</td>
+<td style="text-align: left;">central value</td>
+<td style="text-align: left;">pseudonym of state 2</td>
+<td style="text-align: left;">central value</td>
+</tr>
+</tbody>
+</table>
+<p>This code goes through the simulation trajectories, and tracks the states of the bonds and dihedrals provided. It then plots them as histogram plots to show the overall distribution of the bonds and dihedrals. It also generates 2D histograms to plot the distribution of bonds and dihedrals against the target colvar.</p>
 
 
 

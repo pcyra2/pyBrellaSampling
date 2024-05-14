@@ -292,9 +292,60 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pre-requisits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requisits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-requisits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#orca" class="md-nav__link">
+    <span class="md-ellipsis">
+      ORCA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namd" class="md-nav__link">
+    <span class="md-ellipsis">
+      NAMD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wham" class="md-nav__link">
+    <span class="md-ellipsis">
+      WHAM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure" class="md-nav__link">
     <span class="md-ellipsis">
       Configure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Configuration:
     </span>
   </a>
   
@@ -679,9 +730,60 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pre-requisits" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pre-requisits
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pre-requisits">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#orca" class="md-nav__link">
+    <span class="md-ellipsis">
+      ORCA
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#namd" class="md-nav__link">
+    <span class="md-ellipsis">
+      NAMD
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wham" class="md-nav__link">
+    <span class="md-ellipsis">
+      WHAM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#configure" class="md-nav__link">
     <span class="md-ellipsis">
       Configure
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#current-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Current Configuration:
     </span>
   </a>
   
@@ -721,6 +823,17 @@
 <p>Finally install the environment:</p>
 <div class="language-sh highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </span></code></pre></div>
+<h2 id="pre-requisits">Pre-requisits</h2>
+<h3 id="orca">ORCA</h3>
+<p>To use any QMMM functionality or benchmarking, ORCA must be installed. You can obtain this <a href="https://orcaforum.kofo.mpg.de/app.php/portal">here</a></p>
+<h3 id="namd">NAMD</h3>
+<p>For all dynamics simulations, we use NAMD which can be found <a href="http://www.ks.uiuc.edu/Research/namd/">here</a>. Two versions of NAMD are recommended:</p>
+<ul>
+<li>a CUDA-GPU accelorated version for running standard MD</li>
+<li>a CPU version for running QM/MM</li>
+</ul>
+<h3 id="wham">WHAM</h3>
+<p>You must also have the WHAM code from the <a href="http://membrane.urmc.rochester.edu/?page_id=126">Grossfield Lab</a> in order to perform WHAM calculations for Umbrella Sampling.</p>
 <h2 id="configure">Configure</h2>
 <p>It is important now to configure the default variables! 
 Go into the UserVars directory within the source.</p>
@@ -768,6 +881,206 @@ Go into the UserVars directory within the source.</p>
 - Change the Default inputs for each calculation type (if you always use the same QM method for example.) (Defaultinputs.py)
 </code></pre></div>
 </details>
+<div class="admonition note">
+<p class="admonition-title">Final stage (optional)</p>
+<p>Within the source directory, run:
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>mkdocs<span class="w"> </span>build
+</span></code></pre></div></p>
+<p>This will compile the documentation webpage and update the current configuration below.</p>
+</div>
+<h2 id="current-configuration">Current Configuration:</h2>
+<div class="language-py highlight"><span class="filename">Defaultinputs.py</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="n">Umbrella_Inp</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1">###--------------------------General---------------------------------###                </span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>    <span class="s2">&quot;WorkDir&quot;</span> <span class="p">:</span> <span class="s2">&quot;./&quot;</span><span class="p">,</span><span class="c1"># str: relative or absolute path to calculation</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="s2">&quot;Verbosity&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: 0=Errors, 1=Warnings, 2=Info, 3=Debug</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="s2">&quot;DryRun&quot;</span> <span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># bool: Whether to actually run calculations</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="c1">###--------------------------Calcuation------------------------------### </span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>    <span class="s2">&quot;CoresPerJob&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="c1"># int: Number of CPU cores for the calc.</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>    <span class="s2">&quot;MemoryPerJob&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="c1"># int: Ammount of RAM for the calc.</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>    <span class="s2">&quot;MaxStepsPerCalc&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1"># int: Maximum number of steps per calculation</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="c1">###--------------------------QM--------------------------------------### </span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>    <span class="s2">&quot;QM&quot;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="c1"># bool: To select the use of qmmm, requires the use of a qm file. </span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>    <span class="s2">&quot;QmFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str:  Name of qm file containing qm parms. </span>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>    <span class="s2">&quot;QmSelection&quot;</span> <span class="p">:</span> <span class="s2">&quot;resname CTN POP MG&quot;</span><span class="p">,</span> <span class="c1"># str: vmd selection algebra for the QM region</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>    <span class="s2">&quot;QmCharge&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># int: Net charge of QM system</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="s2">&quot;QmSpin&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: Spin state of QM system</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>    <span class="s2">&quot;QmMethod&quot;</span> <span class="p">:</span> <span class="s2">&quot;PBE&quot;</span><span class="p">,</span> <span class="c1"># str: ORCA QM method</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>    <span class="s2">&quot;QmBasis&quot;</span> <span class="p">:</span> <span class="s2">&quot;6-31+G*&quot;</span><span class="p">,</span> <span class="c1"># str: ORCA QM basis set.</span>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>    <span class="s2">&quot;QmArgs&quot;</span> <span class="p">:</span> <span class="s2">&quot;MINIPRINT D3BJ TightSCF CFLOAT&quot;</span><span class="p">,</span> <span class="c1"># str: extra information to parse to ORCA</span>
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="c1">###--------------------------Umbrella--------------------------------###</span>
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>    <span class="s2">&quot;Stage&quot;</span> <span class="p">:</span> <span class="s2">&quot;inpfile&quot;</span><span class="p">,</span> <span class="c1"># str: Stage of calculation</span>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>    <span class="s2">&quot;UmbrellaFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: file containing qm information.</span>
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>    <span class="s2">&quot;UmbrellaMin&quot;</span> <span class="p">:</span> <span class="mf">1.3</span><span class="p">,</span> <span class="c1"># float: Minimum Umbrella distance.</span>
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>    <span class="s2">&quot;UmbrellaWidth&quot;</span> <span class="p">:</span> <span class="mf">0.05</span><span class="p">,</span> <span class="c1"># float: Width of the umbrella bin in either Ang or Deg.</span>
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>    <span class="s2">&quot;UmbrellaBins&quot;</span> <span class="p">:</span> <span class="mi">54</span><span class="p">,</span> <span class="c1"># int: Number of Umbrella bins. </span>
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>    <span class="s2">&quot;PullForce&quot;</span> <span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="c1"># float: Force to pull the variables to each bin</span>
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>    <span class="s2">&quot;ConstForce&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="c1"># float: Force to restain the colvar during Umbrella simulations</span>
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>    <span class="s2">&quot;StartDistance&quot;</span> <span class="p">:</span> <span class="mf">1.4</span><span class="p">,</span> <span class="c1"># float: Current value for the colvar (From the equilibrated MD)</span>
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>    <span class="s2">&quot;StartFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;start.rst7&quot;</span><span class="p">,</span> <span class="c1"># str: Amber or NAMD coordinates, start coordinates for THIS simulation.</span>
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>    <span class="s2">&quot;ParmFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;complex.parm7&quot;</span><span class="p">,</span> <span class="c1"># str: Amber parameter file. This must be in the root directory!</span>
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>    <span class="s2">&quot;AtomMask&quot;</span> <span class="p">:</span> <span class="s2">&quot;0,0,0,0&quot;</span><span class="p">,</span> <span class="c1"># str: Atom mask for SMD, comma delimited string of atoms. </span>
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>    <span class="s2">&quot;AnalysisFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;prod&quot;</span><span class="p">,</span> <span class="c1"># str: Variable to perform analysis on (i.e. if you only want to visualise pull files, use pull_1)</span>
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>    <span class="s2">&quot;EquilLength&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># int: Length of equil in ps. eg 1 ps = 2000 steps at 0.5 fs timestep</span>
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>    <span class="s2">&quot;ProdLength&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># int: Length of production in ps. 4 ps = 8000 steps at 0.5 fs timestep</span>
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>    <span class="p">}</span>
+</span><span id="__span-8-35"><a id="__codelineno-8-35" name="__codelineno-8-35" href="#__codelineno-8-35"></a>
+</span><span id="__span-8-36"><a id="__codelineno-8-36" name="__codelineno-8-36" href="#__codelineno-8-36"></a><span class="n">Standalone_Inp</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-8-37"><a id="__codelineno-8-37" name="__codelineno-8-37" href="#__codelineno-8-37"></a>    <span class="s2">&quot;WorkDir&quot;</span> <span class="p">:</span> <span class="s2">&quot;./&quot;</span><span class="p">,</span><span class="c1"># str: relative or absolute path to calculation</span>
+</span><span id="__span-8-38"><a id="__codelineno-8-38" name="__codelineno-8-38" href="#__codelineno-8-38"></a>    <span class="s2">&quot;Verbosity&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: 0=Errors, 1=Warnings, 2=Info, 3=Debug</span>
+</span><span id="__span-8-39"><a id="__codelineno-8-39" name="__codelineno-8-39" href="#__codelineno-8-39"></a>    <span class="s2">&quot;DryRun&quot;</span> <span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># bool: Whether to actually run calculations</span>
+</span><span id="__span-8-40"><a id="__codelineno-8-40" name="__codelineno-8-40" href="#__codelineno-8-40"></a>    <span class="s2">&quot;CoresPerJob&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># int: Number of CPU cores for the calc.</span>
+</span><span id="__span-8-41"><a id="__codelineno-8-41" name="__codelineno-8-41" href="#__codelineno-8-41"></a>    <span class="s2">&quot;MemoryPerJob&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="c1"># int: Ammount of RAM for the calc.</span>
+</span><span id="__span-8-42"><a id="__codelineno-8-42" name="__codelineno-8-42" href="#__codelineno-8-42"></a>    <span class="s2">&quot;Name&quot;</span> <span class="p">:</span> <span class="s2">&quot;Name&quot;</span><span class="p">,</span> <span class="c1"># str: Name of calculation.</span>
+</span><span id="__span-8-43"><a id="__codelineno-8-43" name="__codelineno-8-43" href="#__codelineno-8-43"></a>    <span class="s2">&quot;Ensemble&quot;</span> <span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="c1"># str: min, heat, NVT, NVP</span>
+</span><span id="__span-8-44"><a id="__codelineno-8-44" name="__codelineno-8-44" href="#__codelineno-8-44"></a>    <span class="s2">&quot;QM&quot;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="c1"># bool: To select the use of qmmm, requires the use of a qm file. </span>
+</span><span id="__span-8-45"><a id="__codelineno-8-45" name="__codelineno-8-45" href="#__codelineno-8-45"></a>    <span class="s2">&quot;QmFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str:  Name of qm file containing qm parms. </span>
+</span><span id="__span-8-46"><a id="__codelineno-8-46" name="__codelineno-8-46" href="#__codelineno-8-46"></a>    <span class="s2">&quot;QmSelection&quot;</span> <span class="p">:</span> <span class="s2">&quot;resname CTN POP MG&quot;</span><span class="p">,</span> <span class="c1"># str: vmd selection algebra for the QM region</span>
+</span><span id="__span-8-47"><a id="__codelineno-8-47" name="__codelineno-8-47" href="#__codelineno-8-47"></a>    <span class="s2">&quot;QmCharge&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># int: Net charge of QM system</span>
+</span><span id="__span-8-48"><a id="__codelineno-8-48" name="__codelineno-8-48" href="#__codelineno-8-48"></a>    <span class="s2">&quot;QmSpin&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: Spin state of QM system</span>
+</span><span id="__span-8-49"><a id="__codelineno-8-49" name="__codelineno-8-49" href="#__codelineno-8-49"></a>    <span class="s2">&quot;QmMethod&quot;</span> <span class="p">:</span> <span class="s2">&quot;PBE&quot;</span><span class="p">,</span> <span class="c1"># str: ORCA QM method</span>
+</span><span id="__span-8-50"><a id="__codelineno-8-50" name="__codelineno-8-50" href="#__codelineno-8-50"></a>    <span class="s2">&quot;QmBasis&quot;</span> <span class="p">:</span> <span class="s2">&quot;6-31+G*&quot;</span><span class="p">,</span> <span class="c1"># str: ORCA QM basis set.</span>
+</span><span id="__span-8-51"><a id="__codelineno-8-51" name="__codelineno-8-51" href="#__codelineno-8-51"></a>    <span class="s2">&quot;QmArgs&quot;</span> <span class="p">:</span> <span class="s2">&quot;MINIPRINT D3BJ TightSCF CFLOAT&quot;</span><span class="p">,</span> <span class="c1"># str: extra information to parse to ORCA</span>
+</span><span id="__span-8-52"><a id="__codelineno-8-52" name="__codelineno-8-52" href="#__codelineno-8-52"></a>    <span class="s2">&quot;MMFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: file containing qm information.</span>
+</span><span id="__span-8-53"><a id="__codelineno-8-53" name="__codelineno-8-53" href="#__codelineno-8-53"></a>    <span class="s2">&quot;Steps&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="c1"># int: Number of steps to simulate.</span>
+</span><span id="__span-8-54"><a id="__codelineno-8-54" name="__codelineno-8-54" href="#__codelineno-8-54"></a>    <span class="s2">&quot;TimeStep&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="c1"># float: timestep in fs. if &gt;1, shake will be turned on. </span>
+</span><span id="__span-8-55"><a id="__codelineno-8-55" name="__codelineno-8-55" href="#__codelineno-8-55"></a>    <span class="s2">&quot;ParmFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;complex.parm7&quot;</span><span class="p">,</span> <span class="c1"># str: parameter file. Currently only amber params supported.</span>
+</span><span id="__span-8-56"><a id="__codelineno-8-56" name="__codelineno-8-56" href="#__codelineno-8-56"></a>    <span class="s2">&quot;AmberCoordinates&quot;</span> <span class="p">:</span> <span class="s2">&quot;start.rst7&quot;</span><span class="p">,</span> <span class="c1"># str: amber coordinate file for use with the parameter files.</span>
+</span><span id="__span-8-57"><a id="__codelineno-8-57" name="__codelineno-8-57" href="#__codelineno-8-57"></a>    <span class="s2">&quot;StartFile&quot;</span> <span class="p">:</span> <span class="s2">&quot;start.rst7&quot;</span><span class="p">,</span> <span class="c1"># str: Amber or NAMD coordinates, start coordinates for THIS simulation.</span>
+</span><span id="__span-8-58"><a id="__codelineno-8-58" name="__codelineno-8-58" href="#__codelineno-8-58"></a>    <span class="s2">&quot;RestartOut&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="c1"># int: frequency of updating the restart file.</span>
+</span><span id="__span-8-59"><a id="__codelineno-8-59" name="__codelineno-8-59" href="#__codelineno-8-59"></a>    <span class="s2">&quot;TrajOut&quot;</span> <span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="c1"># int: frequency of updating the trajectory file.</span>
+</span><span id="__span-8-60"><a id="__codelineno-8-60" name="__codelineno-8-60" href="#__codelineno-8-60"></a>    <span class="s2">&quot;SMD&quot;</span> <span class="p">:</span> <span class="s2">&quot;False&quot;</span><span class="p">,</span> <span class="c1"># bool: Whether to use Steered MD.</span>
+</span><span id="__span-8-61"><a id="__codelineno-8-61" name="__codelineno-8-61" href="#__codelineno-8-61"></a>    <span class="s2">&quot;SMDFile&quot;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># str: Name of file containing SMD parms</span>
+</span><span id="__span-8-62"><a id="__codelineno-8-62" name="__codelineno-8-62" href="#__codelineno-8-62"></a>    <span class="s2">&quot;Force&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># float: Force to perform SMD</span>
+</span><span id="__span-8-63"><a id="__codelineno-8-63" name="__codelineno-8-63" href="#__codelineno-8-63"></a>    <span class="s2">&quot;StartValue&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># float: start value for SMD</span>
+</span><span id="__span-8-64"><a id="__codelineno-8-64" name="__codelineno-8-64" href="#__codelineno-8-64"></a>    <span class="s2">&quot;EndValue&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># float: end value for SMD</span>
+</span><span id="__span-8-65"><a id="__codelineno-8-65" name="__codelineno-8-65" href="#__codelineno-8-65"></a>    <span class="s2">&quot;AtomMask&quot;</span> <span class="p">:</span> <span class="s2">&quot;0,0,0,0&quot;</span><span class="p">,</span> <span class="c1"># str: Atom mask for SMD, comma delimited string of atoms. </span>
+</span><span id="__span-8-66"><a id="__codelineno-8-66" name="__codelineno-8-66" href="#__codelineno-8-66"></a>    <span class="s2">&quot;HPC&quot;</span> <span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="c1"># bool: Run using a SLURM Scheduler. </span>
+</span><span id="__span-8-67"><a id="__codelineno-8-67" name="__codelineno-8-67" href="#__codelineno-8-67"></a><span class="p">}</span>
+</span><span id="__span-8-68"><a id="__codelineno-8-68" name="__codelineno-8-68" href="#__codelineno-8-68"></a>
+</span><span id="__span-8-69"><a id="__codelineno-8-69" name="__codelineno-8-69" href="#__codelineno-8-69"></a><span class="n">Benchmark_Inp</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-8-70"><a id="__codelineno-8-70" name="__codelineno-8-70" href="#__codelineno-8-70"></a>    <span class="s2">&quot;Verbosity&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: 0=Errors, 1=Warnings, 2=Info, 3=Debug</span>
+</span><span id="__span-8-71"><a id="__codelineno-8-71" name="__codelineno-8-71" href="#__codelineno-8-71"></a>    <span class="s2">&quot;WorkDir&quot;</span> <span class="p">:</span> <span class="s2">&quot;./&quot;</span><span class="p">,</span> <span class="c1"># str: Path to calculation directory.</span>
+</span><span id="__span-8-72"><a id="__codelineno-8-72" name="__codelineno-8-72" href="#__codelineno-8-72"></a>    <span class="s2">&quot;Cores&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="c1"># int: Number of CPU cores</span>
+</span><span id="__span-8-73"><a id="__codelineno-8-73" name="__codelineno-8-73" href="#__codelineno-8-73"></a>    <span class="s2">&quot;DryRun&quot;</span> <span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="c1"># bool: Whether to actually run calculations</span>
+</span><span id="__span-8-74"><a id="__codelineno-8-74" name="__codelineno-8-74" href="#__codelineno-8-74"></a>    <span class="s2">&quot;Stage&quot;</span> <span class="p">:</span> <span class="s2">&quot;analysis&quot;</span><span class="p">,</span> <span class="c1"># str: init, calc or analysis</span>
+</span><span id="__span-8-75"><a id="__codelineno-8-75" name="__codelineno-8-75" href="#__codelineno-8-75"></a>    <span class="s2">&quot;BenchmarkType&quot;</span> <span class="p">:</span> <span class="s2">&quot;Energy&quot;</span><span class="p">,</span> <span class="c1"># str: only Energy supported at current.</span>
+</span><span id="__span-8-76"><a id="__codelineno-8-76" name="__codelineno-8-76" href="#__codelineno-8-76"></a>    <span class="s2">&quot;CoordinateLoc&quot;</span> <span class="p">:</span> <span class="s2">&quot;./Coordinates&quot;</span><span class="p">,</span> <span class="c1"># str: location of molecule coordinates</span>
+</span><span id="__span-8-77"><a id="__codelineno-8-77" name="__codelineno-8-77" href="#__codelineno-8-77"></a>    <span class="s2">&quot;ReactionList&quot;</span> <span class="p">:</span> <span class="s2">&quot;reactions.dat&quot;</span><span class="p">,</span> <span class="c1"># str: List of 1 step reactions</span>
+</span><span id="__span-8-78"><a id="__codelineno-8-78" name="__codelineno-8-78" href="#__codelineno-8-78"></a>    <span class="s2">&quot;SCF&quot;</span> <span class="p">:</span> <span class="s2">&quot;TIGHTSCF&quot;</span><span class="p">,</span> <span class="c1"># str: Convergence criteria (As supported by ORCA)</span>
+</span><span id="__span-8-79"><a id="__codelineno-8-79" name="__codelineno-8-79" href="#__codelineno-8-79"></a>    <span class="s2">&quot;Grid&quot;</span> <span class="p">:</span> <span class="s2">&quot;DEFGRID3&quot;</span><span class="p">,</span> <span class="c1"># str: SCF Grid (As supported by ORCA)</span>
+</span><span id="__span-8-80"><a id="__codelineno-8-80" name="__codelineno-8-80" href="#__codelineno-8-80"></a>    <span class="s2">&quot;Restart&quot;</span> <span class="p">:</span> <span class="s2">&quot;NOAUTOSTART&quot;</span><span class="p">,</span> <span class="c1"># str: Whether to use the .gbw restart files (AUTOSTART/NOAUTOSTART)</span>
+</span><span id="__span-8-81"><a id="__codelineno-8-81" name="__codelineno-8-81" href="#__codelineno-8-81"></a>    <span class="s2">&quot;Convergence&quot;</span> <span class="p">:</span> <span class="s2">&quot;NormalConv&quot;</span><span class="p">,</span> <span class="c1"># str: Agressivness of the SCF optimizer. </span>
+</span><span id="__span-8-82"><a id="__codelineno-8-82" name="__codelineno-8-82" href="#__codelineno-8-82"></a>    <span class="s2">&quot;Extras&quot;</span> <span class="p">:</span> <span class="s2">&quot;MINIPRINT&quot;</span><span class="p">,</span> <span class="c1"># str: Extra information to parse to ORCA.</span>
+</span><span id="__span-8-83"><a id="__codelineno-8-83" name="__codelineno-8-83" href="#__codelineno-8-83"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-py highlight"><span class="filename">MM_Variables.py</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">MM_DefaultVars</span> <span class="o">=</span> <span class="p">{</span>  <span class="s2">&quot;parmfile&quot;</span> <span class="p">:</span> <span class="s2">&quot;complex.parm7&quot;</span><span class="p">,</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>                    <span class="s2">&quot;ambercoor&quot;</span><span class="p">:</span> <span class="s2">&quot;start.rst7&quot;</span><span class="p">,</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>                    <span class="s2">&quot;bincoordinates&quot;</span> <span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>                    <span class="s2">&quot;DCDfile&quot;</span> <span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>                    <span class="s2">&quot;DCDfreq&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>                    <span class="s2">&quot;restartname&quot;</span> <span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>                    <span class="s2">&quot;restartfreq&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>              <span class="c1"># Energy output and calculation also printed at this rate.</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>                    <span class="s2">&quot;outputname&quot;</span> <span class="p">:</span> <span class="s2">&quot;output&quot;</span><span class="p">,</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>                    <span class="s2">&quot;outputTiming&quot;</span> <span class="p">:</span> <span class="s2">&quot;100&quot;</span><span class="p">,</span> 
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>                    <span class="s2">&quot;amber&quot;</span> <span class="p">:</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>                    <span class="s2">&quot;switching&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>                    <span class="s2">&quot;exclude&quot;</span> <span class="p">:</span> <span class="s2">&quot;scaled1-4&quot;</span><span class="p">,</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>                    <span class="s2">&quot;1-4scaling&quot;</span> <span class="p">:</span> <span class="mf">0.833333333</span><span class="p">,</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>                    <span class="s2">&quot;scnb&quot;</span> <span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>                    <span class="s2">&quot;readexclusions&quot;</span> <span class="p">:</span> <span class="s2">&quot;yes&quot;</span><span class="p">,</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>                    <span class="s2">&quot;cutoff&quot;</span> <span class="p">:</span> <span class="mf">8.0</span><span class="p">,</span>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>                    <span class="s2">&quot;watermodel&quot;</span> <span class="p">:</span> <span class="s2">&quot;tip3&quot;</span><span class="p">,</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>                    <span class="s2">&quot;pairListdist&quot;</span> <span class="p">:</span> <span class="mi">11</span><span class="p">,</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>                    <span class="s2">&quot;LJcorrection&quot;</span> <span class="p">:</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>                    <span class="s2">&quot;ZeroMomentum&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>                    <span class="s2">&quot;rigidBonds&quot;</span> <span class="p">:</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>                    <span class="s2">&quot;rigidTolerance&quot;</span> <span class="p">:</span> <span class="s2">&quot;1.0e-8&quot;</span><span class="p">,</span>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a>                    <span class="s2">&quot;rigidIterations&quot;</span> <span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>                    <span class="s2">&quot;timeStep&quot;</span> <span class="p">:</span> <span class="mi">2</span><span class="p">,</span>                 <span class="c1"># In fs</span>
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>                    <span class="s2">&quot;fullElectFrequency&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>                    <span class="s2">&quot;nonBondedFreq&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>                    <span class="s2">&quot;stepspercycle&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>                    <span class="s2">&quot;PME&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>                    <span class="s2">&quot;PMEGridSizeX&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>                    <span class="s2">&quot;PMEGridSizeY&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>                    <span class="s2">&quot;PMEGridSizeZ&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>                    <span class="s2">&quot;PMETolerance&quot;</span> <span class="p">:</span> <span class="s2">&quot;1.0e-6&quot;</span><span class="p">,</span>
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>                    <span class="s2">&quot;PMEInterpOrder&quot;</span> <span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>                    <span class="s2">&quot;cellBasisVector1&quot;</span> <span class="p">:</span> <span class="s2">&quot;135.913174 0.0 0.0&quot;</span><span class="p">,</span>
+</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>                    <span class="s2">&quot;cellBasisVector2&quot;</span> <span class="p">:</span> <span class="s2">&quot;-45.30439133333333 128.1401693173162 0.0&quot;</span><span class="p">,</span>
+</span><span id="__span-9-36"><a id="__codelineno-9-36" name="__codelineno-9-36" href="#__codelineno-9-36"></a>                    <span class="s2">&quot;cellBasisVector3&quot;</span> <span class="p">:</span> <span class="s2">&quot;-45.30439133333333 -64.0700846586581 -110.97264187403509&quot;</span><span class="p">,</span>
+</span><span id="__span-9-37"><a id="__codelineno-9-37" name="__codelineno-9-37" href="#__codelineno-9-37"></a>                    <span class="s2">&quot;cellOrigin&quot;</span> <span class="p">:</span> <span class="s2">&quot;0 0 0&quot;</span><span class="p">,</span>
+</span><span id="__span-9-38"><a id="__codelineno-9-38" name="__codelineno-9-38" href="#__codelineno-9-38"></a>                    <span class="s2">&quot;cellBasisVector&quot;</span> <span class="p">:</span> <span class="mf">135.913174</span><span class="p">,</span> <span class="c1">#### Base if all 3 are calculated...</span>
+</span><span id="__span-9-39"><a id="__codelineno-9-39" name="__codelineno-9-39" href="#__codelineno-9-39"></a>                    <span class="s2">&quot;langevin&quot;</span> <span class="p">:</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span>
+</span><span id="__span-9-40"><a id="__codelineno-9-40" name="__codelineno-9-40" href="#__codelineno-9-40"></a>                    <span class="s2">&quot;langevinDamping&quot;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+</span><span id="__span-9-41"><a id="__codelineno-9-41" name="__codelineno-9-41" href="#__codelineno-9-41"></a>                    <span class="s2">&quot;langevinTemp&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+</span><span id="__span-9-42"><a id="__codelineno-9-42" name="__codelineno-9-42" href="#__codelineno-9-42"></a>                    <span class="s2">&quot;langevinHydrogen&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-43"><a id="__codelineno-9-43" name="__codelineno-9-43" href="#__codelineno-9-43"></a>                    <span class="s2">&quot;temperature&quot;</span> <span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+</span><span id="__span-9-44"><a id="__codelineno-9-44" name="__codelineno-9-44" href="#__codelineno-9-44"></a>                    <span class="s2">&quot;BerendsenPressure&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-45"><a id="__codelineno-9-45" name="__codelineno-9-45" href="#__codelineno-9-45"></a>                    <span class="s2">&quot;qmForces&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-46"><a id="__codelineno-9-46" name="__codelineno-9-46" href="#__codelineno-9-46"></a>                    <span class="s2">&quot;CUDASOAintegrate&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-47"><a id="__codelineno-9-47" name="__codelineno-9-47" href="#__codelineno-9-47"></a>                    <span class="s2">&quot;run&quot;</span> <span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+</span><span id="__span-9-48"><a id="__codelineno-9-48" name="__codelineno-9-48" href="#__codelineno-9-48"></a>                    <span class="s2">&quot;minimize&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+</span><span id="__span-9-49"><a id="__codelineno-9-49" name="__codelineno-9-49" href="#__codelineno-9-49"></a>                    <span class="s2">&quot;qmParamPDB&quot;</span> <span class="p">:</span> <span class="s2">&quot;syst-qm.pdb&quot;</span><span class="p">,</span>
+</span><span id="__span-9-50"><a id="__codelineno-9-50" name="__codelineno-9-50" href="#__codelineno-9-50"></a>                    <span class="s2">&quot;qmColumn&quot;</span> <span class="p">:</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span>
+</span><span id="__span-9-51"><a id="__codelineno-9-51" name="__codelineno-9-51" href="#__codelineno-9-51"></a>                    <span class="s2">&quot;qmBondColumn&quot;</span> <span class="p">:</span> <span class="s2">&quot;occ&quot;</span><span class="p">,</span>
+</span><span id="__span-9-52"><a id="__codelineno-9-52" name="__codelineno-9-52" href="#__codelineno-9-52"></a>                    <span class="s2">&quot;QMsimsPerNode&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-53"><a id="__codelineno-9-53" name="__codelineno-9-53" href="#__codelineno-9-53"></a>                    <span class="s2">&quot;QMElecEmbed&quot;</span> <span class="p">:</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span>
+</span><span id="__span-9-54"><a id="__codelineno-9-54" name="__codelineno-9-54" href="#__codelineno-9-54"></a>                    <span class="s2">&quot;QMSwitching&quot;</span> <span class="p">:</span> <span class="s2">&quot;on&quot;</span><span class="p">,</span>
+</span><span id="__span-9-55"><a id="__codelineno-9-55" name="__codelineno-9-55" href="#__codelineno-9-55"></a>                    <span class="s2">&quot;QMSwitchingType&quot;</span> <span class="p">:</span> <span class="s2">&quot;shift&quot;</span><span class="p">,</span>
+</span><span id="__span-9-56"><a id="__codelineno-9-56" name="__codelineno-9-56" href="#__codelineno-9-56"></a>                    <span class="s2">&quot;QMPointChargeScheme&quot;</span> <span class="p">:</span> <span class="s2">&quot;round&quot;</span><span class="p">,</span>
+</span><span id="__span-9-57"><a id="__codelineno-9-57" name="__codelineno-9-57" href="#__codelineno-9-57"></a>                    <span class="s2">&quot;QMBondScheme&quot;</span> <span class="p">:</span> <span class="s2">&quot;cs&quot;</span><span class="p">,</span>
+</span><span id="__span-9-58"><a id="__codelineno-9-58" name="__codelineno-9-58" href="#__codelineno-9-58"></a>                    <span class="s2">&quot;qmBaseDir&quot;</span> <span class="p">:</span> <span class="s2">&quot;/dev/shm/RUNDIR&quot;</span><span class="p">,</span>
+</span><span id="__span-9-59"><a id="__codelineno-9-59" name="__codelineno-9-59" href="#__codelineno-9-59"></a>                    <span class="s2">&quot;qmConfigLine&quot;</span> <span class="p">:</span> <span class="s2">&quot;&quot;&quot;! PBE 6-31G* EnGrad D3BJ TightSCF </span>
+</span><span id="__span-9-60"><a id="__codelineno-9-60" name="__codelineno-9-60" href="#__codelineno-9-60"></a><span class="si">%%</span><span class="s2">output PrintLevel Mini Print\[ P_Mulliken \] 1 Print\[P_AtCharges_M\] 1 end&quot;&quot;&quot;</span><span class="p">,</span>
+</span><span id="__span-9-61"><a id="__codelineno-9-61" name="__codelineno-9-61" href="#__codelineno-9-61"></a>                    <span class="s2">&quot;qmMult&quot;</span> <span class="p">:</span> <span class="s2">&quot;1 1&quot;</span><span class="p">,</span>
+</span><span id="__span-9-62"><a id="__codelineno-9-62" name="__codelineno-9-62" href="#__codelineno-9-62"></a>                    <span class="s2">&quot;qmCharge&quot;</span> <span class="p">:</span> <span class="s2">&quot;1 0&quot;</span><span class="p">,</span>
+</span><span id="__span-9-63"><a id="__codelineno-9-63" name="__codelineno-9-63" href="#__codelineno-9-63"></a>                    <span class="s2">&quot;qmSoftware&quot;</span> <span class="p">:</span> <span class="s2">&quot;orca&quot;</span><span class="p">,</span>
+</span><span id="__span-9-64"><a id="__codelineno-9-64" name="__codelineno-9-64" href="#__codelineno-9-64"></a>                    <span class="s2">&quot;qmExecPath&quot;</span> <span class="p">:</span> <span class="s2">&quot;~/Software/ORCA/orca&quot;</span><span class="p">,</span>
+</span><span id="__span-9-65"><a id="__codelineno-9-65" name="__codelineno-9-65" href="#__codelineno-9-65"></a>                    <span class="s2">&quot;QMOutStride&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-66"><a id="__codelineno-9-66" name="__codelineno-9-66" href="#__codelineno-9-66"></a>                    <span class="s2">&quot;qmEnergyStride&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-67"><a id="__codelineno-9-67" name="__codelineno-9-67" href="#__codelineno-9-67"></a>                    <span class="s2">&quot;QMPositionOutStride&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+</span><span id="__span-9-68"><a id="__codelineno-9-68" name="__codelineno-9-68" href="#__codelineno-9-68"></a>                    <span class="s2">&quot;colvars&quot;</span> <span class="p">:</span> <span class="s2">&quot;off&quot;</span><span class="p">,</span>
+</span><span id="__span-9-69"><a id="__codelineno-9-69" name="__codelineno-9-69" href="#__codelineno-9-69"></a>                    <span class="s2">&quot;colvarsConfig&quot;</span> <span class="p">:</span> <span class="s2">&quot;colvars.conf&quot;</span><span class="p">,</span>
+</span><span id="__span-9-70"><a id="__codelineno-9-70" name="__codelineno-9-70" href="#__codelineno-9-70"></a>                    <span class="p">}</span>
+</span></code></pre></div>
+<div class="language-py highlight"><span class="filename">QM_Methods.py</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="n">Functionals</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PBE&quot;</span><span class="p">,</span> <span class="s2">&quot;PBE0&quot;</span><span class="p">,</span> <span class="s2">&quot;B3LYP&quot;</span><span class="p">,</span> <span class="s2">&quot;HF&quot;</span><span class="p">,</span> <span class="s2">&quot;M062X&quot;</span><span class="p">,</span> <span class="s2">&quot;wB97M-V&quot;</span><span class="p">,</span> <span class="s2">&quot;wB97X-D3&quot;</span><span class="p">,</span> <span class="s2">&quot;MP2&quot;</span><span class="p">]</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="n">Basis_Sets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;6-31G&quot;</span><span class="p">,</span> <span class="s2">&quot;6-31G*&quot;</span><span class="p">,</span> <span class="s2">&quot;6-31+G*&quot;</span><span class="p">,</span> <span class="s2">&quot;cc-pVDZ&quot;</span><span class="p">,</span> <span class="s2">&quot;cc-pVTZ&quot;</span><span class="p">,</span>  <span class="s2">&quot;def2-SVP&quot;</span><span class="p">]</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">Dispersion_Corrections</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;D3BJ&quot;</span><span class="p">,</span> <span class="s2">&quot;D3ZERO&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="c1">## &quot;&quot; blank is for no dispersion to be benchmarked</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">DispersionCorrFunc</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;wB97M-V&quot;</span><span class="p">,</span> <span class="s2">&quot;wB97X-D3&quot;</span><span class="p">]</span>
+</span></code></pre></div>
+<div class="language-py highlight"><span class="filename">HPC_Config.py</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="n">HPC_Config</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>    <span class="s2">&quot;None&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>        <span class="s2">&quot;HostName&quot;</span> <span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="c1"># str: Hostname of the HPC</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>        <span class="s2">&quot;MaxWallTime&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># int: Maximum calculation time in hours</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>        <span class="s2">&quot;Partition&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: Partition to run calc on.</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>        <span class="s2">&quot;MaxCores&quot;</span> <span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="c1"># Maximum number of cores per node </span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>        <span class="s2">&quot;QualityofService&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: Account QoS or None if not needed</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>        <span class="s2">&quot;Account&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: SLURM account or None if not needed</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>        <span class="s2">&quot;SoftwareLines&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">,],</span> <span class="c1"># list: List of lines required to set up environment</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>    <span class="p">},</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>    <span class="s2">&quot;sulis&quot;</span> <span class="p">:</span> <span class="p">{</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>        <span class="s2">&quot;HostName&quot;</span> <span class="p">:</span> <span class="s2">&quot;login01.sulis.hpc&quot;</span><span class="p">,</span> <span class="c1"># str: Hostname of the HPC</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>        <span class="s2">&quot;MaxWallTime&quot;</span> <span class="p">:</span> <span class="mi">48</span><span class="p">,</span> <span class="c1"># int: Maximum calculation time in hours</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>        <span class="s2">&quot;Partition&quot;</span> <span class="p">:</span> <span class="s2">&quot;compute&quot;</span><span class="p">,</span> <span class="c1"># str: Partition to run calc on.</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>        <span class="s2">&quot;MaxCores&quot;</span> <span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="c1"># Maximum number of cores per node </span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>        <span class="s2">&quot;QualityofService&quot;</span> <span class="p">:</span> <span class="s2">&quot;None&quot;</span><span class="p">,</span> <span class="c1"># str: Account QoS or None if not needed</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>        <span class="s2">&quot;Account&quot;</span> <span class="p">:</span> <span class="s2">&quot;su120&quot;</span><span class="p">,</span> <span class="c1"># str: SLURM account or None if not needed</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>        <span class="s2">&quot;SoftwareLines&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s2">&quot;module load GCC/11.2.0&quot;</span><span class="p">,</span> 
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>                           <span class="s2">&quot;module load OpenMPI/4.1.1&quot;</span><span class="p">,</span> 
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a>                           <span class="s2">&quot;module load ORCA/5.0.4&quot;</span><span class="p">],</span> <span class="c1"># list: List of lines required to set up environment</span>
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>    <span class="p">},</span>
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a>
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-py highlight"><span class="filename">SoftwarePaths.py</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># ORCA path</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">ORCA_PATH</span> <span class="o">=</span> <span class="s2">&quot;/home/pcyra2/Software/ORCA/5.0.4/orca&quot;</span> 
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1">#NAMD paths</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="n">NAMD_CPU</span> <span class="o">=</span> <span class="s2">&quot;/home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3&quot;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="n">NAMD_GPU</span> <span class="o">=</span> <span class="s2">&quot;/home/pcyra2/Software/NAMD/NAMD_3.0b4_Linux-x86_64-multicore-CUDA/namd3&quot;</span>
+</span></code></pre></div>
 
 
 
