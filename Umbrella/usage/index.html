@@ -1,0 +1,1124 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../pyBrellaSampling/">
+      
+      
+        <link rel="next" href="../Inputs/">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.22">
+    
+    
+      
+        <title>Usage - pyBrellaSampling Docs</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.732c4fb1.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#usage" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pyBrellaSampling Docs" class="md-header__button md-logo" aria-label="pyBrellaSampling Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pyBrellaSampling Docs
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Usage
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/pcyra2/pyBrellaSampling" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pyBrellaSampling Docs" class="md-nav__button md-logo" aria-label="pyBrellaSampling Docs" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    pyBrellaSampling Docs
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/pcyra2/pyBrellaSampling" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    pyBrellaSampling
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            pyBrellaSampling
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pyBrellaSampling/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimisation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Minimisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heating
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Heating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pull
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pull">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equilibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Equilibration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Inputs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Inputs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../CodeReference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Standalone
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Standalone
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Standalone/usage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Usage
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Standalone/CodeReference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Code
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../Standalone/Examples/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Examples
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../coverage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Testing
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      Workflow
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Setup
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#minimisation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Minimisation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Minimisation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#heating" class="md-nav__link">
+    <span class="md-ellipsis">
+      Heating
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Heating">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pull" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pull
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pull">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#important-variables_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Important variables:
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      Run:
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#equilibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      Equilibration
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#production" class="md-nav__link">
+    <span class="md-ellipsis">
+      Production
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="usage">Usage</h1>
+<h2 id="setup">Setup</h2>
+<p>To run an umbrella calculation, you need two key files: </p>
+<ul>
+<li><code>Parameter file</code> (default = complex.parm7) Can be changed using <code>pyBrella --ParmFile PARM</code></li>
+<li><code>Coordinate file</code> (default = start.rst7) Can be changed using <code>pyBrella --StartFile COORD</code></li>
+</ul>
+<p>These two files, along with other user defined <a href="#UserInputs">variables</a> are all you need in order to perform Umbrella Sampling. </p>
+<p>Users are recommended to follow the workflow provided <a href="#workflow">below</a>.</p>
+<h2 id="workflow">Workflow</h2>
+<pre class="mermaid"><code>graph TB
+subgraph Local
+ direction LR
+ A[Setup] --&gt; B[Minimize]
+ B --&gt; C[Heat]
+ C --&gt; D[Pull]
+ D --&gt; G[Check strcutures]
+ G --&gt;|If wrong, fix| D
+ end
+ Local --&gt;|If correct| HPC
+ subgraph HPC
+ direction LR
+ E[Equilibrate] --&gt; F[Production]
+ end</code></pre>
+<h3 id="setup_1">Setup</h3>
+<p>The setup stage performs the <a href="../CodeReference/#pyBrellaSampling.pyBrella.setup">setup script</a></p>
+<p>This generates the <code>syst-col.pdb</code> and <code>syst-qm.pdb</code> files.</p>
+<ul>
+<li><code>syst-col.pdb</code>  tells NAMD which atoms are involved in the sampling.</li>
+<li><code>syst-qm.pdb</code> tells NAMD which atoms are involved in the QM zone.</li>
+</ul>
+<h4 id="important-variables">Important variables:</h4>
+<div class="language-text highlight"><pre><span></span><code>&quot;Stage&quot; : Setup
+&quot;QmSelection&quot; : The VMD selection algebra for the QM zone
+&quot;AtomMask&quot; : The atomic index of the atoms involved in Umbrella sampling. 
+    - This should be comma delimited, and contain 4 numbers. 
+        All unused numbers should be zero e.g if bond: 20,21,0,0
+</code></pre></div>
+<h4 id="run">Run:</h4>
+<div class="language-sh highlight"><span class="filename">Running the setup</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>setup<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>
+</span></code></pre></div>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>At this point, check that your syst-qm.pdb file has been generated correctly. It is a common bug (depending on your version of vmd) to not generate the column containing elements. (The final column should be the atomic elements.)
+If this does not exist, edit the file around the QM zone, the elements should be in columns 77/78.</p>
+</details>
+<h3 id="minimisation">Minimisation</h3>
+<p>This step minimizes your system using traditional MD. The <a href="../CodeReference/#pyBrellaSampling.pyBrella.min">minimisation code</a> is used to perform this.</p>
+<h4 id="important-variables_1">Important variables:</h4>
+<div class="language-text highlight"><pre><span></span><code>&quot;Stage&quot; : min
+</code></pre></div>
+<h4 id="run_1">Run:</h4>
+<div class="language-sh highlight"><span class="filename">Running a minimisation</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>min<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span><span class="c1"># (1)</span>
+</span></code></pre></div>
+<ol>
+<li>It is important that the GPU version of NAMD is loaded and that the path has been defined.</li>
+</ol>
+<h3 id="heating">Heating</h3>
+<p>At this step, we heat the system to 300 k over 20 ps using the <a href="../CodeReference/#pyBrellaSampling.pyBrella.heat">heat code</a>. </p>
+<h4 id="important-variables_2">Important variables:</h4>
+<div class="language-text highlight"><pre><span></span><code>&quot;Stage&quot; : heat
+</code></pre></div>
+<h4 id="run_2">Run:</h4>
+<div class="language-sh highlight"><span class="filename">Heating the system</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>heat<span class="w"> </span>-dr<span class="w"> </span>False
+</span></code></pre></div>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>Now that the standard MD steps have been performed, you should remove the GPU version of NAMD from your path, and load in the CPU version. You should also ensure that the path to ORCA is correctly defined. QM/MM requires a CPU version of NAMD. </p>
+<p>You can also start the calculation at this point however need to ensure that your input is named <strong>heat_1.0.restart.coor</strong> and is in NAMD format.</p>
+</details>
+<h3 id="pull">Pull</h3>
+<p>This is the stage where you initiate the umbrella windows/bins. This uses the <a href="../CodeReference/#pyBrellaSampling.pyBrella.pull">pull code</a> From this point on it is recommended to be using an input file for all steps of the simulation. </p>
+<p>You first need to analyze the heated structure, and obtain the atom index's for the collective variable.</p>
+<ul>
+<li><code>"at1,at2,0,0"</code> : Bond colvar between atom 1 and atom 2</li>
+<li><code>"at1,at2,at3,0"</code> : Angle colvar between atoms 1, 2 and 3</li>
+<li><code>"at1,at2,at3,at4"</code> : Dihedral colvar between atoms 1, 2, 3 and 4 </li>
+</ul>
+<h4 id="important-variables_3">Important variables:</h4>
+<div class="language-text highlight"><pre><span></span><code>&quot;Stage&quot; : pull
+&quot;QmSelection&quot; : &quot;VMD selection algebra for qm region&quot;
+&quot;QmCharge&quot; : Net charge of QM region
+&quot;QmSpin&quot; : Spin of QM system
+&quot;QmMethod&quot; : QM functional
+&quot;QmBasis&quot; : QM basis set
+&quot;QmArgs&quot; : Dispersion corrections ect.
+
+&quot;UmbrellaMin&quot; : Value of bin 0
+&quot;UmbrellaWidth&quot; : Width between each bin (can be negative)
+&quot;UmbrellaBins&quot; : Number of bins
+&quot;PullForce&quot; : Force to pull atoms
+&quot;ConstForce&quot; : Force used during umbrella simulations
+&quot;StartDistance&quot; : Current value in the __heat_1.0.restart.coor__ file
+&quot;AtomMask&quot; : The mask for the collective variable (see above)
+</code></pre></div>
+<h4 id="run_3">Run:</h4>
+<details class="tip">
+<summary>Tip</summary>
+<p>At this point, you can either run the calculation locally or on a HPC. If you have a fast computer (12 or more cores), it is recommended that you do this locally as the pulls occur in serial and only need around 10 threads. This also makes life faster when checking the generated structures as you do not need to move files between computers.</p>
+</details>
+<div class="language-py highlight"><span class="filename">Umbrella.inp</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">QmSelection</span><span class="o">=</span><span class="n">resname</span> <span class="n">RES</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">QmCharge</span><span class="o">=</span><span class="mi">0</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">QmSpin</span><span class="o">=</span><span class="mi">1</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">QmMethod</span><span class="o">=</span><span class="n">PBE</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="n">QmBasis</span><span class="o">=</span><span class="mi">6</span><span class="o">-</span><span class="mi">31</span><span class="o">+</span><span class="n">G</span><span class="o">*</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="n">QmArgs</span><span class="o">=</span><span class="n">MINIPRINT</span> <span class="n">D3BJ</span> <span class="n">TightSCF</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">UmbrellaMin</span><span class="o">=</span><span class="mf">1.3</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="n">UmbrellaWidth</span><span class="o">=</span><span class="mf">0.05</span> <span class="c1"># (1)</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="n">UmbrellaBins</span><span class="o">=</span><span class="mi">50</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="n">PullForce</span><span class="o">=</span><span class="mi">5000</span> <span class="c1"># (2)</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="n">ConstForce</span><span class="o">=</span><span class="mi">300</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="n">StartDistance</span><span class="o">=</span><span class="mf">1.4</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="n">AtomMask</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span><span class="mi">13</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span> <span class="c1"># (3)</span>
+</span></code></pre></div>
+<ol>
+<li>Small window gap gives better umbrella sampling results. As its a bond, units in Angstroms.</li>
+<li>Pull force should be large so that the bins are linearly spaced</li>
+<li>Bond collective variable between atoms 12 and 13</li>
+</ol>
+<div class="language-sh highlight"><span class="filename">Generating windows</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>pull<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>-i<span class="w"> </span>Umbrella.inp
+</span></code></pre></div>
+<details class="warning" open="open">
+<summary>Warning</summary>
+<p>At this point, you should <strong>ALWAYS</strong> check the generated structures. You can do this quickly by using the <a href="../CodeReference/#pyBrellaSampling.pyBrella.VisLoad">visualisation script</a> which is called using :</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>vis<span class="w"> </span>-dr<span class="w"> </span>False<span class="w"> </span>-af<span class="w"> </span>pull_1
+</span></code></pre></div>
+<p>This will open up the final structure from each window as a new frame in a single trajectory in vmd. You can then use vmd to plot the collective variable against frame to ensure a linear distribution and that the collective variables are at the correct value.</p>
+</details>
+<h3 id="equilibration">Equilibration</h3>
+<p>Once the structures are all setup, it is recommended to move everything onto a HPC. This will dramatically speed up the future stages of the simulation and make the calculation possible within reasonable time scales. </p>
+<p>Ensure that you have correctly setup the pyBrellaSampling environment on the HPC as the default paths to software ect. will likely be different.</p>
+<p>Once on the HPC, using the same <code>Umbrella.inp</code> file as used previously, you can initiate the equilibration files.</p>
+<div class="language-sh highlight"><span class="filename">Setting up equilibration</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>equil<span class="w"> </span>-dr<span class="w"> </span>True<span class="w"> </span>-i<span class="w"> </span>Umbrella.inp
+</span></code></pre></div>
+<p>This should initialize the equilibration input files for each window, at this point it is recommended that you check at least one of the windows to make sure the software paths are correct.</p>
+<p>The command also generates some SLURM files:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>sub.sh<span class="w"> </span><span class="c1"># (1)</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>array_job.sh<span class="w"> </span><span class="c1"># (2)</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>runner.sh<span class="w"> </span><span class="c1"># (3)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>equil_1.txt<span class="w"> </span><span class="c1"># (4)</span>
+</span></code></pre></div>
+<ol>
+<li>Blank SLURM submission file that is used as a template by runner.sh. You can also manually use this to sumbit your equil scripts.</li>
+<li>File used by SLURM to run the array file. You shouldnt need to edit this.</li>
+<li>File used to link and submit all simulations to SLURM with dependancies... This may or may not work so use with caution. Also it will likely max out your maximum queue allowance so will have to comment lines out and run multiple times. Good Luck! </li>
+<li>Text file with each line being a self-contained command to run each window in the umbrella sampling simulation. This is used by SLURM as the array file which runs each line as an independent simulation. There will be multiple of these if you have set <strong>MaxStepsPerCalc</strong> &gt; 0 and they <strong>MUST</strong> be run in order. </li>
+</ol>
+<h3 id="production">Production</h3>
+<p>Running the production stage of Umbrella sampling is identical to the equilibration stage. </p>
+<p>It requires the same <code>Umbrella.inp</code> file and <strong>should</strong> be performed on a HPC. </p>
+<div class="language-sh highlight"><span class="filename">Setting up production</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pyBrella<span class="w"> </span>-stg<span class="w"> </span>prod<span class="w"> </span>-dr<span class="w"> </span>True<span class="w"> </span>-i<span class="w"> </span>Umbrella.inp
+</span></code></pre></div>
+<p>Like the equilibration stage, this will generate the <code>prod_X.txt</code> files that contain commands for running each step in the production run. Submit them in order otherwise they <strong>will</strong> break!</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.annotate", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.5cfa9459.min.js"></script>
+      
+    
+  </body>
+</html>
