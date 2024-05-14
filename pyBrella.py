@@ -124,6 +124,7 @@ def class_init(args: dict):
 def setup(QM: QMClass, Umbrella: UmbrellaClass):
     """
     Generates a setup directory and creates the syst-*.pdb files
+    
     Args:
         QM (QMClass): QM class containing QM section
         Umbrella (UmbrellaClass): Umbrella Class containing colvar information

@@ -1,7 +1,11 @@
 site_name: "pyBrellaSampling Docs"
 
 theme:
-        name: "material"
+    name: "material" # material 
+    features:
+        - content.code.annotate
+        - content.code.copy
+        - content.code.select
 
 plugins:
 - search
@@ -34,3 +38,20 @@ nav:
     - Testing: coverage.md
 
 repo_url: https://github.com/pcyra2/pyBrellaSampling
+
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+        anchor_linenums: true
+        line_spans: __span
+        pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences

@@ -12,7 +12,7 @@ You can however use only one input file as either file can read in all user vari
 The default inputs can be found and edited in `UserVars/Defaultinputs.py`
 
 Here is a list of the main variables that can be changed:
-
+``` py title="Default User Inputs"
 ### General               
     "WorkDir" : "./",# str: relative or absolute path to calculation
     "Verbosity" : 0, # int: 0=Errors, 1=Warnings, 2=Info, 3=Debug
@@ -45,14 +45,19 @@ Here is a list of the main variables that can be changed:
     "AnalysisFile" : "prod", # str: Variable to perform analysis on (i.e. if you only want to visualise pull files, use pull_1)
     "EquilLength" : 1, # int: Length of equil in ps. eg 1 ps = 2000 steps at 0.5 fs timestep
     "ProdLength" : 4, # int: Length of production in ps. 4 ps = 8000 steps at 0.5 fs timestep
-
-### Software paths
+```
+## Software paths
 
 Software paths should be set up before running any calculations and these can be found in `UserVars/SoftwarePaths.py`
+
+``` py title="Example structure of UserVars/SoftwarePaths.py"
 #### ORCA path
+
     "ORCA_PATH" : "/PATH_TO_ORCA/5.0.4/orca" # str: Path to the orca executable
 
 #### NAMD paths
+
     "NAMD_CPU" : "/PATH_TO_NAMD/NAMD_3.0b4_Linux-x86_64-multicore/namd3" # str: Path to the cpu version of NAMD for QMMM
     "NAMD_GPU" : "/PATH_TO_NAMD/NAMD_3.0b4_Linux-x86_64-multicore-CUDA/namd3" # str: Path to the GPU version of NAMD for MD
+```
 
