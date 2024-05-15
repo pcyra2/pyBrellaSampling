@@ -17,7 +17,7 @@ from pyBrellaSampling.Tools.utils import kcal
 def main():
     starttime = time.time()
     args = Input_Parser(sys.argv[1:])
-    verbosity = args["Verbosity"]
+    verbosity = args["verbosity"]
     WorkDir = args["WorkDir"]
     DryRun = args["DryRun"]
     Stage=args["Stage"]
@@ -26,7 +26,8 @@ def main():
     ORCA = ORCA_init(args)
     Structures = Get_Structures(args)
     calcs = init_benchmark(Structures=Structures, ORCA=ORCA, )
-    if Stage == "run" and globals.DryRun == False:
+    if Stage == "run" and globals.DryRun == "False":
+        print("bob")
         Finished, Failed = get_energy(calcs)
         if len(Finished) == 0: ### No jobs have started therefore a clean run.
             run_benchmark("jobfile.dat")
@@ -165,7 +166,7 @@ def init_benchmark(Structures: list, ORCA: ORCAClass):
         calculations (list[QMCalcClass]): Returns a list of calculations
     """
     print("INFO: Setting up benchmark\n" if globals.verbosity >= 1 else "", end="")    
-    jobfile=[]
+    jobfile=["mkdir /dev/shm/QM"]
     calculations = []
     for i in Functionals:
         try:
@@ -203,9 +204,9 @@ def init_benchmark(Structures: list, ORCA: ORCAClass):
                     except FileExistsError:
                         print(f"WARNING: {i} {j} {directory} {Structures[l].name} directory exists, skipping \n" if globals.verbosity > 1 else "", end="")
                     file = FileGen.ORCA_FileGen(Structures[l], ORCA) 
-                    if globals.DryRun == False:
+                    if globals.DryRun == "False":
                         utils.file_write(f"{path}/ORCA.inp", [file])
-                    jobfile.append(f"cd {path} ; WD=$PWD ; cp * /dev/shm/QM ; cd /dev/shm/QM ;  {ORCA.path} ORCA.inp '--use-hwthread-cpus --bind-to hwthread' > ORCA.out ; mv * $WD ; cd $WD ; cd ../../../../")
+                    jobfile.append(f"cd {path} ; WD=$PWD ; cp * /dev/shm/QM/. ; cd /dev/shm/QM ;  {ORCA.path} ORCA.inp '--use-hwthread-cpus --bind-to hwthread' > ORCA.out ; mv * $WD ; cd $WD ; cd ../../../../")
                     calculation = QMCalcClass(Structures[l].name, i, j, directory)
                     calculation.set_path(path)
                     calculation.set_runline(f"cd {path} ; WD=$PWD ; cp * /dev/shm/QM ; cd /dev/shm/QM ;  {ORCA.path} ORCA.inp '--use-hwthread-cpus --bind-to hwthread' > ORCA.out ; mv * $WD ; cd $WD ; cd ../../../../")
@@ -225,6 +226,7 @@ def run_benchmark(file:str = "jobfile.dat"):
     print(f"INFO: Running Jobs \n" if globals.verbosity >= 2 else "", end="")
     for lines in jobs:
         print(f"INFO: Running {lines} \n" if globals.verbosity >= 2 else "", end="")
+        print(lines)
         runout = subprocess.run([f"{lines}"], shell=True, capture_output=True)
         print(f"{runout.stdout}\n " if globals.verbosity >= 2 else "", end="")
 

@@ -439,7 +439,7 @@ def BenchmarkInput(sysargs: list):
     gen.add_argument("-wd","--WorkDir", type=str, help="Working directory path", default=Benchmark_Inp["WorkDir"])
     gen.add_argument("-c", "--Cores", type=int, help="The number of CPU cores to give each ORCA Job.", default=Benchmark_Inp["Cores"])
     gen.add_argument("-dr", "--DryRun", type=str, help="Should the calculation be performed?", default=Benchmark_Inp["DryRun"])
-    gen.add_argument("-stg", "--Stage", type=str, help="The stage of the calculation",choices=["init", "calc", "analysis",], default=Benchmark_Inp["Stage"])
+    gen.add_argument("-stg", "--Stage", type=str, help="The stage of the calculation",choices=["run", "analysis",], default=Benchmark_Inp["Stage"])
     gen.add_argument("-i", "--input", type=str, help="Optinonal input file rather than using the CLI interface.", default=None)
     bench = parser.add_argument_group("Benchmark Inputs")
     bench.add_argument("-type", "--BenchmarkType", type=str, help="Define the type of benchmark to perform", choices=["Energy", "Gradient", "Structure"], default=Benchmark_Inp["BenchmarkType"])
