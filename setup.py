@@ -8,7 +8,7 @@ setup(
         'console_scripts': [
             'pyBrella = pyBrellaSampling.pyBrella:main',
             'Standalone = pyBrellaSampling.Standalone:main',
-            'Benchmark = pyBrellaSampling.Benchmark.Benchmark:main',
+            'Benchmark = pyBrellaSampling.Benchmark:main',
             'convert = pyBrellaSampling.Tools.utils:convert',
         ],
     },

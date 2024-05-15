@@ -43,6 +43,7 @@ nav:
         - Examples: Standalone/Examples.md
     - Benchmark:
         - Overview: Benchmark/Overview.md
+        - User Guide: Benchmark/UserGuide.md
     - User Variables: UserVars.md
     - Testing: coverage.md
 

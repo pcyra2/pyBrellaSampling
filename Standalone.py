@@ -122,6 +122,7 @@ def calc_setup(args: dict):
 def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
     """
     Handles the running of the calculations. Choosing the right version of NAMD
+    
     Args:
         Calc (CalcClass): Gets the name of the calculation
         MM (MMClass): Gets the path to executables

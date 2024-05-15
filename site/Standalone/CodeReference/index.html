@@ -659,6 +659,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../UserVars/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Variables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../coverage/" class="md-nav__link">
         
   
@@ -764,18 +784,16 @@
 <h1 id="standalone">Standalone</h1>
 
 
-
 <div class="doc doc-object doc-function">
 
 
 
-
 <a id="pyBrellaSampling.Standalone.main"></a>
-  <div class="doc doc-contents first">
+    <div class="doc doc-contents first">
 
-          <details class="quote">
-            <summary>Source code in <code>Standalone.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
+            <details class="quote">
+              <summary>Source code in <code>Standalone.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
 <span class="normal"><a href="#__codelineno-0-13">13</a></span>
 <span class="normal"><a href="#__codelineno-0-14">14</a></span>
@@ -811,547 +829,541 @@
 </span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27"></a>    <span class="n">endtime</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 </span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Total time is </span><span class="si">{</span><span class="n">endtime</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">starttime</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
 
-
 <a id="pyBrellaSampling.Tools.InputParser.StandaloneInput"></a>
-  <div class="doc doc-contents first">
-  
+    <div class="doc doc-contents first">
+
       <p>Controls the inputs of a standalone calculation. </p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>sysargs</code></td>
-          <td>
-                <code>list</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>CLI inputs (see attributes)</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>sysargs</code></td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>CLI inputs (see attributes)</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Attributes:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--WorkDir">--WorkDir</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Working Directory</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Attributes:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Verbosity">--Verbosity</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Verbosity: 0 = none, 1 = info</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--DryRun">--DryRun</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Indicates whether programs are executed or not</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--CoresPerJob">--CoresPerJob</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Number of cores per individual calculation</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MemoryPerJob">--MemoryPerJob</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Gb of memory per individual calculation</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MDCPUPath">--MDCPUPath</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Path to NAMD CPU executable</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MDGPUPath">--MDGPUPath</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Path to NAMD GPU executable</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmFile">--QmFile</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of file containing QM information.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmPath">--QmPath</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Path to QM software</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmSelection">--QmSelection</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Selection algebra for QM atoms</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmCharge">--QmCharge</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Charge of QM region</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmSpin">--QmSpin</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Spin of QM region</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmMethod">--QmMethod</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Qm method</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmBasis">--QmBasis</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>QM basis set</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmArgs">--QmArgs</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Extra arguments for ORCA calculation</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--HPC">--HPC</span></code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to run on a HPC</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MaxWallTime">--MaxWallTime</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--HostName">--HostName</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>HostName of the HPC</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Partition">--Partition</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Calculation partition name</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MaxCores">--MaxCores</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Maximum number of cores available to a node (For array splitting)</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QualityofService">--QualityofService</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Slurm QoS, set to None if not relevant.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Account">--Account</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Slurm account, (Not username), Set to None if not relevant</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--SoftwareLines">--SoftwareLines</span></code></td>
-          <td>
-                <code>list</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>List of commands like "module load XXX" to load software. Keep each line surrounded by quotes.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MMFile">--MMFile</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name of input file containing MD information</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Name">--Name</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Name for the calculation</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Ensemble">--Ensemble</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Ensemble for Calculation</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QM">--QM</span></code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether this is a QMMM calculation or not.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Steps">--Steps</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Number of simulation steps.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--TimeStep">--TimeStep</span></code></td>
-          <td>
-                <code>float</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--ParmFile">--ParmFile</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Parameter file name</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--AmberCoordinates">--AmberCoordinates</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Amber coordinate file name that relates to the parameter file</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--StartFile">--StartFile</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--RestartOut">--RestartOut</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Frequency to generate a restart file</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--TrajOut">--TrajOut</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Frequency to add to the trajectory file</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--SMD">--SMD</span></code></td>
-          <td>
-                <code>bool</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Whether to use steered molecular dynamics</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Force">--Force</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Force for Steered MD</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--StartValue">--StartValue</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Start value for SMD</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--EndValue">--EndValue</span></code></td>
-          <td>
-                <code>int</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>End value for SMD. MAKE == Start if wanting constant.</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-          <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--AtomMask">--AtomMask</span></code></td>
-          <td>
-                <code>str</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Mask for the restrained atoms.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--WorkDir">--WorkDir</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Working Directory</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Verbosity">--Verbosity</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Verbosity: 0 = none, 1 = info</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--DryRun">--DryRun</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Indicates whether programs are executed or not</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--CoresPerJob">--CoresPerJob</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of cores per individual calculation</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MemoryPerJob">--MemoryPerJob</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Gb of memory per individual calculation</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MDCPUPath">--MDCPUPath</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to NAMD CPU executable</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MDGPUPath">--MDGPUPath</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to NAMD GPU executable</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmFile">--QmFile</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of file containing QM information.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmPath">--QmPath</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Path to QM software</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmSelection">--QmSelection</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Selection algebra for QM atoms</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmCharge">--QmCharge</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Charge of QM region</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmSpin">--QmSpin</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Spin of QM region</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmMethod">--QmMethod</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Qm method</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmBasis">--QmBasis</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>QM basis set</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QmArgs">--QmArgs</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Extra arguments for ORCA calculation</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--HPC">--HPC</span></code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to run on a HPC</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MaxWallTime">--MaxWallTime</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum wall time (Hours) for your jobs (either leave as node max, or set as job length)</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--HostName">--HostName</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>HostName of the HPC</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Partition">--Partition</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculation partition name</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MaxCores">--MaxCores</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Maximum number of cores available to a node (For array splitting)</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QualityofService">--QualityofService</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Slurm QoS, set to None if not relevant.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Account">--Account</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Slurm account, (Not username), Set to None if not relevant</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--SoftwareLines">--SoftwareLines</span></code></td>
+            <td>
+                  <code>list</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of commands like "module load XXX" to load software. Keep each line surrounded by quotes.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--MMFile">--MMFile</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name of input file containing MD information</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Name">--Name</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Name for the calculation</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Ensemble">--Ensemble</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Ensemble for Calculation</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--QM">--QM</span></code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether this is a QMMM calculation or not.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Steps">--Steps</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of simulation steps.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--TimeStep">--TimeStep</span></code></td>
+            <td>
+                  <code>float</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Time step for the simulation. We recommend 2 for MM, 0.5 for QMMM</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--ParmFile">--ParmFile</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Parameter file name</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--AmberCoordinates">--AmberCoordinates</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Amber coordinate file name that relates to the parameter file</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--StartFile">--StartFile</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Either Amber coordinates or NAMD coordinates. These are the coordinates that it starts from.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--RestartOut">--RestartOut</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency to generate a restart file</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--TrajOut">--TrajOut</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Frequency to add to the trajectory file</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--SMD">--SMD</span></code></td>
+            <td>
+                  <code>bool</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to use steered molecular dynamics</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--Force">--Force</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Force for Steered MD</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--StartValue">--StartValue</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Start value for SMD</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--EndValue">--EndValue</span></code></td>
+            <td>
+                  <code>int</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>End value for SMD. MAKE == Start if wanting constant.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="pyBrellaSampling.Tools.InputParser.StandaloneInput.--AtomMask">--AtomMask</span></code></td>
+            <td>
+                  <code>str</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Mask for the restrained atoms.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><span class="doc-section-title">Raises:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td>
-                <code>ValueError</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>If an unknown variable is parsed</p>
-            </div>
-          </td>
+<p><span class="doc-section-title">Raises:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code>ValueError</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>If an unknown variable is parsed</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-<td><code>arg_dict</code></td>          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Dictionary of user variables.</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>arg_dict</code></td>            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Dictionary of user variables.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>Tools/InputParser.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-232">232</a></span>
+            <details class="quote">
+              <summary>Source code in <code>Tools/InputParser.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-232">232</a></span>
 <span class="normal"><a href="#__codelineno-0-233">233</a></span>
 <span class="normal"><a href="#__codelineno-0-234">234</a></span>
 <span class="normal"><a href="#__codelineno-0-235">235</a></span>
@@ -1735,109 +1747,105 @@
 </span><span id="__span-0-422"><a id="__codelineno-0-422" name="__codelineno-0-422"></a>    <span class="c1"># utils.print_attributes(arg_dict) # Prints out all vars for use in docstring generation</span>
 </span><span id="__span-0-423"><a id="__codelineno-0-423" name="__codelineno-0-423"></a>    <span class="k">return</span> <span class="n">arg_dict</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
 
-
 <a id="pyBrellaSampling.Standalone.Class_init"></a>
-  <div class="doc doc-contents first">
-  
+    <div class="doc doc-contents first">
+
       <p>Initialises some of the main classes used by the calculation. </p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>args</code></td>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User defined variables.</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
-
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>args</code></td>
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User defined variables.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-<td><code>Calc</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.CalcClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.CalcClass">CalcClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Generic calculation info</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-<td><code>MM</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.MMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.MMClass">MMClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>MM Variables</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-<td><code>QM</code></td>          <td>
-                <code>QMClas</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>QM variables, if == False : No QMMM</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-<td><code>Umbrella</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.UmbrellaClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.UmbrellaClass">UmbrellaClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Umbrella variables for restraint information.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>Calc</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.CalcClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.CalcClass">CalcClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Generic calculation info</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>MM</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.MMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.MMClass">MMClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>MM Variables</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>QM</code></td>            <td>
+                  <code>QMClas</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>QM variables, if == False : No QMMM</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>Umbrella</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.UmbrellaClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.UmbrellaClass">UmbrellaClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Umbrella variables for restraint information.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>Standalone.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-31">31</a></span>
+            <details class="quote">
+              <summary>Source code in <code>Standalone.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-31">31</a></span>
 <span class="normal"><a href="#__codelineno-0-32">32</a></span>
 <span class="normal"><a href="#__codelineno-0-33">33</a></span>
 <span class="normal"><a href="#__codelineno-0-34">34</a></span>
@@ -1929,99 +1937,95 @@
 </span><span id="__span-0-75"><a id="__codelineno-0-75" name="__codelineno-0-75"></a>    <span class="n">NAMD</span> <span class="o">=</span> <span class="n">NAMDClass</span><span class="p">(</span><span class="n">Calc</span><span class="o">=</span><span class="n">Calc</span><span class="p">,</span> <span class="n">MM</span><span class="o">=</span><span class="n">MM</span><span class="p">)</span>
 </span><span id="__span-0-76"><a id="__codelineno-0-76" name="__codelineno-0-76"></a>    <span class="k">return</span> <span class="n">Calc</span><span class="p">,</span> <span class="n">MM</span><span class="p">,</span> <span class="n">QM</span><span class="p">,</span> <span class="n">Umbrella</span><span class="p">,</span> <span class="n">NAMD</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
 
-
 <a id="pyBrellaSampling.Standalone.calc_setup"></a>
-  <div class="doc doc-contents first">
-  
+    <div class="doc doc-contents first">
+
       <p>Generates the input file, including any syst-*.pdb files.</p>
 
 
-
-  <p><span class="doc-section-title">Parameters:</span></p>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Default</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-          <td><code>args</code></td>
-          <td>
-                <code>dict</code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>User defined variables</p>
-            </div>
-          </td>
-          <td>
-              <em>required</em>
-          </td>
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
         </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td><code>args</code></td>
+            <td>
+                  <code>dict</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>User defined variables</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
 
-
-  <p><span class="doc-section-title">Returns:</span></p>
-  <table>
-    <thead>
-      <tr>
-<th>Name</th>        <th>Type</th>
-        <th>Description</th>
-      </tr>
-    </thead>
-    <tbody>
-        <tr class="doc-section-item">
-<td><code>Calc</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.CalcClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.CalcClass">CalcClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Calculation variables</p>
-            </div>
-          </td>
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
         </tr>
-        <tr class="doc-section-item">
-<td><code>MM</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.MMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.MMClass">MMClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Required for knowing how to run the calculation (With or without GPU ect. )</p>
-            </div>
-          </td>
-        </tr>
-        <tr class="doc-section-item">
-<td><code>QM</code></td>          <td>
-                <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.QMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.QMClass">QMClass</a></code>
-          </td>
-          <td>
-            <div class="doc-md-description">
-              <p>Again required for knowing how to run the calculation.</p>
-            </div>
-          </td>
-        </tr>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>Calc</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.CalcClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.CalcClass">CalcClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Calculation variables</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>MM</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.MMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.MMClass">MMClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Required for knowing how to run the calculation (With or without GPU ect. )</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+<td><code>QM</code></td>            <td>
+                  <code><a class="autorefs autorefs-internal" title="pyBrellaSampling.Tools.classes.QMClass" href="../../Umbrella/CodeReference/#pyBrellaSampling.Tools.classes.QMClass">QMClass</a></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Again required for knowing how to run the calculation.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
-          <details class="quote">
-            <summary>Source code in <code>Standalone.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-78"> 78</a></span>
+            <details class="quote">
+              <summary>Source code in <code>Standalone.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-78"> 78</a></span>
 <span class="normal"><a href="#__codelineno-0-79"> 79</a></span>
 <span class="normal"><a href="#__codelineno-0-80"> 80</a></span>
 <span class="normal"><a href="#__codelineno-0-81"> 81</a></span>
@@ -2107,29 +2111,27 @@
 </span><span id="__span-0-119"><a id="__codelineno-0-119" name="__codelineno-0-119"></a>    <span class="n">utils</span><span class="o">.</span><span class="n">file_write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">globals</span><span class="o">.</span><span class="n">WorkDir</span><span class="si">}{</span><span class="n">Calc</span><span class="o">.</span><span class="n">Name</span><span class="si">}</span><span class="s2">.conf&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">file</span><span class="p">])</span> <span class="c1"># Outputs the calculation file for namd. </span>
 </span><span id="__span-0-120"><a id="__codelineno-0-120" name="__codelineno-0-120"></a>    <span class="k">return</span> <span class="n">Calc</span><span class="p">,</span> <span class="n">MM</span><span class="p">,</span> <span class="n">QM</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
 
-
 <a id="pyBrellaSampling.Standalone.calc_run"></a>
-  <div class="doc doc-contents first">
-  
+    <div class="doc doc-contents first">
+
       <p>Handles the running of the calculations. Choosing the right version of NAMD
 Args:
     Calc (CalcClass): Gets the name of the calculation
     MM (MMClass): Gets the path to executables
     QM (QMClass): Gets wheter to use the GPU.</p>
 
-          <details class="quote">
-            <summary>Source code in <code>Standalone.py</code></summary>
-            <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-122">122</a></span>
+            <details class="quote">
+              <summary>Source code in <code>Standalone.py</code></summary>
+              <div class="language-python highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-122">122</a></span>
 <span class="normal"><a href="#__codelineno-0-123">123</a></span>
 <span class="normal"><a href="#__codelineno-0-124">124</a></span>
 <span class="normal"><a href="#__codelineno-0-125">125</a></span>
@@ -2173,8 +2175,8 @@ Args:
 </span><span id="__span-0-142"><a id="__codelineno-0-142" name="__codelineno-0-142"></a>                       <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">capture_output</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span><span id="__span-0-143"><a id="__codelineno-0-143" name="__codelineno-0-143"></a>        <span class="n">subprocess</span><span class="o">.</span><span class="n">run</span><span class="p">([</span><span class="s2">&quot;rm -r /dev/shm/NAMD_QMMM&quot;</span><span class="p">],</span> <span class="n">shell</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
-          </details>
-  </div>
+            </details>
+    </div>
 
 </div>
 

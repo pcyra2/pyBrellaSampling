@@ -554,7 +554,17 @@ def convert():
             print(f"{val} {inpunit} is {float(val)*0.001} ps")
         elif output.casefold() == "ns":
             print(f"{val} {inpunit} is {float(val)*0.000001} ns")
-    elif  "ps"in inputs.casefold():
+    elif "steps" in inputs.casefold():
+        inpunit = "steps"
+        group = "time"
+        timestep = input("What is your timestep in fs? ")
+        if output.casefold() == "fs":
+            print(f"{val} {inpunit} is {float(val)*1*float(timestep)} fs")
+        elif output.casefold() == "ps":
+            print(f"{val} {inpunit} is {float(val)*0.001*float(timestep)} ps")
+        elif output.casefold() == "ns":
+            print(f"{val} {inpunit} is {float(val)*0.000001*float(timestep)} ns")
+    elif  "ps" in inputs.casefold():
         inpunit = "ps"
         group = "time"
         if output.casefold() == "fs":
@@ -571,7 +581,9 @@ def convert():
         elif output.casefold() == "ps":
             print(f"{val} {inpunit} is {float(val)*1000} ps")
         elif output.casefold() == "ns":
-            print(f"{val} {inpunit} is {float(val)*1} ns")        
+            print(f"{val} {inpunit} is {float(val)*1} ns")  
+    else:
+        print("Sorry, I havent understood your units. Currently I accept: fs, ps, ns, and steps")
     print(f"Have a good day! <3")
     
             

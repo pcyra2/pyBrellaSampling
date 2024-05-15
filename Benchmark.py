@@ -14,7 +14,7 @@ import os
 from pyBrellaSampling.Tools.utils import kcal 
 
 
-def main_cli():
+def main():
     starttime = time.time()
     args = Input_Parser(sys.argv[1:])
     verbosity = args["Verbosity"]

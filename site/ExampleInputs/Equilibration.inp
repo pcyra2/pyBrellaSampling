@@ -1,0 +1,7 @@
+StartFile=equil_rest_1.0.restart.coor
+Ensemble=NVT
+Steps=50000000
+DryRun=False
+Name=equil
+RestartOut=10000
+TrajOut=500000

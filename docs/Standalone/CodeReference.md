@@ -1,11 +1,15 @@
 # Standalone
 
-::: pyBrellaSampling.Standalone.main
+
+## Core code
+
+::: pyBrellaSampling.Standalone
+
+
+## Input parser
 
 ::: pyBrellaSampling.Tools.InputParser.StandaloneInput
 
-::: pyBrellaSampling.Standalone.Class_init
+## File generation
 
-::: pyBrellaSampling.Standalone.calc_setup
-
-::: pyBrellaSampling.Standalone.calc_run
+::: pyBrellaSampling.Tools.FileGen
