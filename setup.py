@@ -9,6 +9,7 @@ setup(
             'pyBrella = pyBrellaSampling.pyBrella:main',
             'Standalone = pyBrellaSampling.Standalone:main',
             'Benchmark = pyBrellaSampling.Benchmark.Benchmark:main',
+            'convert = pyBrellaSampling.Tools.utils:convert',
         ],
     },
 )

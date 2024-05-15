@@ -1,6 +1,8 @@
 # Some example input files
 
 ## Minimsation
+### Setup
+
 
 ## Heat
 
@@ -11,16 +13,15 @@
 * start.rst7
 * complex.parm7
 
-#### Input file: (heat.inp)
+#### Input file: 
 
-    # Heat file, heats to 300 k over 300 ps.
-    StartFile=min_1.0.restart.coor
-    Ensemble=heat
-    Steps=150000
-    DryRun=False
-    Name=heat
-    RestartOut=100
-    TrajOut=500 # Generates 300 trajectory frames
+``` py title="heat.inp"
+---8<--- "./docs/ExampleInputs/StandardHeating.inp"
+```
+
+``` py title="RestrainedHeat.inp"
+---8<--- "./docs/ExampleInputs/RestrainedHeating.inp"
+```
 
 ### Run: 
 
@@ -41,4 +42,8 @@
 * heat_1.0.xsc
 * heat.conf
 
-## Equilibration
+## Restrained Equilibration
+
+``` py title="RestrainedEquilibration.inp"
+---8<--- "./docs/ExampleInputs/RestrainedEquilibration.inp"
+```

@@ -12,3 +12,4 @@ It should be noted that some of the functionality has not been tested and usage 
 
 Feedback and issues can be raised on [github](https://github.com/pcyra2/pyBrellaSampling/issues) or via email to `ross.amory98@gmail.com`
 
+Follow the [usage guide](./usage.md) to perform your first Umbrella sampling calculation, or if your feeling brave, go through the [source code](./CodeReference.md).

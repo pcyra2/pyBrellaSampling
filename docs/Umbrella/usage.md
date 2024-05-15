@@ -7,7 +7,7 @@ To run an umbrella calculation, you need two key files:
 * `Coordinate file` (default = start.rst7) Can be changed using `pyBrella --StartFile COORD`
 
 
-These two files, along with other user defined [variables](#UserInputs) are all you need in order to perform Umbrella Sampling. 
+These two files, along with other user defined [variables](./Inputs.md) are all you need in order to perform Umbrella Sampling. 
 
 Users are recommended to follow the workflow provided [below](#workflow).
 
@@ -31,7 +31,7 @@ subgraph Local
 ```
 
 ### Setup
-The setup stage performs the [setup script](CodeReference.md/#pyBrellaSampling.pyBrella.setup)
+The setup stage performs the [setup script](./CodeReference.md#pyBrellaSampling.pyBrella.setup)
 
 This generates the `syst-col.pdb` and `syst-qm.pdb` files.
 
@@ -57,7 +57,7 @@ pyBrella -stg setup -dr False
 
 ### Minimisation
 
-This step minimizes your system using traditional MD. The [minimisation code](CodeReference.md/#pyBrellaSampling.pyBrella.min) is used to perform this.
+This step minimizes your system using traditional MD. The [minimisation code](CodeReference.md#pyBrellaSampling.pyBrella.min) is used to perform this.
 
 #### Important variables:
     
@@ -73,7 +73,7 @@ pyBrella -stg min -dr False # (1)
 
 ### Heating
 
-At this step, we heat the system to 300 k over 20 ps using the [heat code](CodeReference.md/#pyBrellaSampling.pyBrella.heat). 
+At this step, we heat the system to 300 k over 20 ps using the [heat code](CodeReference.md#pyBrellaSampling.pyBrella.heat). 
 
 #### Important variables:
     
@@ -93,7 +93,7 @@ pyBrella -stg heat -dr False
 
 ### Pull
 
-This is the stage where you initiate the umbrella windows/bins. This uses the [pull code](CodeReference.md/#pyBrellaSampling.pyBrella.pull) From this point on it is recommended to be using an input file for all steps of the simulation. 
+This is the stage where you initiate the umbrella windows/bins. This uses the [pull code](CodeReference.md#pyBrellaSampling.pyBrella.pull) From this point on it is recommended to be using an input file for all steps of the simulation. 
 
 You first need to analyze the heated structure, and obtain the atom index's for the collective variable.
 
@@ -151,7 +151,7 @@ pyBrella -stg pull -dr False -i Umbrella.inp
 
 ???+ warning "Warning"
 
-    At this point, you should __ALWAYS__ check the generated structures. You can do this quickly by using the [visualization script](CodeReference.md/#pyBrellaSampling.pyBrella.VisLoad) which is called using :
+    At this point, you should __ALWAYS__ check the generated structures. You can do this quickly by using the [visualization script](CodeReference.md#pyBrellaSampling.pyBrella.VisLoad) which is called using :
     
     ``` sh 
     pyBrella -stg vis -dr False -af pull_1
@@ -201,7 +201,7 @@ Like the equilibration stage, this will generate the `prod_X.txt` files that con
 
 ### Wham
 
-You can perform a WHAM calculation at any stage after the windows are pulled. This is done through the [WHAM code](CodeReference.md/#wham-code). This is not the best way to run a WHAM calculation however, and [convergence](#convergence) is a more robust implementation of this method.
+You can perform a WHAM calculation at any stage after the windows are pulled. This is done through the [WHAM code](CodeReference.md#wham-code). This is not the best way to run a WHAM calculation however, and [convergence](#convergence) is a more robust implementation of this method.
 
 You can run a WHAM calculation using:
 
@@ -264,7 +264,7 @@ The Convergence calculation outputs files to WHAM/Conv. For each of the sub-step
 
 ### Analysis
 
-Using further configuration files, you can also perform analysis and track other variables of the system throughout the simulation. This uses the [analysis code](CodeReference.md/#pyBrellaSampling.Tools.analysis.analysis) and reads in data files to configure states to track. (See below)
+Using further configuration files, you can also perform analysis and track other variables of the system throughout the simulation. This uses the [analysis code](CodeReference.md#pyBrellaSampling.Tools.analysis.analysis) and reads in data files to configure states to track. (See below)
 
 
 ``` sh title="Running analysis"

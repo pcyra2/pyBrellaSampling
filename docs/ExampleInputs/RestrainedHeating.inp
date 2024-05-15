@@ -1,0 +1,12 @@
+SMD=True
+Force=0.50
+StartValue=1.3
+EndValue=1.3                    # Constant restraint (1.3 Ang)
+AtomMask=13717,13734,0,0        # Bond Restraint
+StartFile=min_1.0.restart.coor  # Starts from min file
+Ensemble=heat                   # Heats to 300k
+Steps=150000                    # Heat over 300 ps 
+DryRun=False
+Name=RestrainedHeat
+RestartOut=100
+TrajOut=500

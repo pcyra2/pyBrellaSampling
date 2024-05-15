@@ -22,6 +22,7 @@ plugins:
           show_root_heading: false
           show_submodules: true
           show_object_type: true
+          sort_members: source
           
 - coverage:
     page_name: coverage  # default
@@ -42,6 +43,7 @@ nav:
         - Examples: Standalone/Examples.md
     - Benchmark:
         - Overview: Benchmark/Overview.md
+    - User Variables: UserVars.md
     - Testing: coverage.md
 
 repo_url: https://github.com/pcyra2/pyBrellaSampling

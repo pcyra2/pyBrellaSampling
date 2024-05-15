@@ -1,6 +1,6 @@
 # User Inputs
 
-User inputs can either be provided by [commandline variables](../CodeReference/#pyBrellaSampling.Tools.InputParser.UmbrellaInput), or through the use of one or two inputfiles. 
+User inputs can either be provided by [commandline variables](./CodeReference.md#pyBrellaSampling.Tools.InputParser.UmbrellaInput), or through the use of one or two inputfiles. 
 
 We recommend the use of two input files, on being the QM input file that should contain the information regarding the QM zone. The other being the Umbrella input file that will contain all other information. 
 

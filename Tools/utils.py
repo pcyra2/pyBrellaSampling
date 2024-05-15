@@ -7,6 +7,7 @@ import numpy as np
 from pyBrellaSampling.Tools.classes import *
 # from pyBrellaSampling.Tools.globals import verbosity, globals.WorkDir, DryRun, globals.parmfile
 import pyBrellaSampling.Tools.globals as globals
+import sys
 
 def file_read(path):
     """Reads in the file in the path as a 1D array of lines"""
@@ -535,3 +536,42 @@ kcal = 627.51 ### a.u. to kcal/mol conversion
 def print_attributes(argdict: dict):
     for i in argdict:
         print(f"--{i} ({type(argdict[i])}):")
+        
+def convert():
+    """Quick CLI tool to convert between units, currently only ps, fs and ns works.
+    """
+    inputs = input("Input value with units: ")
+    inpunit=""
+    group=""
+    val = inputs.split()[0]
+    output = input("What units do you want it in? ")
+    if "fs" in inputs.casefold():
+        inpunit = "fs"
+        group = "time"
+        if output.casefold() == "fs":
+            print(f"{val} {inpunit} is {float(val)*1} fs")
+        elif output.casefold() == "ps":
+            print(f"{val} {inpunit} is {float(val)*0.001} ps")
+        elif output.casefold() == "ns":
+            print(f"{val} {inpunit} is {float(val)*0.000001} ns")
+    elif  "ps"in inputs.casefold():
+        inpunit = "ps"
+        group = "time"
+        if output.casefold() == "fs":
+            print(f"{val} {inpunit} is {float(val)*1000} fs")
+        elif output.casefold() == "ps":
+            print(f"{val} {inpunit} is {float(val)*1} ps")
+        elif output.casefold() == "ns":
+            print(f"{val} {inpunit} is {float(val)*0.001} ns")
+    elif "ns"in inputs.casefold():
+        inpunit = "ns"
+        group = "time"
+        if output.casefold() == "fs":
+            print(f"{val} {inpunit} is {float(val)*1000000} fs")
+        elif output.casefold() == "ps":
+            print(f"{val} {inpunit} is {float(val)*1000} ps")
+        elif output.casefold() == "ns":
+            print(f"{val} {inpunit} is {float(val)*1} ns")        
+    print(f"Have a good day! <3")
+    
+            

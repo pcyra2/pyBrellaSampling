@@ -28,6 +28,13 @@ Finally install the environment:
 pip install -e .
 ```
 
+!!! warning
+
+    Warning, to re-compile this documentation, you also need to instal mkdocs-coverage... sadly this isnt a conda package so install it using:
+    ``` sh
+    pip install mkdocs-coverage
+    ```
+
 ## Pre-requisits 
 
 ### ORCA

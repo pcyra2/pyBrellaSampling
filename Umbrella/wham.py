@@ -17,7 +17,7 @@ def autocorrelate(data: list):
         data (list): list of colvar data
 
     Returns:
-        integral_time: Time autocorrelation value for the dataset.
+        integral_time (float): Time autocorrelation value for the dataset.
     """
     try:
         integral_time = emcee.autocorr.integrated_time(data, c=1)

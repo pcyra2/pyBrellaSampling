@@ -1,0 +1,8 @@
+# Heat file, heats to 300 k over 300 ps.
+StartFile=min_1.0.restart.coor
+Ensemble=heat                   # Heats to 300k
+Steps=150000                    # 300 ps with dt = 2fs
+DryRun=False
+Name=heat
+RestartOut=100
+TrajOut=500                     # Generates 300 trajectory frames

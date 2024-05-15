@@ -8,7 +8,7 @@ To run a standalone simulation, you need some key initial files:
 * `Coordinate file` (default = start.rst7) Can be changed using `pyBrella --StartFile COORD`
 * `Amber Coordinate file` (default = start.rst7) Can be changed using `pyBrella --AmberCoordinates COORD`, This needs to be an amber file to link with amber parameters
 
-You also have [cli variables](#user-inputs) that tune the calculation. They are handled by the [input parser](../CodeReference/#pyBrellaSampling.Tools.InputParser.StandaloneInput)
+You also have [cli variables](#user-inputs) that tune the calculation. They are handled by the [input parser](./CodeReference.md#pyBrellaSampling.Tools.InputParser.StandaloneInput)
 
 ## Running (recommended)
 
@@ -26,7 +26,7 @@ INPUTFILE must be in the format:
 
 ## Running (not recommended)
 
-You can also run a simulation directly from the command line. All user variables can be parsed and this is handled by the [input parser](../CodeReference/#pyBrellaSampling.Tools.InputParser.StandaloneInput)
+You can also run a simulation directly from the command line. All user variables can be parsed and this is handled by the [input parser](./CodeReference.md#pyBrellaSampling.Tools.InputParser.StandaloneInput)
 
 ## User Inputs
 The default inputs can be found and edited in `UserVars/Defaultinputs.py`, 
