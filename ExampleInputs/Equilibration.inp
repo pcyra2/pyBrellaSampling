@@ -1,7 +1,7 @@
-StartFile=equil_rest_1.0.restart.coor
-Ensemble=NVT
-Steps=50000000
-DryRun=False
-Name=equil
-RestartOut=10000
-TrajOut=500000
+StartFile=equil_rest_1.0.restart.coor   # Starts from a restrained equilibration file
+Ensemble=NVT                            # NVT Ensemble
+Steps=5000000                           # 10 ns equilibration
+DryRun=False                            # Runs the calculation
+Name=equil                              # Name of calculation
+RestartOut=10000                        
+TrajOut=500000                          # Creates 10 frames in trajectory

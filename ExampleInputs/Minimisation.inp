@@ -1,0 +1,8 @@
+Name=min
+Ensemble=min                # runs a minimization calculation rather than dynamics
+Steps=100000
+TrajOut=1000                # 100 trajectory frames
+RestartOut=10               # Generate restart files frequently when minimizing!
+DryRun=False    
+StartFile=start.rst7        # Start using amber coordinates not NAMD
+AmberCoordinates=start.rst7 # What i usually call my initial coordinates.. 
