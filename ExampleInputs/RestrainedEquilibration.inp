@@ -1,0 +1,12 @@
+SMD=True				            # Turns on Colvar module
+Force=0.10
+StartValue=40				        # Restrain rather than SMD
+EndValue=40				            # Restrain rather than SMD
+AtomMask=13717,13734,13759,13762	# Dihedral restraint
+StartFile=heat_1.0.restart.coor	    # Reads in Heat file
+Ensemble=NVT				        # Constant volume
+Steps=150000				        # 300 ps equil (2fs time step)
+DryRun=False
+Name=equil_rest
+RestartOut=100
+TrajOut=1500

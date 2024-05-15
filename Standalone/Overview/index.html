@@ -63,6 +63,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#standalone-calculations" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -421,6 +426,19 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Overview
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -431,6 +449,52 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -577,6 +641,26 @@
   
   
     <li class="md-nav__item">
+      <a href="../../UserVars/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Variables
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../coverage/" class="md-nav__link">
         
   
@@ -607,6 +691,43 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      Overview
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Examples
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -624,9 +745,17 @@
   
 
 
-  <h1>Overview</h1>
-
-
+<h1 id="standalone-calculations">Standalone Calculations</h1>
+<h2 id="overview">Overview</h2>
+<p>In the workflow of designing a QM/MM umbrella sampling automation program, the tools required to run standard MD and QM/MM calculations were generated. </p>
+<p>We therefore added an interface that access these tools to allow the end user to quickly setup and run MD and QM/MM calculations. The tool uses the same file formats as the umbrella sampling code, and also reads in standard <a href="../../UserVars/#md-global-variables">MD parameters</a> that can be edited in the <a href="../../UserVars/">UserVars</a> directory.  </p>
+<h2 id="usage">Usage</h2>
+<p>To use the standalone code, you can run:</p>
+<div class="language-sh highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Standalone<span class="w"> </span>--help<span class="w"> </span><span class="c1"># Gets all cli variables</span>
+</span></code></pre></div>
+<p>For a more in-depth usage guide: <a href="../usage/">Read this</a></p>
+<h2 id="examples">Examples</h2>
+<p>There are also <a href="../Examples/">example input files</a> for a variety of different calculation types. </p>
 
 
 
