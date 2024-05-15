@@ -31,7 +31,7 @@ subgraph Local
 ```
 
 ### Setup
-The setup stage performs the [setup script](../CodeReference/#pyBrellaSampling.pyBrella.setup)
+The setup stage performs the [setup script](CodeReference.md/#pyBrellaSampling.pyBrella.setup)
 
 This generates the `syst-col.pdb` and `syst-qm.pdb` files.
 
@@ -57,7 +57,7 @@ pyBrella -stg setup -dr False
 
 ### Minimisation
 
-This step minimizes your system using traditional MD. The [minimisation code](../CodeReference/#pyBrellaSampling.pyBrella.min) is used to perform this.
+This step minimizes your system using traditional MD. The [minimisation code](CodeReference.md/#pyBrellaSampling.pyBrella.min) is used to perform this.
 
 #### Important variables:
     
@@ -65,7 +65,7 @@ This step minimizes your system using traditional MD. The [minimisation code](..
 
 #### Run:
 
-```sh title="Running a minimisation"
+```sh title="Running a minimization"
 pyBrella -stg min -dr False # (1)
 ```
 
@@ -73,7 +73,7 @@ pyBrella -stg min -dr False # (1)
 
 ### Heating
 
-At this step, we heat the system to 300 k over 20 ps using the [heat code](../CodeReference/#pyBrellaSampling.pyBrella.heat). 
+At this step, we heat the system to 300 k over 20 ps using the [heat code](CodeReference.md/#pyBrellaSampling.pyBrella.heat). 
 
 #### Important variables:
     
@@ -93,7 +93,7 @@ pyBrella -stg heat -dr False
 
 ### Pull
 
-This is the stage where you initiate the umbrella windows/bins. This uses the [pull code](../CodeReference/#pyBrellaSampling.pyBrella.pull) From this point on it is recommended to be using an input file for all steps of the simulation. 
+This is the stage where you initiate the umbrella windows/bins. This uses the [pull code](CodeReference.md/#pyBrellaSampling.pyBrella.pull) From this point on it is recommended to be using an input file for all steps of the simulation. 
 
 You first need to analyze the heated structure, and obtain the atom index's for the collective variable.
 
@@ -151,7 +151,7 @@ pyBrella -stg pull -dr False -i Umbrella.inp
 
 ???+ warning "Warning"
 
-    At this point, you should __ALWAYS__ check the generated structures. You can do this quickly by using the [visualisation script](../CodeReference/#pyBrellaSampling.pyBrella.VisLoad) which is called using :
+    At this point, you should __ALWAYS__ check the generated structures. You can do this quickly by using the [visualization script](CodeReference.md/#pyBrellaSampling.pyBrella.VisLoad) which is called using :
     
     ``` sh 
     pyBrella -stg vis -dr False -af pull_1
@@ -183,8 +183,8 @@ equil_1.txt # (4)
 ```
 
 1. Blank SLURM submission file that is used as a template by runner.sh. You can also manually use this to sumbit your equil scripts.
-2. File used by SLURM to run the array file. You shouldnt need to edit this.
-3. File used to link and submit all simulations to SLURM with dependancies... This may or may not work so use with caution. Also it will likely max out your maximum queue allowance so will have to comment lines out and run multiple times. Good Luck! 
+2. File used by SLURM to run the array file. You shouldn't need to edit this.
+3. File used to link and submit all simulations to SLURM with dependencies... This may or may not work so use with caution. Also it will likely max out your maximum queue allowance so will have to comment lines out and run multiple times. Good Luck! 
 4. Text file with each line being a self-contained command to run each window in the umbrella sampling simulation. This is used by SLURM as the array file which runs each line as an independent simulation. There will be multiple of these if you have set __MaxStepsPerCalc__ > 0 and they __MUST__ be run in order. 
 
 ### Production
@@ -198,3 +198,89 @@ pyBrella -stg prod -dr True -i Umbrella.inp
 ```
 
 Like the equilibration stage, this will generate the `prod_X.txt` files that contain commands for running each step in the production run. Submit them in order otherwise they __will__ break!
+
+### Wham
+
+You can perform a WHAM calculation at any stage after the windows are pulled. This is done through the [WHAM code](CodeReference.md/#wham-code). This is not the best way to run a WHAM calculation however, and [convergence](#convergence) is a more robust implementation of this method.
+
+You can run a WHAM calculation using:
+
+``` sh title="performing WHAM on the prod_1 stage of calculations"
+pyBrella -stg wham -dr False -af Prod_1
+```
+
+!!! warning 
+
+    Ensure wham.sh is in the $PATH otherwise this will not work! This can be found [here](http://membrane.urmc.rochester.edu/?page_id=126)
+
+This will generate a sub-directory called WHAM. Within this, it generates:
+
+- `AnalysisFile`metadata.dat : Contains the list of files containing colvar values
+- `AnalysisFile`UmbrellaHist.dat : produces a histogram of the distribution of colvar values (can be plotted in LaTex using Tikz)
+- PMF.dat : File containing PMF information
+- PMF.eps : EPS plot of the PMF
+- plot_free_energy.dat : data that can be plotted using xmgrace
+- wham.sh : script file that runs the wham calculation.
+
+
+### Convergence
+
+This is the better way of running the WHAM calculation. It iterates through each of the sub-steps, in order for you to understand how well your calculation is converging.
+
+To run a convergence calculation, run:
+
+``` sh title="Running a convergence calculation"
+pyBrella -stg convergence -dr False -af prod
+```
+
+The Convergence calculation outputs files to WHAM/Conv. For each of the sub-steps, it calculates the PMF using all previous sub-steps and outputs these to:
+
+- `sub-step`.dat : Raw PMF data
+- `sub-step`.eps : Plot of PMF data
+
+???+ tips "Advanced error checking"
+
+    If you have a complex potential energy surface, sometimes umbrella bins fail during the umbrella sampling simulation through moving to a different area along the potential energy surface. This can be problematic as it often causes a sudden shift in the relative energies of that bin. We have implemented an error checking tool that uses extra input files (See below) to identify know problematic structures. Use at your own risk! 
+
+    ``` sh
+    BondErrors.dat # (1)
+    DihedralErrors.dat # (2)
+    ```
+
+    1. File containing known bonds that form when they shouldn't. It requires 4 colummns: Name, Atom1, Atom2, Value. The name is a pseudonym to identify the bond, the two atom columns are the atomic index' of the atoms in the bond, and the value is the standard bond length. If this new bond is formed during a bin, the bin shall be excluded from the WHAM calculation.
+    2. File containing known problematic dihedral angles. tval1 is the acceptable dihedral angle, t2val is the problematic value. If the dihedral is closer to the problematic value then the bin will be ignored.
+
+    BondErrors.dat
+
+    | Name | Atom1 | Atom2 | Value |
+    | :--- | :---- | :---- | :---- |
+    | pseudonym | index of atom1 | index of atom2 | Value that classes the bond as formed |
+
+    DihedralErrors.dat 
+
+    | Name | Atom1 | Atom2 | Atom3 | Atom4 | t1name | t1val | t2name | t2val |
+    | :--- | :---- | :---- | :---- | :---- | :----- | :---- | :----- | :---- | 
+    | pseudonym | index of atom1 | index of atom2 | index of atom3 | index of atom4 | pseudonym of accepted dihedral | Accepted value | pseudonym of problematic dihedral | problematic value | 
+
+### Analysis
+
+Using further configuration files, you can also perform analysis and track other variables of the system throughout the simulation. This uses the [analysis code](CodeReference.md/#pyBrellaSampling.Tools.analysis.analysis) and reads in data files to configure states to track. (See below)
+
+
+``` sh title="Running analysis"
+pyBrella -stg analysis -dr False
+```
+
+Bonds.dat
+
+| Name | Atom1 | Atom2 | Value |
+| :--- | :---- | :---- | :---- |
+| pseudonym | index of atom1 | index of atom2 | Standard bond length |
+
+Dihedrals.dat 
+
+| Name | Atom1 | Atom2 | Atom3 | Atom4 | t1name | t1val | t2name | t2val |
+| :--- | :---- | :---- | :---- | :---- | :----- | :---- | :----- | :---- | 
+| pseudonym | index of atom1 | index of atom2 | index of atom3 | index of atom4 | pseudonym of state 1 | central value | pseudonym of state 2 | central value |
+
+This code goes through the simulation trajectories, and tracks the states of the bonds and dihedrals provided. It then plots them as histogram plots to show the overall distribution of the bonds and dihedrals. It also generates 2D histograms to plot the distribution of bonds and dihedrals against the target colvar.

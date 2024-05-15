@@ -1,6 +1,6 @@
 # Standalone
 
-::: pyBrellaSampling.Standalone.main_cli
+::: pyBrellaSampling.Standalone.main
 
 ::: pyBrellaSampling.Tools.InputParser.StandaloneInput
 

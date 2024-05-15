@@ -1,23 +1,14 @@
-::: pyBrellaSampling.pyBrella.main
+# pyBrella
 
-::: pyBrellaSampling.Tools.InputParser.UmbrellaInput
+## Umbrella code
+::: pyBrellaSampling.pyBrella
 
-::: pyBrellaSampling.pyBrella.class_init
 
-::: pyBrellaSampling.pyBrella.setup
+## Wham code
 
-::: pyBrellaSampling.pyBrella.min
+::: pyBrellaSampling.Umbrella.wham
 
-::: pyBrellaSampling.pyBrella.heat
 
-::: pyBrellaSampling.pyBrella.pull
+## Tools
 
-::: pyBrellaSampling.pyBrella.const
-
-::: pyBrellaSampling.pyBrella.make_umbrellaDirs
-
-::: pyBrellaSampling.pyBrella.make_runfile
-
-::: pyBrellaSampling.pyBrella.VisInit
-
-::: pyBrellaSampling.pyBrella.VisLoad
+::: pyBrellaSampling.Tools

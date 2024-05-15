@@ -8,7 +8,7 @@ import sys
 import time
 import os.path as path
 
-def main_cli():
+def main():
     starttime = time.time()
     args = input.StandaloneInput(sys.argv[1:],)
     verbosity = args["Verbosity"]

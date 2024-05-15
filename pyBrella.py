@@ -87,7 +87,7 @@ def main():
         Wham.Init_Wham(Umbrella, wham, WhamIgnore=AnalIgnore)
         Wham.Run_Wham(Umbrella, WhamIgnore=AnalIgnore)
     if args["Stage"].casefold() == "analysis": # pragma: no cover
-        Anal.analysis()
+        Anal.analysis(Umbrella)
     if args["Stage"].casefold() == "convergence":
         Wham.convergence(Calc, args["AnalysisFile"], equil_length, prod_length, Umbrella)
     if args["Stage"].casefold() == "vis":

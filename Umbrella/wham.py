@@ -83,8 +83,22 @@ sed '1d' out.pmf | awk '{"{"}print $1,"",$2{"}"}' > plot_free_energy.dat
         print(text, file=f)
 
 
-def Run_Wham(Umbrella, WhamIgnore=[]):# Umbrella, Wham):
-    print("Running WHAM")
+def Run_Wham(Umbrella: UmbrellaClass, WhamIgnore=[]):# Umbrella, Wham):
+    """_summary_
+
+    Args:
+        Umbrella (UmbrellaClass): Contains information such as force constants and bin b
+        WhamIgnore (list, optional): List of bins to exclude. 
+
+    Raises:
+        Exception: If wham not working
+        Exception: If metadata.dat file not found
+
+    Returns:
+        y (list): List of energies
+        Err (list): List of errors 
+    """
+    print("INFO: Running WHAM" if globals.verbosity >=2 else "", end="")
     out = subprocess.run(f"cd {globals.WorkDir}WHAM ; sh wham.sh ; cd ../", shell=True, capture_output=True)
     if "wham.sh" in out.stderr.decode():
         raise Exception(f"Problem with running wham: {out.stderr.decode()}")
