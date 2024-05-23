@@ -77,7 +77,6 @@ class UmbrellaClass:
         """
         self.PullForce = Force
         self.ConstForce = Force
-
 class LabelClass:
     """Class for containing bond and dihedral label information (For structure analysis)
     Attributes:
@@ -227,7 +226,6 @@ class BondClass:
         self.thresh = threshold
     def __repr__(self):
         return f"Atoms: {self.at1} {self.at2}, name: {self.name}, threshold: {self.thresh}"
-
 class DihedralClass:
     """Class for containing dihedral data
     Attributes:
@@ -625,7 +623,7 @@ class NAMDClass:
         self.rigidBonds = MM.Shake
         self.steps = MM.Steps
         if MM.Ensemble == "NVT": # Formats NVT calculation
-            self.BrensdenPressure = "off"
+            self.BrensdenPressure = ""
             self.heating = f"""langevin            on
 langevinDamping     5
 langevinTemp        {MM.Temp}
@@ -634,7 +632,17 @@ temperature         {MM.Temp}
 """
             self.runtype = "run"
         elif MM.Ensemble == "NPT": # Formats NPT calculation
-            self.BrensdenPressure = "on"
+            self.BrensdenPressure = f"""useGroupPressure     yes 
+useFlexibleCell     no
+useConstantArea     no
+
+langevinPiston on
+langevinPistonTarget 1.01325
+langevinPistonPeriod 100
+langevinPistonDecay 50
+langevinPistonTemp {MM.Temp}
+
+"""
             self.heating = f"""langevin            on
 langevinDamping     5
 langevinTemp        {MM.Temp}

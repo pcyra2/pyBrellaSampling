@@ -12,7 +12,7 @@
         <link rel="prev" href="../../Standalone/Examples/">
       
       
-        <link rel="next" href="../../UserVars/">
+        <link rel="next" href="../UserGuide/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -62,6 +62,11 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
+      
+        
+        <a href="#benchmark-code" class="md-skip">
+          Skip to content
+        </a>
       
     </div>
     <div data-md-component="announce">
@@ -547,6 +552,8 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -558,6 +565,27 @@
 
       </a>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../UserGuide/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    User Guide
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -627,6 +655,8 @@
   
   
   
+    
+  
   
 </nav>
                   </div>
@@ -644,9 +674,12 @@
   
 
 
-  <h1>Overview</h1>
-
-
+<h1 id="benchmark-code">Benchmark code</h1>
+<p>Due to the need for a highly efficient QM method when performing QM/MM umbrella sampling, I developed an automated protocol for aiding with the selection of QM methods.</p>
+<p>The code allows you to supply a list of 2-step reactions, with target energies that can be obtained from experimental values, or from higher level QM methods. 
+This list, along with the gas-phase optimized structures is then used to generate a wide-scope QM benchmark. The code automates the generation, running and analysis of all calculations and provides both an overview of the different methods, along with a database of the benchmark energies. </p>
+<p>To use the feature, we recommend you follow the <a href="../UserGuide/">user guide</a>. </p>
+<p>Future versions of this code will hopefully include the ability to perform structure benchmarks but currently only single point energies can be calculated.</p>
 
 
 

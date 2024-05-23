@@ -50,3 +50,7 @@ This will generate the directory structure that follows this format:
                 ↳ Molecules
                     
 
+It will also create input files for each calculation, as well as a list of calculations to run called `jobfile.dat`. The calculation will also check to see if the calculations have already run, and only run incomplete calculations so if a job fails, you can continue it.
+
+If you wish to run this on a HPC, you can generate the `jobfile.dat`, and then submit it as an array_file to the HPC scheduler, however this process is not automated at current. 
+

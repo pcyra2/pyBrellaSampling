@@ -73,6 +73,7 @@ def Class_init(args: dict):
         print("WARNING: TimeStep is greater than 1 fs. Setting Rattle to True\n" if globals.verbosity >=1 else "", end="")
         MM.Set_Shake("all")
     NAMD = NAMDClass(Calc=Calc, MM=MM)
+    NAMD.set_startcoords(bincoor, MM.ambercoor, MM.parmfile)
     return Calc, MM, QM, Umbrella, NAMD
 
 def calc_setup(args: dict):
@@ -90,7 +91,7 @@ def calc_setup(args: dict):
     Calc, MM, QM, Umbrella, NAMD = Class_init(args) # inits classes
     MM.CellVec = utils.get_cellVec(MM) # Obtains the cell vectors from the parm file. 
     NAMD.set_cellvectors(MM.CellVec)
-    NAMD.set_startcoords(args["StartFile"], ambercoor=MM.ambercoor, parm=MM.parmfile)
+    # NAMD.set_startcoords(args["StartFile"], ambercoor=MM.ambercoor, parm=MM.parmfile)
     if QM != False:
         print("INFO: Setting up a QMMM calculation\n" if globals.verbosity >= 2 else "", end="")
         NAMD.set_qm(Calc=Calc, QM=QM, index="QMMM")

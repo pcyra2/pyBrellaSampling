@@ -89,7 +89,7 @@ cellOrigin          {NAMD.cellOrigin}
 {NAMD.heating}
 
 # Pressure options:
-BerendsenPressure   {NAMD.BrensdenPressure}
+{NAMD.BrensdenPressure}
 
 # QMMM options:
 qmForces            {NAMD.qmForces}
