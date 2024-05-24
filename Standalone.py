@@ -9,6 +9,9 @@ import time
 import os.path as path
 
 def main():
+    """
+    Code used to run a standalone MD, SMD or QMMM simulation.
+    """
     starttime = time.time()
     args = input.StandaloneInput(sys.argv[1:],)
     verbosity = args["Verbosity"]

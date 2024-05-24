@@ -9,27 +9,51 @@ from pyBrellaSampling.Tools.classes import *
 import pyBrellaSampling.Tools.globals as globals
 import sys
 
-def file_read(path):
-    """Reads in the file in the path as a 1D array of lines"""
+def file_read(path: str):
+    """Reads in the file in the path as a 1D array of lines
+    
+    Args:   
+        path (string): location of file to read
+
+    Returns:
+        data (list): list of lines from within the file.
+    """
     with open(path, 'r') as file:
         data = file.readlines()
     return data
 
-def file_write(path, lines):
-    """Writes a 1D array of lines to a file in the path"""
+def file_write(path: str, lines: list):
+    """Writes a 1D array of lines to a file in the path
+    
+    Args:
+        path (str): path of file to write to.
+        lines (list): list of lines to write in file.
+
+    """
     with open(path, 'w') as f:
         for i in lines:
             print(i,file=f)
 
-def file_2dwrite(path, x, y, delim="\t"):
-    """Writes a 2D array as a delimited file"""
+def file_2dwrite(path: str, x: list, y: list, delim="\t"):
+    """Writes a 2D array as a delimited file
+    
+    Args:
+        path (str): path of file to write to.
+        x (list): list of data to print in column one.
+        y (list): list of data to print in column two.
+        delim (str): delimiter to print between columns. (Usually tab delimited)
+    """
     assert len(x) == len(y), f"Column 1 length is {len(x)} but column 2 length is{len(y)}. They need to be equal to work"
     with open(path, 'w') as f:
         for i in range(len(x)):
             print(f"{x[i]}{delim}{y[i]}", file=f)
 
-def data_2d(path):
-    """Reads in a 2D data file. This ignores lines starting with # """
+def data_2d(path: str):
+    """Reads in a 2D data file. This ignores lines starting with # 
+    
+    Args:
+        path (str): location of data file to read.
+    """
     data0 = file_read(path)
     data = []
     for i in data0:
@@ -45,19 +69,36 @@ def data_2d(path):
         col2[i] = words[1]
     return col1, col2
 
-def dict_read(path):
-    """Reads a json dictionary and returns as a variable"""
+def dict_read(path: str):
+    """Reads a json dictionary and returns as a variable
+    
+    Args:
+        path (str): location of json dictionary
+
+    Returns:
+        data (dict): Dictionary from the json file.
+    """
     with open(path, "r") as f:
         data = json.load(f)
     return data
 
-def dict_write(path, dict):
-    """Writes a dictionary to a json file"""
+def dict_write(path: str, dict: dict):
+    """Writes a dictionary to a json file
+    
+    Args:
+        path (str): path of json file to write to.
+        dict (dict): dictionary to write as json file. 
+    """
     with open(path,"w") as f:
         json.dump(dict, f)
 
-def QM_Gen(qmzone,):
-    """Creates a tcl script file for generating the syst-qm.pdb."""    
+def QM_Gen(qmzone: str,):
+    """Creates a tcl script file for generating the syst-qm.pdb.
+    
+    Args:
+        qmzone (str): vmd selection algebra for identifying the QM zone.
+    
+    """    
     tcl = f"""
 mol new {globals.parmfile}
 mol addfile start.rst7
@@ -194,7 +235,11 @@ quit
         print(tcl, file=f)
 
 def ColVarPDB_Gen(Umbrella: UmbrellaClass, ):
-    """tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling."""
+    """tcl script to obtain the syst-col.pdb file. It is a requirement for SMD and Umbrella sampling.
+    
+    Args:
+        Umbrella (UmbrellaClass): Class containing information about the collective variable used.
+    """
     if Umbrella.atom3 == 0:
         tcl = f"""mol new {globals.parmfile}
 mol addfile start.rst7
@@ -268,8 +313,19 @@ quit
 """
     file_write(f"{globals.WorkDir}Colvar_prep.tcl", [tcl])
 
-def colvar_gen(Umbrella, i, type, force, relLoc="../"):
-    """Generates collective variables and parses them into the Umbrella class. This also generates the colvar files."""
+def colvar_gen(Umbrella: UmbrellaClass, i: int, type: str, force: float, relLoc="../"):
+    """Generates collective variables and parses them into the Umbrella class. This also generates the colvar files.
+    
+    Args:
+        Umbrella (UmbrellaClass): contains information about the umbrella simulation. 
+        i (int): window that this colvar is for.
+        type (str): defines the type of collective variable, is it a pull or a hold?
+        force (float): the force to apply the restraint with
+        relLoc (str): the relative location of the syst-col.pdb file (useful if performing SMD instead of umbrella)
+
+    Returns:
+        file (str): the contents of the colvar file. (to be written sepparately.)
+    """
     if type == "pull":
         freq = 1
         Stages = 100
@@ -378,8 +434,18 @@ harmonic {"{"}
         """
     return file
 
-def init_bins(num, step, start):
-    """Calculates the bins and their values for umbrella sampling"""
+def init_bins(num: int, step: float, start: float):
+    """Calculates the bins and their values for umbrella sampling
+    
+    Args:
+        num (int): the number of umbrella sampling windows to generate.
+        step (float): the distance between the umbrella windows.
+        start (float): the value of the minimum umbrella window.
+
+    Returns:
+        bins (list): list of umbrella bin values
+
+    """
     bins = np.zeros(num)
     bins_min = np.zeros(num)
     bins_max = np.zeros(num)
@@ -387,8 +453,15 @@ def init_bins(num, step, start):
         bins[i] = round(start + step * i,2)
     return bins
 
-def slurm_gen(JobName, SLURM, Job, path):
-    """Generates the slurm file that is used by HPC's."""
+def slurm_gen(JobName: str, SLURM:SLURMClass, Job: str, path: str):
+    """Generates the slurm file that is used by HPC's.
+    
+    Args:
+        JobName (str): name of job,
+        SLURM (SLURMClass): class containing slurm variables for the HPC
+        Job (str): commant to be ran by the HPC.
+        path (str): location to write the sub.sh script.
+    """
     SoftwareLines = ""
     for i in SLURM.Software:
         SoftwareLines=SoftwareLines+"\n"+i
@@ -490,14 +563,24 @@ def get_cellVec(MM: MMClass):
     return float(words[0]) # return the first number
 
 def array_script(ntasks: int):
-    """Required for generating slurm array jobs."""
+    """Required for generating slurm array jobs.
+    
+    Args:
+        ntasks (int): Number of jobs to submit to the array (usually number of bins unless on archer2)
+    """
     Script=f"""#!/bin/bash
 RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*{ntasks})) | tail -n {ntasks}))
 eval \"$RUNLINE wait\""""
     file_write("./array_job.sh", [Script])
 
 def batch_sub(nequil=4, nprod=16, ID_NUMBER=1): 
-    """Generates a runner.sh script that can be run on a login node within a HPC. This can automate the linking of multiple dependant array jobs."""
+    """Generates a runner.sh script that can be run on a login node within a HPC. This can automate the linking of multiple dependant array jobs.
+    
+    Args:
+        nequil (int): number of equilibration steps
+        nprod (int): number of production steps
+        ID_NUMBER (int): position where the slurm job id is printed when submitting 
+    """
     script = f"""#!/bin/bash
 """
     script += f"""echo \"Submitting equil_1\"
@@ -534,6 +617,12 @@ echo \"prod_{i+1} ID is $ID\" >> SLURMID.dat
 kcal = 627.51 ### a.u. to kcal/mol conversion 
 
 def print_attributes(argdict: dict):
+    """Used for debugging perposes mainly, prints all variables in the dictionary
+    
+    Args:
+        argdict (dict): dictionary to print.
+        
+    """
     for i in argdict:
         print(f"--{i} ({type(argdict[i])}):")
         

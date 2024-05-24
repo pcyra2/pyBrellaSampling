@@ -15,6 +15,9 @@ from pyBrellaSampling.Tools.utils import kcal
 
 
 def main():
+    """
+    Code used to perform a gas phase QM single point energy benchmark, specifically for use when performing umbrella sampling.
+    """
     starttime = time.time()
     args = Input_Parser(sys.argv[1:])
     verbosity = args["verbosity"]
