@@ -14,7 +14,7 @@ def main():
     """
     starttime = time.time()
     args = input.StandaloneInput(sys.argv[1:],)
-    verbosity = args["Verbosity"]
+    verbosity = int(args["Verbosity"])
     WorkDir = args["WorkDir"]
     dr = args["DryRun"]
     if dr == "True" or dr == True:
@@ -98,7 +98,7 @@ def calc_setup(args: dict):
     if QM != False:
         print("INFO: Setting up a QMMM calculation\n" if globals.verbosity >= 2 else "", end="")
         NAMD.set_qm(Calc=Calc, QM=QM, index="QMMM")
-        utils.QM_Gen(QM.QMSel, globals.WorkDir)
+        utils.QM_Gen(QM.QMSel)
         if globals.DryRun == False:
             print("INFO: Setting up the QM pdb file.\n" if globals.verbosity >=2 else "", end="")
             logfile = subprocess.run(["vmd", "-dispdev", "text", "-e", "qm_prep.tcl"],

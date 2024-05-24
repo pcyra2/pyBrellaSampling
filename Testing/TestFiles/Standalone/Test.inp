@@ -1,0 +1,12 @@
+Verbosity=2
+DryRun=True
+CoresPerJob=1
+MemoryPerJob=1
+QM=True
+Steps=10
+TimeStep=2
+SMD=True
+AtomMask=1,2,3,4
+StartValue=1
+EndValue=2
+Force=100
