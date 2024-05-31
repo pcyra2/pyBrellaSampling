@@ -24,9 +24,9 @@ def main():
     parmfile = args["ParmFile"]
     assert path.isfile(f"{WorkDir}{parmfile}"), f"ERROR: {parmfile} does not exist in the working directory!"
     globals.init(v=verbosity,wd=WorkDir,dr=DryRun, parm=parmfile)
-    Calc, MM, QM = calc_setup(args)
+    Calc, MM, QM, Step= calc_setup(args)
     if globals.DryRun == False:
-        calc_run(Calc=Calc, MM=MM, QM=QM, )
+        calc_run(Calc=Calc, MM=MM, QM=QM, Step=Step)
     endtime = time.time()
     print(f"Total time is {endtime - starttime}")
 
@@ -119,11 +119,21 @@ def calc_setup(args: dict):
             with open(f"{globals.WorkDir}tcl-colvar.log","w") as f:
                 print(logfile, file=f)
     print("INFO: Setting up the conf file\n" if globals.verbosity >=2 else "", end="")
-    file = FileGen.Namd_File(NAMD)
+    if "_" in NAMD.bincoor: # used for linking sequential simulations
+        preremove = NAMD.bincoor.replace(f"{NAMD.outfile}_", "") # checks to see if startfile == outfile with extra decoration...
+        postremove = preremove.replace(".0.restart.coor", "") # Removes the file ending to get the substep
+        try:
+            prevStep = int(postremove) 
+            Step = prevStep +1
+        except ValueError:
+            Step = 0
+    else:
+        Step = 0
+    file = FileGen.Namd_File(NAMD, substep=Step)
     utils.file_write(f"{globals.WorkDir}{Calc.Name}.conf", [file]) # Outputs the calculation file for namd. 
-    return Calc, MM, QM
+    return Calc, MM, QM, Step
 
-def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
+def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass, Step: int):
     """
     Handles the running of the calculations. Choosing the right version of NAMD
     
@@ -131,14 +141,14 @@ def calc_run(Calc: CalcClass, MM: MMClass, QM: QMClass):
         Calc (CalcClass): Gets the name of the calculation
         MM (MMClass): Gets the path to executables
         QM (QMClass): Gets wheter to use the GPU.
-
+        Step (int):  Substep
     """
     print(f"INFO: Running the {Calc.Name} Calculation.\n" if globals.verbosity >=2 else "", end="")
     if  QM == False:
-        print(f"INFO: {MM.GPUNamd} +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_1.0.out\n" 
+        print(f"INFO: {MM.GPUNamd} +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_{Step}.0.out\n" 
               if globals.verbosity >=2 else "", end="")
         subprocess.run([MM.GPUNamd +
-                        f" +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_1.0.out"],
+                        f" +oneWthPerCore +setcpuaffinity +devices 0 +cs {globals.WorkDir}{Calc.Name}.conf > {globals.WorkDir}{Calc.Name}_{Step}.0.out"],
                        shell=True, capture_output=True)
     else:
         subprocess.run(["mkdir /dev/shm/NAMD_QMMM"], shell=True)

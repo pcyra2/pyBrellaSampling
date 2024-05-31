@@ -1,5 +1,6 @@
 from pyBrellaSampling.Tools.classes import *
 import pyBrellaSampling.Tools.utils as utils
+import os
 
 def Namd_File(NAMD: NAMDClass,  substep=1, window=0):
     """
@@ -26,7 +27,8 @@ def Namd_File(NAMD: NAMDClass,  substep=1, window=0):
     if NAMD.bincoor == None:
         bincoor = ""
     else:
-        bincoor = f"bincoordinates      {NAMD.bincoor}"
+        bincoor = f"""bincoordinates      {NAMD.bincoor}
+extendedSystem      {NAMD.bincoor.replace(".coor", ".xsc")}"""
     if NAMD.timestep < 2 and NAMD.rigidBonds != "none":
         return AttributeError, f"Timestep is {NAMD.timestep} but shake is on... This will cause errors."
     if int(NAMD.steps) <= 10000:
