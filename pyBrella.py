@@ -110,8 +110,8 @@ def class_init(args: dict):
         Umbrella (UmbrellaClass): Class containing Umbrella variables
         SLURM (SLURMClass): Class containing Slurm variables for HPC usage
     """
-    Umbrella = UmbrellaClass(args,args["UmbrellaMin"], args["UmbrellaBins"],
-                             args["StartDistance"], args["UmbrellaWidth"],)
+    Umbrella = UmbrellaClass(args,float(args["UmbrellaMin"]), int(args["UmbrellaBins"]),
+                             float(args["StartDistance"]), float(args["UmbrellaWidth"]),)
     Calc = CalcClass(args)
     MM = MMClass()
     QM = QMClass(args)
@@ -247,7 +247,7 @@ def pull(Umbrella: UmbrellaClass, MM: MMClass, QM: QMClass, Calc: CalcClass):
         utils.file_write(f"{globals.WorkDir}{i}/pull.conf", [file])
         colvarfile = utils.colvar_gen(Umbrella, i, "pull", Umbrella.PullForce )
         utils.file_write(f"{globals.WorkDir}{i}/colvars.pull.conf", [colvarfile])
-        Joblist[i] = f"mkdir /dev/shm/NAMD_{i} ; cd ./{i} ; {MM.CPUNamd} pull.conf > pull_1.{i}.out ; cd ../ ; rm -r /dev/shm/NAMD_{i}"
+        Joblist[i] = f"mkdir /dev/shm/RUNDIR_{i} ; cd ./{i} ; {MM.CPUNamd} pull.conf > pull_1.{i}.out ; cd ../ ; rm -r /dev/shm/RUNDIR_{i}"
     utils.file_write(f"{globals.WorkDir}pull.txt",Joblist)
     make_runfile(Umbrella, Joblist)
     if globals.DryRun == False: # pragma: no cover
