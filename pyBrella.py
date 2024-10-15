@@ -68,9 +68,9 @@ def main():
         if Calc.MaxSteps == 0:
             NumJobs = 1
         else:
-            if "prod" in args["AnalFile"].casefold():
+            if "prod" in args["AnalysisFile"].casefold():
                 steps = prod_length
-            elif "equil" in args["AnalFile"].casefold():
+            elif "equil" in args["AnalysisFile"].casefold():
                 steps = equil_length
             else:
                 steps = 0
@@ -78,7 +78,7 @@ def main():
         if "_" not in args["AnalysisFile"].casefold():
             if globals.verbosity >= 1:
                 print(f"Number of steps to glue together is {NumJobs}")
-            Anal.glue_stick(Umbrella, NumJobs=NumJobs, file=args["AnalFile"])
+            Anal.glue_stick(Umbrella, NumJobs=NumJobs, file=args["AnalysisFile"])
         if Umbrella.atom3 != 0:
             periodicity = "periodic"
         else:
@@ -114,6 +114,7 @@ def class_init(args: dict):
                              float(args["StartDistance"]), float(args["UmbrellaWidth"]),)
     Calc = CalcClass(args)
     MM = MMClass()
+    MM.CellVec = utils.get_cellVec(MM)
     QM = QMClass(args)
     bins = utils.init_bins(Umbrella.Bins, Umbrella.Width, Umbrella.Min)
     Umbrella.add_bins(bins)

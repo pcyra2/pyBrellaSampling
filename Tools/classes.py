@@ -651,7 +651,7 @@ temperature         {MM.Temp}
 """
             self.runtype = "run"
         elif "heat" in MM.Ensemble.casefold(): # Heat is classed as an ensemble 
-            self.BrensdenPressure = "off"
+            self.BrensdenPressure = "langevin       off"
             self.heating = f"""temperature         0
 reassignFreq        {math.floor(MM.Steps/(MM.Temp/0.2))}
 reassignIncr        0.2
@@ -659,9 +659,8 @@ reassignHold        {MM.Temp}
 """
             self.runtype = "run"
         elif "min" in MM.Ensemble.casefold(): # Min is classed as an ensemble
-            self.BrensdenPressure = "off"
-            self.heating = """temperature             0
-langevin            off"""
+            self.BrensdenPressure = "langevin         off"
+            self.heating = """temperature             0"""
             self.runtype = "minimize"
         else:
             return AttributeError, f"ERROR: {MM.Ensemble} not configured."

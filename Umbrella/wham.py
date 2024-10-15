@@ -35,6 +35,7 @@ def Init_Wham( Umbrella: UmbrellaClass, Wham: WhamClass, WhamIgnore=[]):
         Wham (WhamClass): Wham variables
         WhamIgnore (list): List of windows to ignore (Incase error)
     """
+    print("DEBUG: WHAM init")
     hist_bar = []
     hist_count = []
     try:
@@ -77,7 +78,7 @@ def Init_Wham( Umbrella: UmbrellaClass, Wham: WhamClass, WhamIgnore=[]):
             max = Umbrella.BinVals[Umbrella.Bins-1]
             min = Umbrella.BinVals[0]
         text = f"""#!/bin/bash
-wham {P} {min} {max} {Umbrella.Bins-1 - len(WhamIgnore)} 1e-06 {Wham.Force} 0 {Wham.Name}metadata.dat out.pmf 10 60
+wham {P} {min} {max} {Umbrella.Bins-1 - len(WhamIgnore)} 1e-06 300 0 {Wham.Name}metadata.dat out.pmf 10 60
 sed '1d' out.pmf | awk '{"{"}print $1,"",$2{"}"}' > plot_free_energy.dat
 """
         print(text, file=f)
