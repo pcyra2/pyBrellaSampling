@@ -25,8 +25,8 @@ Umbrella_Inp = {
     "PullForce" : 5000, # float: Force to pull the variables to each bin
     "ConstForce" : 300, # float: Force to restain the colvar during Umbrella simulations
     "StartDistance" : 1.4, # float: Current value for the colvar (From the equilibrated MD)
-    "StartFile" : "start.rst7", # str: Amber or NAMD coordinates, start coordinates for THIS simulation.
-    "ParmFile" : "complex.parm7", # str: Amber parameter file. This must be in the root directory!
+    "StartFile" : "system.rst7", # str: Amber or NAMD coordinates, start coordinates for THIS simulation.
+    "ParmFile" : "system.parm7", # str: Amber parameter file. This must be in the root directory!
     "AtomMask" : "0,0,0,0", # str: Atom mask for SMD, comma delimited string of atoms. 
     "AnalysisFile" : "prod", # str: Variable to perform analysis on (i.e. if you only want to visualise pull files, use pull_1)
     "EquilLength" : 1, # int: Length of equil in ps. eg 1 ps = 2000 steps at 0.5 fs timestep

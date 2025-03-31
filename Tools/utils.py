@@ -101,7 +101,7 @@ def QM_Gen(qmzone: str,):
     """    
     tcl = f"""
 mol new {globals.parmfile}
-mol addfile start.rst7
+mol addfile HCN-F_prod100ns.restart.coor
 
 set qmPDB "syst-qm.pdb"
 set qmPSF "syst-qm.QMonly.parm7"

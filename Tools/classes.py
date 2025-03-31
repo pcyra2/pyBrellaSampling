@@ -363,7 +363,7 @@ class MMClass:
     CutOff = MMVars["cutoff"]
     PME = "off"
     parmfile = f"../{globals.parmfile}"
-    ambercoor = "../start.rst7"
+    ambercoor = "../system.rst7"
     Shake = "none"
     def __init__(self, ):
         """
@@ -1207,31 +1207,3 @@ class ReactionClass:
         """
         self.error = err
     
-# class JobClass:
-#     """Class for containing job specific information
-#     Attributes:
-#         WorkDir (str): Path to location of calculation
-#         JobType (str): Type of calculation to perform
-#         globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
-#         Stage (str): Stage of calculation.
-
-#     TODO:
-#         Need to depreciate this class..     
-#     """
-#     def __init__(self, args: Namespace):
-#         """
-#         JobClass init.
-
-#         Args:
-#             args (Namespace): ArgParse user inputs to contain the Job information
-
-#         Attributes:
-#             WorkDir (str): Path to location of calculation
-#             JobType (str): Type of calculation to perform
-#             globals.verbosity (int): Level of globals.verbosity  (0: Errors, 1: Warnings, 2: Info, 3: Debug)
-#             Stage (str): Stage of calculation.
-#         """
-#         self.WorkDir = args.WorkDir
-#         self.JobType = args.JobType.casefold()
-#         self.globals.verbosity = args.globals.verbosity
-#         self.Stage = args.Stage.casefold()

@@ -119,16 +119,19 @@ def calc_setup(args: dict):
             with open(f"{globals.WorkDir}tcl-colvar.log","w") as f:
                 print(logfile, file=f)
     print("INFO: Setting up the conf file\n" if globals.verbosity >=2 else "", end="")
-    if "_" in NAMD.bincoor: # used for linking sequential simulations
-        preremove = NAMD.bincoor.replace(f"{NAMD.outfile}_", "") # checks to see if startfile == outfile with extra decoration...
-        postremove = preremove.replace(".0.restart.coor", "") # Removes the file ending to get the substep
-        try:
-            prevStep = int(postremove) 
-            Step = prevStep +1
-        except ValueError:
+    if NAMD.bincoor != None:
+        if "_" in NAMD.bincoor: # used for linking sequential simulations
+            preremove = NAMD.bincoor.replace(f"{NAMD.outfile}_", "") # checks to see if startfile == outfile with extra decoration...
+            postremove = preremove.replace(".0.restart.coor", "") # Removes the file ending to get the substep
+            try:
+                prevStep = int(postremove) 
+                Step = prevStep +1
+            except ValueError:
+                Step = 0
+        else:
             Step = 0
     else:
-        Step = 0
+        Step=0
     file = FileGen.Namd_File(NAMD, substep=Step)
     utils.file_write(f"{globals.WorkDir}{Calc.Name}.conf", [file]) # Outputs the calculation file for namd. 
     return Calc, MM, QM, Step

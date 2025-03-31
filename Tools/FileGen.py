@@ -26,10 +26,18 @@ def Namd_File(NAMD: NAMDClass,  substep=1, window=0):
     #     NAMD.set_pme(MM.PME)
     if NAMD.bincoor == None:
         bincoor = ""
+        Cell = f"""cellBasisVector1    {NAMD.cellBasisVector1}
+cellBasisVector2    {NAMD.cellBasisVector2}
+cellBasisVector3    {NAMD.cellBasisVector3}
+cellOrigin          {NAMD.cellOrigin}
+"""
     else:
 #         bincoor = f"""bincoordinates      {NAMD.bincoor}
 # extendedSystem      {NAMD.bincoor.replace(".coor", ".xsc")}"""
-        bincoor = f"""bincoordinates      {NAMD.bincoor}"""
+        bincoor = f"""bincoordinates      {NAMD.bincoor}
+extendedSystem      {NAMD.bincoor.replace(".restart.coor", ".xsc")}"""
+        Cell = f"""dcdUnitCell         yes
+"""
 
     if NAMD.timestep < 2 and NAMD.rigidBonds != "none":
         return AttributeError, f"Timestep is {NAMD.timestep} but shake is on... This will cause errors."
@@ -42,6 +50,7 @@ def Namd_File(NAMD: NAMDClass,  substep=1, window=0):
     if NAMD.timestep >=2 and NAMD.rigidBonds == "none":
         print(f"WARNING: Timestep is {NAMD.timestep} but shake isn't on... this will slow down simulations. running anyway.")
     NAMD_File = f"""### pybrella {NAMD.outfile} input file 
+
 # File options:
 parmfile            {NAMD.parm}
 ambercoor           {NAMD.ambercoor}
@@ -84,10 +93,7 @@ PMETolerance        {NAMD.PMETolerance}
 PMEInterpOrder      {NAMD.PMEInterpOrder}
 
 # Cell options:
-cellBasisVector1    {NAMD.cellBasisVector1}
-cellBasisVector2    {NAMD.cellBasisVector2}
-cellBasisVector3    {NAMD.cellBasisVector3}
-cellOrigin          {NAMD.cellOrigin}
+{Cell}
 
 # Temperature options:
 {NAMD.heating}

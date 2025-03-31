@@ -178,6 +178,8 @@ It is recommended to use --Stage inpfile to generate input file templates with d
                 arg_dict[var] = val
             else:
                 raise ValueError(f"ERROR: Unknown variable: {var} provided in {inpfile}")
+    if type(arg_dict["Verbosity"]) != int:
+        arg_dict["Verbosity"] = int(arg_dict["Verbosity"])
     return arg_dict
 
 def BondsInput(path: str, Labels: LabelClass):
