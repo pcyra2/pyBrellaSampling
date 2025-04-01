@@ -1,0 +1,5 @@
+[console_scripts]
+Benchmark = pyBrellaSampling.Benchmark:main
+Standalone = pyBrellaSampling.Standalone:main
+convert = pyBrellaSampling.Tools.utils:convert
+pyBrella = pyBrellaSampling.pyBrella:main

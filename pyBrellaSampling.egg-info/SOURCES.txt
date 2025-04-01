@@ -1,0 +1,7 @@
+README.md
+setup.py
+pyBrellaSampling.egg-info/PKG-INFO
+pyBrellaSampling.egg-info/SOURCES.txt
+pyBrellaSampling.egg-info/dependency_links.txt
+pyBrellaSampling.egg-info/entry_points.txt
+pyBrellaSampling.egg-info/top_level.txt
