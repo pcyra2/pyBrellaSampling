@@ -837,7 +837,7 @@ quit
         return file
     
 class HPCClass:
-    arrayjobscript = """!/bin/bash
+    arrayjobscript = """#!/bin/bash
 RUNLINE=$(cat $ARRAY_TASKFILE | head -n $(($SLURM_ARRAY_TASK_ID*1)) | tail -n 1)
 eval "$RUNLINE wait"
 """
@@ -865,7 +865,7 @@ eval "$RUNLINE wait"
         self.partition = True
     def set_dependency(self, id):
         self.dependency = f"#SBATCH --depend=afterok:{id}"
-    def gen_slumScript(self, command:str, name:str,  arrayFile=None):
+    def gen_slumScript(self, command:str, name:str,  arrayFile=None, arrayLen=0):
         if command != "array-job":
             file=f"""{self.slurmlines}
 #SBATCH --job-name={name}
@@ -876,6 +876,7 @@ eval "$RUNLINE wait"
 """
         else:
             file = f"""{self.slurmlines}
+#SBATCH --array=1-{arrayLen}
 #SBATCH --job-name={name}
 {self.dependency}
 export ARRAY_JOBFILE=array_job.sh
