@@ -340,6 +340,11 @@ QMPositionOutStride     1
         for key in self.defaults.keys():
             if key not in self.config.keys():
                 self.config[key] = self.defaults[key]
+        if self.config["GPUresident"] == "on":
+            self.config["GPUresident"] = "GPUResident   on" #TODO: implement NAMD version compatibility
+        else:
+            self.config["GPUresident"] = ""
+            
         if infile == self.config["ambercoor"]: # Starting from the initial amber file, not a previous trajectory.
             self.config["bincoordinates"] = ""
             self.config["extendedSystem"] = ""
@@ -428,7 +433,7 @@ qmForces            {self.config["qmForces"]}
 {self.config["colvarlines"]}
 
 # GPU speedups
-GPUresident         {self.config["GPUresident"]}
+{self.config["GPUresident"]}
 
 {self.config["command"]}      {self.config["run"]}
 """
