@@ -399,3 +399,4 @@ FodyWeavers.xsd
 
 # Software config files
 *.conf
+Code/Tools/__pycache__/classes.cpython-313.pyc
