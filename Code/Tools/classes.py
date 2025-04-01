@@ -898,7 +898,7 @@ sh $ARRAY_JOBFILE
         return file
     def run_slurmScript(self, filename):
         if socket.gethostname() == self.hostname:
-            out = subprocess.run(["sbatch", filename],shell=True, capture_output=True, text=True )
+            out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
         else:
