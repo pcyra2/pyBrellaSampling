@@ -17,7 +17,7 @@ def main():
     MM = classes.MMClass("namd", Inputs["parameters"], Inputs["topology"])
     HPC = classes.HPCClass(Inputs["hpc"]["hostname"])
     if "config" in Inputs["hpc"]:
-        HPC.init_slurm(Inputs["hpc"]["config"], Inputs["hpc"]["modulefiles"])
+        HPC.init_slurm(Inputs["hpc"]["config"], Inputs["hpc"]["modulefiles"], Inputs["hpc"]["environment"])
     tracker_inf = Inputs["tracker"]
     trackers = [None]*len(tracker_inf.keys())
     Analysis_lines = ""

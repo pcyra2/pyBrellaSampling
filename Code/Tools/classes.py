@@ -854,7 +854,7 @@ eval "$RUNLINE wait"
     slurmIDindex=3
     def __init__(self, hostname:str):
         self.hostname = hostname
-    def init_slurm(self, config:dict, modulefiles:list):
+    def init_slurm(self, config:dict, modulefiles:list, env:list):
         self.exists = True
         self.config = config
         slurmLines = f"#!/bin/bash \n"
@@ -865,6 +865,10 @@ eval "$RUNLINE wait"
         for file in modulefiles:
             modulelines += f"\nmodule load {file}\n"
         self.module_lines = modulelines
+        envLines = ""
+        for envonments in env:
+            envLines += f"{envonments} \n"
+        self.environmentLines = envLines
     def walltime_partition(self, steps:int):
         self.max_steps = steps
         self.partition = True
@@ -888,7 +892,7 @@ export ARRAY_JOBFILE=array_job.sh
 export ARRAY_TASKFILE={arrayFile}
 export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
 {self.module_lines}
-
+{self.environmentLines}
 sh $ARRAY_JOBFILE
 """
         return file
