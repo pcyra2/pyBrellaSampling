@@ -228,7 +228,7 @@ mkdir /dev/shm/RUNDIR
             GPU=True
         for bin in self.data.keys():
             if HPC.exists:
-                runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID \n"
+                runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
             else:
                 runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
         if HPC.exists == False:
