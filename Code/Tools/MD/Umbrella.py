@@ -1,6 +1,7 @@
 import emcee as emcee
 import os
 import subprocess
+from pprint import pprint
 
 from pyBrellaSampling.Code.Tools.classes import ColvarClass, MMClass, VMDClass, TrackerClass, HPCClass
 import pyBrellaSampling.Code.Tools.io as io
@@ -197,9 +198,28 @@ mkdir /dev/shm/RUNDIR
             if HPC.partition == False:
                 file = MM.SMD(job["input"], job["output"], "hold.colvar.conf", job["steps"], 
                             job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                io.textDump(file, os.path.join(binpath, f"{job["output"]}.conf"))
+                files = [file]
             else:
-                pass
-            io.textDump(file, os.path.join(binpath, f"{job["output"]}.conf"))
+                files = []
+                if job["steps"] > HPC.max_steps:
+                    file = MM.SMD(job["input"], f"{job["output"]}_1", "hold.colvar.conf", HPC.max_steps, 
+                            job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                    io.textDump(file, os.path.join(binpath, f"{job["output"]}_1.conf"))
+                    files.append(f"{job["output"]}_1.conf")
+                    if job["steps"]//HPC.max_steps != 1:
+                        for i in range(1,job["steps"]//HPC.max_steps):
+                            file = MM.SMD(f"{job["output"]}_{i}", f"{job["output"]}_{i+1}", "hold.colvar.conf", HPC.max_steps, 
+                                job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                            io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+1}.conf"))
+                            files.append(f"{job["output"]}_{i+1}.conf")
+                    else:
+                        i = 0
+                    if job["steps"]%HPC.max_steps > 0:
+                        file = MM.SMD(f"{job["output"]}_{i+1}", f"{job["output"]}_{i+2}", "hold.colvar.conf",job["steps"]%HPC.max_steps, 
+                            job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                        io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+2}.conf"))
+                        files.append(f"{job["output"]}_{i+2}.conf")            
             baseColvarFile = self.colvar.VariableLines
             baseColvarFile += f"""
 harmonic {"{"}
@@ -210,14 +230,10 @@ forceConstant   {self.colvar.HoldForce}
 {"}"}
 """
             io.textDump(baseColvarFile, os.path.join(binpath, "hold.colvar.conf"))
+        return files
 
-    def hold_run(self, WorkDir:str, MM: MMClass, job:dict, VMD: VMDClass, Trackers:list, HPC:HPCClass):
-        if HPC.exists:
-            runscript = ""
-        else:
-            runscript = """#!/bin/bash 
-mkdir /dev/shm/RUNDIR
-"""
+    def hold_run(self, WorkDir:str, MM: MMClass, job:dict, VMD: VMDClass, Trackers:list, 
+    HPC:HPCClass, NPartitions:int):
         if MM.software.config["qmForces"] == "on":
             MMPath = MM.software.path_cpu
             CommandLines = "+setcpuaffinity"
@@ -226,17 +242,48 @@ mkdir /dev/shm/RUNDIR
             MMPath = MM.software.path_gpu
             CommandLines = "+oneWthPerCore +setcpuaffinity +devices 0"
             GPU=True
-        for bin in self.data.keys():
+        if NPartitions == 1:
             if HPC.exists:
-                runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                runscript = ""
             else:
-                runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
-        if HPC.exists == False:
-            runscript += "rm -r /dev/shm/RUNDIR"
+                runscript = """#!/bin/bash 
+    mkdir /dev/shm/RUNDIR
+    """
+            
+            for bin in self.data.keys():
+                if HPC.exists:
+                    runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                else:
+                    runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
+            if HPC.exists == False:
+                runscript += "rm -r /dev/shm/RUNDIR"
 
-        io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"))
-        if HPC.exists:
-            slurmscript = HPC.gen_slumScript("array-job", job["output"], os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"), len(self.data.keys()))
-            io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
-            io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
-            HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+            io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"))
+            if HPC.exists:
+                slurmscript = HPC.gen_slumScript("array-job", job["output"], os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"), len(self.data.keys()))
+                io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+                io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
+                HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+        else:
+            for i in range(NPartitions):
+                if HPC.exists:
+                    runscript = ""
+                else:
+                    runscript = """#!/bin/bash 
+        mkdir /dev/shm/RUNDIR
+        """
+                
+                for bin in self.data.keys():
+                    if HPC.exists:
+                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}_{i+1}.conf > {job["output"]}_{i+1}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                    else:
+                        runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}_{i+1}.conf > {job["output"]}_{i+1}.out ; cd ../ \n"
+                if HPC.exists == False:
+                    runscript += "rm -r /dev/shm/RUNDIR"
+
+                io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job["output"]}_{i+1}.sh"))
+                if HPC.exists:
+                    slurmscript = HPC.gen_slumScript("array-job", f"{job["output"]}_{i+1}", os.path.join(WorkDir, f"Umbrella-{job["output"]}_{i+1}.sh"), len(self.data.keys()))
+                    io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
+                    io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
+                    HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))

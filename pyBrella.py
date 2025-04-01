@@ -16,8 +16,11 @@ def main():
     assert os.path.isdir(Inputs["workdir"]), f"ERROR: WorkDirectory does not exist: {Inputs['workdir']}"
     MM = classes.MMClass("namd", Inputs["parameters"], Inputs["topology"])
     HPC = classes.HPCClass(Inputs["hpc"]["hostname"])
+    if "max_steps" in Inputs["hpc"]:
+        HPC.walltime_partition(Inputs["hpc"]["max_steps"])
     if "config" in Inputs["hpc"]:
         HPC.init_slurm(Inputs["hpc"]["config"], Inputs["hpc"]["modulefiles"], Inputs["hpc"]["environment"])
+    partitioned = False
     tracker_inf = Inputs["tracker"]
     trackers = [None]*len(tracker_inf.keys())
     Analysis_lines = ""
@@ -145,9 +148,28 @@ def main():
         job = InputParser.check_keys(job, keys)
         MM.software.set_global(True, os.path.join("../", Inputs["parameters"]), os.path.join("../",Inputs["topology"] ))
 
-        Umbrella.hold_init(Inputs["workdir"], MM, job, HPC)
-        Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC)
+        files = Umbrella.hold_init(Inputs["workdir"], MM, job, HPC)
+        if len(files) > 1:
+            partitioned = True
+        else:
+            partitioned = False
+        Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
 
+    if "umbrella-prod" in Inputs["jobs"]:
+        keys = ["umbrella-prod", "input", "output", "steps", "timestep", "trajout", "temperature", "pressure", "run", "vis",]
+        job = Inputs["jobs"]["umbrella-prod"]
+        job = InputParser.check_keys(job, keys)
+
+        MM.software.set_global(True, os.path.join("../", Inputs["parameters"]), os.path.join("../",Inputs["topology"] ))
+        if partitioned == True:
+            job["input"] = f"{job["input"]}_{len(files)}"
+            pprint(job)
+        files = Umbrella.hold_init(Inputs["workdir"], MM, job, HPC)
+        if len(files) > 1:
+            partitioned = True
+        else:
+            partitioned = False
+        Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
 
     GlobEnd = time.perf_counter()
     print(f"INFO: Total calculation time was {GlobEnd - GlobStart} s" if Inputs["verbosity"] > 2 else "")
