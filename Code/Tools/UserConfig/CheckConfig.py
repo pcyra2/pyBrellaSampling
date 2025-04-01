@@ -86,9 +86,12 @@ def GetDefaults()->dict:
     if os.path.isfile(ConfigLoc+"/pyBrellaDefaults.conf") == False:
         print("WARNING: Default variables are not set... Initiating.")
         DefInps = {}
-        if os.environ["DOCKER"] == "TestEnv":
-            HardDef = "n"
-        else:
+        try:
+            if os.environ["DOCKER"] == "TestEnv":
+                HardDef = "n"
+            else:
+                HardDef = input("Would you like to configure your own defaults? (y/n) ")
+        except KeyError:
             HardDef = input("Would you like to configure your own defaults? (y/n) ")
         if HardDef.casefold() == "y":
             # DefInps[""] = input("")
