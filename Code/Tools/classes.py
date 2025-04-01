@@ -846,7 +846,7 @@ eval "$RUNLINE wait"
     max_steps = 0
     exists = False
     dependency = ""
-    slurmIDindex=4
+    slurmIDindex=3
     def __init__(self, hostname:str):
         self.hostname = hostname
     def init_slurm(self, config:dict, modulefiles:list):
