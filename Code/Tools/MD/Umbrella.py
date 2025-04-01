@@ -238,4 +238,5 @@ mkdir /dev/shm/RUNDIR
         if HPC.exists:
             slurmscript = HPC.gen_slumScript("array-job", job["output"], os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"))
             io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+            io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
             HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
