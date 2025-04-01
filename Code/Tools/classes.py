@@ -234,7 +234,7 @@ class namd_class:
     name = "namd"
     config = {"colvarlines":""}
     def __init__(self):
-        defaults = io.jsonRead(CurrentPath+"/UserConfig/NAMDDefaults.conf")
+        self.defaults = io.jsonRead(CurrentPath+"/UserConfig/NAMDDefaults.conf")
         paths = io.jsonRead(CurrentPath+"/UserConfig/SoftwareLocations.conf")
         self.path_cpu = paths["namd"]["cpu"]
         self.path_gpu = paths["namd"]["gpu"]
