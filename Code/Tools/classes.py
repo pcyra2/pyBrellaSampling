@@ -231,10 +231,10 @@ class pyscf_class:
         pass
 
 class namd_class:
-    defaults = io.jsonRead(CurrentPath+"/UserConfig/NAMDDefaults.conf")
     name = "namd"
     config = {"colvarlines":""}
     def __init__(self):
+        defaults = io.jsonRead(CurrentPath+"/UserConfig/NAMDDefaults.conf")
         paths = io.jsonRead(CurrentPath+"/UserConfig/SoftwareLocations.conf")
         self.path_cpu = paths["namd"]["cpu"]
         self.path_gpu = paths["namd"]["gpu"]
