@@ -910,6 +910,7 @@ sh $ARRAY_JOBFILE
         status = None
         for job in jobs[1:]:
             tags = job.split()
+            print(tags)
             if len(tags) != 7:
                 break
             existing_jobs[tags[2]] = {"ID": tags[0],
