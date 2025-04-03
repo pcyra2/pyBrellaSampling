@@ -95,7 +95,7 @@ def main():
 
     ### Setup Umbrella sampling stuff (QM, colvar etc.)
     if len(Inputs["qm"].keys()) != 0:
-        print("initiating QM")
+        print("INFO: initiating QM region" if Inputs["verbosity"]>2 else"")
         qmVars = Inputs["qm"]
         if "software" not in qmVars:
             qmVars["software"] = "orca"
@@ -107,7 +107,7 @@ def main():
         
         
         VMD.qmPDB_gen(MM)
-
+    print("INFO: initiating colvar region" if Inputs["verbosity"]>2 else"")
     colvarVars = Inputs["colvar"]
     colvar = classes.ColvarClass()
     colvar.atomic_colvar(colvarVars["atoms"], colvarVars["pull_force"], colvarVars["constant_force"], colvarVars["minimum"], colvarVars["maximum"], colvarVars["initial"],colvarVars["width"])
