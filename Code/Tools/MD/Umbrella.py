@@ -264,9 +264,11 @@ forceConstant   {self.colvar.HoldForce}
                 io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
                 io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                 if job["run"] == "true":
-                    status = HPC.check_dependecy(job["output"])
-                    if status != "wait":
-                        HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+                    filepath = os.path.join(WorkDir, str(i), f"{job["output"]}")
+                    if MM.software.check_output(f"{filepath}.out")[0] != "completed":
+                        status = HPC.check_dependecy(job["output"])
+                        if status != "wait":
+                            HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
         else:
             for i in range(NPartitions):
                 if HPC.exists:
@@ -290,6 +292,8 @@ forceConstant   {self.colvar.HoldForce}
                     io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
                     io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                     if job["run"] == "true":
-                        status = HPC.check_dependecy(f"{job["output"]}_{i+1}")
-                        if status != "wait":
-                            HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
+                        filepath = os.path.join(WorkDir, str(i), f"{job["output"]}")
+                        if MM.software.check_output(f"{filepath}.out")[0] != "completed":
+                            status = HPC.check_dependecy(f"{job["output"]}_{i+1}")
+                            if status != "wait":
+                                HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
