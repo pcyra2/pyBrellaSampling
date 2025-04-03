@@ -901,7 +901,7 @@ sh $ARRAY_JOBFILE
             out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
-            print(f"INFO: filename submitted. SLURM ID: {words[self.slurmIDindex]}")
+            print(f"INFO: {filename} submitted. SLURM ID: {words[self.slurmIDindex]}")
         else:
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
     def check_dependecy(self, calc:str):
@@ -910,9 +910,10 @@ sh $ARRAY_JOBFILE
         existing_jobs = {}
         status = None
         for job in jobs[1:]:
+            print(job)
             tags = job.split()
             print(tags)
-            if len(tags) != 7:
+            if len(tags) == 1:
                 break
             existing_jobs[tags[2]] = {"ID": tags[0],
                                   "partition": tags[1],
