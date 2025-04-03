@@ -852,7 +852,7 @@ eval "$RUNLINE wait"
     exists = False
     dependency = ""
     slurmIDindex=3
-    def __init__(self, hostname:str):
+    def __init__(self, hostname:str, username:str):
         self.hostname = hostname
     def init_slurm(self, config:dict, modulefiles:list, env:list):
         self.exists = True
@@ -903,3 +903,23 @@ sh $ARRAY_JOBFILE
             self.set_dependency(words[self.slurmIDindex])
         else:
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
+    def check_dependecy(self, calc:str):
+        jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode()
+        existing_jobs = {}
+        status = None
+        for job in jobs[1:]:
+            tags = job.split()
+            existing_jobs[tags[2]] = {"ID": tags[0],
+                                  "partition": tags[1],
+                                  "status":tags[4],
+                                  "time":tags[5],
+                                  "extras":tags[7]
+                                  }
+            if tags[2] == calc:
+                if tags[4] == "R" or tags[4] == "PD":
+                    status = "wait"
+                else:
+                    status = tags[4]
+        self.SLURM_queue = existing_jobs
+        return status
+        
