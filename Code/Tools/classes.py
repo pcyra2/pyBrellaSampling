@@ -905,9 +905,11 @@ sh $ARRAY_JOBFILE
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
     def check_dependecy(self, calc:str):
         jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode()
+        
         existing_jobs = {}
         status = None
         for job in jobs[1:]:
+            print(job)
             tags = job.split()
             existing_jobs[tags[2]] = {"ID": tags[0],
                                   "partition": tags[1],
