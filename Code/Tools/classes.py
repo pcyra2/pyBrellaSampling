@@ -913,19 +913,18 @@ sh $ARRAY_JOBFILE
             print(job)
             tags = job.split()
             print(tags)
-            if len(tags) == 1:
-                break
-            existing_jobs[tags[2]] = {"ID": tags[0],
-                                  "partition": tags[1],
-                                  "status":tags[4],
-                                  "time":tags[5],
-                                  "extras":tags[7]
-                                  }
-            if tags[2] == calc:
-                if tags[4] == "R" or tags[4] == "PD":
-                    status = "wait"
-                else:
-                    status = tags[4]
+            if len(tags) != 0:
+                existing_jobs[tags[2]] = {"ID": tags[0],
+                                    "partition": tags[1],
+                                    "status":tags[4],
+                                    "time":tags[5],
+                                    "extras":tags[7]
+                                    }
+                if tags[2] == calc:
+                    if tags[4] == "R" or tags[4] == "PD":
+                        status = "wait"
+                    else:
+                        status = tags[4]
         self.SLURM_queue = existing_jobs
         return status
         
