@@ -901,11 +901,12 @@ sh $ARRAY_JOBFILE
             out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
+            print(f"INFO: filename submitted. SLURM ID: {words[self.slurmIDindex]}")
         else:
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
     def check_dependecy(self, calc:str):
         jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode()
-        
+        print(jobs)
         existing_jobs = {}
         status = None
         for job in jobs[1:]:
