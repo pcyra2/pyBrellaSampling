@@ -269,6 +269,10 @@ forceConstant   {self.colvar.HoldForce}
                         status = HPC.check_dependecy(job["output"])
                         if status != "wait":
                             HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+                        else:
+                            print(f"INFO: {job["output"]} job already in the queue, skipping.")
+                    else:
+                        print(f"INFO:  {job["output"]} job has already finished.")
         else:
             for i in range(NPartitions):
                 if HPC.exists:
@@ -297,3 +301,7 @@ forceConstant   {self.colvar.HoldForce}
                             status = HPC.check_dependecy(f"{job["output"]}_{i+1}")
                             if status != "wait":
                                 HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
+                            else:
+                                print(f"INFO: {job["output"]}_{i+1} job already in the queue, skipping.")
+                        else:
+                            print(f"INFO:  {job["output"]}_{i+1} job has already finished.")
