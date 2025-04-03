@@ -905,7 +905,7 @@ sh $ARRAY_JOBFILE
         else:
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
     def check_dependecy(self, calc:str):
-        jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode()
+        jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
         print(jobs)
         existing_jobs = {}
         status = None
