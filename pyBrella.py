@@ -15,7 +15,7 @@ def main():
     print(f"INFO: Input file read, starting calculation, Verbosity is set to {Inputs['verbosity']}" if Inputs["verbosity"]>2 else "")
     assert os.path.isdir(Inputs["workdir"]), f"ERROR: WorkDirectory does not exist: {Inputs['workdir']}"
     MM = classes.MMClass("namd", Inputs["parameters"], Inputs["topology"])
-    HPC = classes.HPCClass(Inputs["hpc"]["hostname"])
+    HPC = classes.HPCClass(Inputs["hpc"]["hostname"], os.getenv("USERNAME"))
     if "max_steps" in Inputs["hpc"]:
         HPC.walltime_partition(Inputs["hpc"]["max_steps"])
     if "config" in Inputs["hpc"]:
