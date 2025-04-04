@@ -154,6 +154,7 @@ def main():
         else:
             partitioned = False
         Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
+        trackers = Umbrella.analyse_completed(Inputs["workdir"], files, MM, VMD,job, trackers)
 
     if "umbrella-prod" in Inputs["jobs"]:
         keys = ["umbrella-prod", "input", "output", "steps", "timestep", "trajout", "temperature", "pressure", "run", "vis",]
@@ -170,6 +171,7 @@ def main():
         else:
             partitioned = False
         Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
+        trackers = Umbrella.analyse_completed(Inputs["workdir"], files, MM, VMD,job, trackers)
 
     GlobEnd = time.perf_counter()
     print(f"INFO: Total calculation time was {GlobEnd - GlobStart} s" if Inputs["verbosity"] > 2 else "")
