@@ -305,3 +305,22 @@ forceConstant   {self.colvar.HoldForce}
                                 print(f"INFO: {job["output"]}_{i+1} job already in the queue, skipping.")
                         else:
                             print(f"INFO:  {job["output"]}_{i+1} job has already finished.")
+    def analyse_completed(self,WorkDir:str,Files:list, MM:MMClass,VMD:VMDClass, job:dict, Trackers:list):
+        for bin in self.data.keys():
+            bindir = os.path.join(WorkDir, str(bin))
+            track = []
+            for file in Files:
+                outfile = file.replace(".conf","")
+                filepath = os.path.join(bindir, outfile)
+                status = MM.software.check_output(f"{filepath}.out")
+                if status == "completed" or status == "running":
+                    data = io.textRead(f"{filepath}.colvars.traj")
+                    self.add_data(bin, "constTime", data[1:], (len(data[1:])-1)*float(MM.software.config["timeStep"]))
+                if status == "completed":
+                    track.append(filepath)
+            TrackerFile = VMD.GenAnalysisScript([track])
+            io.textDump(TrackerFile, os.path.join(bindir,f"Analysis.tcl"))
+            VMD.RunAnalysis(os.path.join(bindir,f"Analysis.tcl"))
+            for Tracker in Trackers:
+                Tracker.get_vmdData(bindir, job["outfile"],bin)
+        return Trackers
