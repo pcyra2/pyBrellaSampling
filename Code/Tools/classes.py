@@ -618,7 +618,9 @@ label delete Dihedrals 0"""
     def dump(self, path:str):
         io.jsonDump(self.data, os.path.join(path, f"{self.Name}_Analysis.json"))
     def read_previous(self, WorkDir:str):
-        self.data = io.jsonRead(os.path.join(WorkDir, f"{self.Name}_Analysis.json") )
+        if os.path.isfile(os.path.join(WorkDir, f"{self.Name}_Analysis.json")):
+            self.data = io.jsonRead(os.path.join(WorkDir, f"{self.Name}_Analysis.json") )
+
 
 class VMDClass:
     def __init__(self, ParmFile:str, AnalysisLines:str):
@@ -852,6 +854,7 @@ eval "$RUNLINE wait"
     exists = False
     dependency = ""
     slurmIDindex=3
+    connected = False
     def __init__(self, hostname:str, username:str):
         self.hostname = hostname
     def init_slurm(self, config:dict, modulefiles:list, env:list):
@@ -869,6 +872,8 @@ eval "$RUNLINE wait"
         for envonments in env:
             envLines += f"{envonments} \n"
         self.environmentLines = envLines
+        if socket.gethostname() == self.hostname:
+            self.connected = True
     def walltime_partition(self, steps:int):
         self.max_steps = steps
         self.partition = True
@@ -897,7 +902,7 @@ sh $ARRAY_JOBFILE
 """
         return file
     def run_slurmScript(self, filename):
-        if socket.gethostname() == self.hostname:
+        if self.connected == True:
             out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
@@ -905,23 +910,24 @@ sh $ARRAY_JOBFILE
         else:
             print("WARNING: You are not connected to the HPC host, therefore the job cannot be submitted.")
     def check_dependecy(self, calc:str):
-        jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
         existing_jobs = {}
         status = None
-        for job in jobs[1:]:
-            tags = job.split()
-            if len(tags) != 0:
-                existing_jobs[tags[2]] = {"ID": tags[0],
-                                    "partition": tags[1],
-                                    "status":tags[4],
-                                    "time":tags[5],
-                                    "extras":tags[7]
-                                    }
-                if tags[2] == calc:
-                    if tags[4] == "R" or tags[4] == "PD":
-                        status = "wait"
-                    else:
-                        status = tags[4]
-        self.SLURM_queue = existing_jobs
+        if self.connected == True:
+            jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
+            for job in jobs[1:]:
+                tags = job.split()
+                if len(tags) != 0:
+                    existing_jobs[tags[2]] = {"ID": tags[0],
+                                        "partition": tags[1],
+                                        "status":tags[4],
+                                        "time":tags[5],
+                                        "extras":tags[7]
+                                        }
+                    if tags[2] == calc:
+                        if tags[4] == "R" or tags[4] == "PD":
+                            status = "wait"
+                        else:
+                            status = tags[4]
+            self.SLURM_queue = existing_jobs
         return status
         

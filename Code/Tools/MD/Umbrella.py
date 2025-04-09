@@ -195,31 +195,30 @@ mkdir /dev/shm/RUNDIR
             bin = self.data[key]
             binpath = os.path.join(WorkDir,str(key))
             assert os.path.isdir(binpath)
-            if HPC.partition == False:
+            if HPC.partition == False or job["steps"] <= HPC.max_steps:
                 file = MM.SMD(job["input"], job["output"], "hold.colvar.conf", job["steps"], 
                             job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
                 io.textDump(file, os.path.join(binpath, f"{job["output"]}.conf"))
-                files = [file]
+                files = [f"{job["output"]}.conf"]
             else:
                 files = []
-                if job["steps"] > HPC.max_steps:
-                    file = MM.SMD(job["input"], f"{job["output"]}_1", "hold.colvar.conf", HPC.max_steps, 
+                file = MM.SMD(job["input"], f"{job["output"]}_1", "hold.colvar.conf", HPC.max_steps, 
+                        job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                io.textDump(file, os.path.join(binpath, f"{job["output"]}_1.conf"))
+                files.append(f"{job["output"]}_1.conf")
+                if job["steps"]//HPC.max_steps != 1:
+                    for i in range(1,job["steps"]//HPC.max_steps):
+                        file = MM.SMD(f"{job["output"]}_{i}", f"{job["output"]}_{i+1}", "hold.colvar.conf", HPC.max_steps, 
                             job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                    io.textDump(file, os.path.join(binpath, f"{job["output"]}_1.conf"))
-                    files.append(f"{job["output"]}_1.conf")
-                    if job["steps"]//HPC.max_steps != 1:
-                        for i in range(1,job["steps"]//HPC.max_steps):
-                            file = MM.SMD(f"{job["output"]}_{i}", f"{job["output"]}_{i+1}", "hold.colvar.conf", HPC.max_steps, 
-                                job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                            io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+1}.conf"))
-                            files.append(f"{job["output"]}_{i+1}.conf")
-                    else:
-                        i = 0
-                    if job["steps"]%HPC.max_steps > 0:
-                        file = MM.SMD(f"{job["output"]}_{i+1}", f"{job["output"]}_{i+2}", "hold.colvar.conf",job["steps"]%HPC.max_steps, 
-                            job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                        io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+2}.conf"))
-                        files.append(f"{job["output"]}_{i+2}.conf")            
+                        io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+1}.conf"))
+                        files.append(f"{job["output"]}_{i+1}.conf")
+                else:
+                    i = 0
+                if job["steps"]%HPC.max_steps > 0:
+                    file = MM.SMD(f"{job["output"]}_{i+1}", f"{job["output"]}_{i+2}", "hold.colvar.conf",job["steps"]%HPC.max_steps, 
+                        job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
+                    io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+2}.conf"))
+                    files.append(f"{job["output"]}_{i+2}.conf")            
             baseColvarFile = self.colvar.VariableLines
             baseColvarFile += f"""
 harmonic {"{"}
@@ -229,10 +228,12 @@ centers         {bin["Value"]}
 forceConstant   {self.colvar.HoldForce}
 {"}"}
 """
+            
             io.textDump(baseColvarFile, os.path.join(binpath, "hold.colvar.conf"))
+            print(files)
         return files
 
-    def hold_run(self, WorkDir:str, MM: MMClass, job:dict, VMD: VMDClass, Trackers:list, 
+    def hold_run(self, WorkDir:str, MM: MMClass, job:dict, 
     HPC:HPCClass, NPartitions:int):
         if MM.software.config["qmForces"] == "on":
             MMPath = MM.software.path_cpu
@@ -264,7 +265,7 @@ forceConstant   {self.colvar.HoldForce}
                 io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
                 io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                 if job["run"] == "true":
-                    filepath = os.path.join(WorkDir, str(i), f"{job["output"]}")
+                    filepath = os.path.join(WorkDir, str(bin), f"{job["output"]}")
                     if MM.software.check_output(f"{filepath}.out")[0] != "completed":
                         status = HPC.check_dependecy(job["output"])
                         if status != "wait":
@@ -307,20 +308,25 @@ forceConstant   {self.colvar.HoldForce}
                             print(f"INFO:  {job["output"]}_{i+1} job has already finished.")
     def analyse_completed(self,WorkDir:str,Files:list, MM:MMClass,VMD:VMDClass, job:dict, Trackers:list):
         for bin in self.data.keys():
+            print(bin)
             bindir = os.path.join(WorkDir, str(bin))
             track = []
             for file in Files:
                 outfile = file.replace(".conf","")
                 filepath = os.path.join(bindir, outfile)
-                status = MM.software.check_output(f"{filepath}.out")
+                status, _ = MM.software.check_output(f"{filepath}.out")
+                print(status)
                 if status == "completed" or status == "running":
                     data = io.textRead(f"{filepath}.colvars.traj")
-                    self.add_data(bin, "constTime", data[1:], (len(data[1:])-1)*float(MM.software.config["timeStep"]))
+                    if "umbrella-equil" in job.keys():
+                        self.add_data(bin, "equilValues", data[1:], (len(data[1:])-1)*float(MM.software.config["timeStep"]))
+                    elif "umbrella-prod" in job.keys():
+                        self.add_data(bin, "prodValues", data[1:], (len(data[1:])-1)*float(MM.software.config["timeStep"]))
                 if status == "completed":
                     track.append(filepath)
-            TrackerFile = VMD.GenAnalysisScript([track])
+            TrackerFile = VMD.GenAnalysisScript(track)
             io.textDump(TrackerFile, os.path.join(bindir,f"Analysis.tcl"))
             VMD.RunAnalysis(os.path.join(bindir,f"Analysis.tcl"))
             for Tracker in Trackers:
-                Tracker.get_vmdData(bindir, job["outfile"],bin)
+                Tracker.get_vmdData(WorkDir, job["output"],bin)
         return Trackers

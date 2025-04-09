@@ -46,7 +46,7 @@ def main():
                 io.textDump(TrackerFile, os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 VMD.RunAnalysis(os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 for Tracker in trackers:
-                    Tracker.get_vmdData(Inputs["workdir"], job["output"])
+                    Tracker.get_vmdData(Inputs["workdir"], f"MD-{job["output"]}")
             else:
                 print("INFO: Minimization has already been performed, skipping." if Inputs["verbosity"]>2 else "")
     
@@ -65,7 +65,7 @@ def main():
                 io.textDump(TrackerFile, os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 VMD.RunAnalysis(os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 for Tracker in trackers:
-                    Tracker.get_vmdData(Inputs["workdir"], job["output"])
+                    Tracker.get_vmdData(Inputs["workdir"], f"MD-{job["output"]}")
             else:
                 print("INFO: Heating job already completed, skipping." if Inputs["verbosity"]>2 else "")
     
@@ -89,7 +89,7 @@ def main():
                 io.textDump(TrackerFile, os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 VMD.RunAnalysis(os.path.join(Inputs["workdir"],f"Analysis.tcl"))
                 for Tracker in trackers:
-                    Tracker.get_vmdData(Inputs["workdir"], job["output"])
+                    Tracker.get_vmdData(Inputs["workdir"], f"MD-{job["output"]}")
             else:
                 print("INFO: Equilibration job already completed, skipping." if Inputs["verbosity"]>2 else "")
 
@@ -146,6 +146,7 @@ def main():
         keys = ["umbrella-equil", "input", "output", "steps", "timestep", "trajout", "temperature", "pressure", "run", "vis",]
         job = Inputs["jobs"]["umbrella-equil"]
         job = InputParser.check_keys(job, keys)
+        pprint(job)
         MM.software.set_global(True, os.path.join("../", Inputs["parameters"]), os.path.join("../",Inputs["topology"] ))
 
         files = Umbrella.hold_init(Inputs["workdir"], MM, job, HPC)
@@ -153,7 +154,7 @@ def main():
             partitioned = True
         else:
             partitioned = False
-        Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
+        Umbrella.hold_run(Inputs["workdir"], MM, job, HPC, len(files))
         trackers = Umbrella.analyse_completed(Inputs["workdir"], files, MM, VMD,job, trackers)
 
     if "umbrella-prod" in Inputs["jobs"]:
@@ -170,7 +171,7 @@ def main():
             partitioned = True
         else:
             partitioned = False
-        Umbrella.hold_run(Inputs["workdir"], MM, job, VMD, trackers, HPC, len(files))
+        Umbrella.hold_run(Inputs["workdir"], MM, job, HPC, len(files))
         trackers = Umbrella.analyse_completed(Inputs["workdir"], files, MM, VMD,job, trackers)
 
     GlobEnd = time.perf_counter()
