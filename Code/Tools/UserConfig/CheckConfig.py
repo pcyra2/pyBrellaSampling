@@ -44,7 +44,7 @@ NAMDDefaults = {
     "PMEGridSizeZ":"300",
     "PMETolerance":"1.0e-6",
     "PMEInterpOrder":"4",
-    "wrap":"wrapWater         on",
+    "wrap":"wrapNearest       on",
     "cell":"",
     "cellShape" : "oct",
     "temperature":"0",

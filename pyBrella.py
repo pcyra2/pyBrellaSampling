@@ -138,7 +138,7 @@ def main():
             data = io.textRead(os.path.join(Inputs["workdir"], str(bin), "pull.colvars.traj"))
             Umbrella.add_data(bin, "pullValues", data[1:], (len(data[1:])-1)*float(job["timestep"]))
         if job["vis"] == "true":
-            trajfiles = [os.path.join(Inputs["workdir"], str(bin),"pull.dcd") for bin in Umbrella.data.keys()]
+            trajfiles = [os.path.join(Inputs["workdir"], str(bin),"pull.restart.coor") for bin in Umbrella.data.keys()]
             file = VMD.gen_visScript(trajfiles)
             io.textDump(file, os.path.join(Inputs["workdir"], "VisualisePull.tcl"))
 

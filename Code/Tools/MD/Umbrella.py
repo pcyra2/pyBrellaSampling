@@ -188,7 +188,7 @@ mkdir /dev/shm/RUNDIR
         io.textDump(runscript, os.path.join(WorkDir, "pull.sh"))
         if job["run"].casefold() == "true":
             if os.path.isdir("/dev/shm/RUNDIR"):
-                os.rmdir("/dev/shm/RUNDIR")
+                subprocess.run(["rm", "-r", "/dev/shm/RUNDIR"],shell=True)
         return Trackers
     def hold_init(self, WorkDir:str, MM:MMClass, job:dict, HPC: HPCClass):
         for key in self.data.keys():
