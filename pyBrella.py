@@ -176,7 +176,7 @@ def main():
 
     if "wham" in Inputs["jobs"]:
         keys = ["wham", "convergence"]
-        job = InputParser(Inputs["jobs"]["wham"], keys)
+        job = InputParser.check_keys(Inputs["jobs"]["wham"], keys)
         Umbrella.dump_data(os.path.join(Inputs["workdir"], "Umbrella.json"))
 
     GlobEnd = time.perf_counter()
