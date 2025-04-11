@@ -297,7 +297,7 @@ forceConstant   {self.colvar.HoldForce}
                     io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
                     io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                     if job["run"] == "true":
-                        filepath = os.path.join(WorkDir, str(i), f"{job["output"]}")
+                        filepath = os.path.join(WorkDir, str(i), f"{job["output"]}_{i+1}")
                         if MM.software.check_output(f"{filepath}.out")[0] != "completed":
                             status = HPC.check_dependecy(f"{job["output"]}_{i+1}")
                             if status != "wait":
