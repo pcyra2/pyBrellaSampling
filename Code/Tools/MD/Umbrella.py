@@ -330,3 +330,6 @@ forceConstant   {self.colvar.HoldForce}
             for Tracker in Trackers:
                 Tracker.get_vmdData(WorkDir, job["output"],bin)
         return Trackers
+    def dump_data(self, path:str):
+        data = self.data
+        io.jsonDump(data, path)

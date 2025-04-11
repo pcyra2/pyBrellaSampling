@@ -174,6 +174,11 @@ def main():
         Umbrella.hold_run(Inputs["workdir"], MM, job, HPC, len(files))
         trackers = Umbrella.analyse_completed(Inputs["workdir"], files, MM, VMD,job, trackers)
 
+    if "wham" in Inputs["jobs"]:
+        keys = ["wham", "convergence"]
+        job = InputParser(Inputs["jobs"]["wham"], keys)
+        Umbrella.dump_data(os.path.join(Inputs["workdir"], "Umbrella.json"))
+
     GlobEnd = time.perf_counter()
     print(f"INFO: Total calculation time was {GlobEnd - GlobStart} s" if Inputs["verbosity"] > 2 else "")
     for tracker in trackers:
