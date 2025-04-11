@@ -35,7 +35,7 @@ class UmbrellaClass:
         if "#step" in data[0]:
             data = data[1:]
         if len(data[0].split()) == 2:
-            data = [float(dat.split()[1]) for dat in data]
+            data = [float(dat.split()[1]) for dat in data if "step" not in dat]
 
         self.data[bin][data_type] += data
         if data_type == "pullValues":
