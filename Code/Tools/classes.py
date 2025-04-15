@@ -203,7 +203,7 @@ class orca_class:
         else:
             for arg in args:
                 self.extras += str(args)+" "
-    def gen_input(method:str, basis:str ,jobtype:str , charge:int , spin:int , mol, cores:int , ram:int , *args)->str:
+    def gen_input(self,method:str, basis:str ,jobtype:str , charge:int , spin:int , mol, cores:int , ram:int , *args)->str:
         line1 = f"{method} {basis} {jobtype} "
         for arg in args:
             line1 += f" {arg}"
@@ -226,9 +226,21 @@ class orca_class:
 
 class pyscf_class:
     name="pyscf"
+    extras = ""
     def __init__(self):
-
+        self.path = ""
+        self.post_inputfile = ""
+    def add_extras(self, args:list):
         pass
+    def run(self, input, output, cores):
+        pass
+    def gen_input(self, method:str, basis:str ,jobtype:str , charge:int , spin:int , mol, cores:int , ram:int , *args):
+        pass
+    def set_envVars(self, method, basis, charge, spin):
+        os.environ["method"] = method
+        os.environ["basis"] = basis
+        os.environ["charge"] = charge
+        os.environ["spin"] = spin
 
 class namd_class:
     name = "namd"
@@ -313,7 +325,8 @@ langevinPistonTemp      {kwargs["temperature"]}
     def set_qm(self, QM:QMClass, qmFilePath:str):
         self.qmzone = QM.vmd_selection
         self.config["qmForces"] = "on"
-        self.config["qmlines"] = f"""
+        if QM.software.name == "orca":
+            self.config["qmlines"] = f"""
 qmParamPDB              "{qmFilePath}"
 qmColumn                "beta"
 qmBondColumn            "occ"
@@ -331,6 +344,27 @@ qmMult                  "1 {QM.spin}"
 qmCharge                "1 {QM.charge}"
 qmSoftware              "orca"
 qmExecPath              "{QM.software.path}"
+QMOutStride             1
+qmEnergyStride          1
+QMPositionOutStride     1
+"""
+        elif QM.software.name == "pyscf":
+            self.config["qmlines"]=f"""
+qmParamPDB              "{qmFilePath}"
+qmColumn                "beta"
+qmBondColumn            "occ"
+QMsimsPerNode           1
+QMElecEmbed             on
+QMSwitching             on
+QMSwitchingType         shift
+QMPointChargeScheme     round
+QMBondScheme            "cs"
+qmBaseDir               "/dev/shm/RUNDIR"
+qmConfigLine            "{QM.Method} {QM.Basis}"
+qmMult                  "1 {QM.spin}"
+qmCharge                "1 {QM.charge}"
+qmSoftware              "custom"
+qmExecPath              "pyscfQMMM"
 QMOutStride             1
 qmEnergyStride          1
 QMPositionOutStride     1
@@ -572,6 +606,7 @@ colvar {
     def update_initial_point(self, point):
         self.initial = point
     
+    
 class TrackerClass:
     def __init__(self, atoms:list, Name:str, ):
         self.data = {}
@@ -620,7 +655,6 @@ label delete Dihedrals 0"""
     def read_previous(self, WorkDir:str):
         if os.path.isfile(os.path.join(WorkDir, f"{self.Name}_Analysis.json")):
             self.data = io.jsonRead(os.path.join(WorkDir, f"{self.Name}_Analysis.json") )
-
 
 class VMDClass:
     def __init__(self, ParmFile:str, AnalysisLines:str):

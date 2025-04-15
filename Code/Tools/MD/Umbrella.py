@@ -2,6 +2,7 @@ import emcee as emcee
 import os
 import subprocess
 from pprint import pprint
+import matplotlib.pyplot as plt
 
 from pyBrellaSampling.Code.Tools.classes import ColvarClass, MMClass, VMDClass, TrackerClass, HPCClass
 import pyBrellaSampling.Code.Tools.io as io
@@ -60,13 +61,13 @@ class UmbrellaClass:
             except IndexError:
                 integral_time = 1    
             self.autocorrelate_results[bin] = {"data": data,
-                                          "integral_time": integral_time }
+                                          "integral_time": float(integral_time) }
     def ToggleError(self, bin, Issue=None):
         self.data[bin]["ERROR"] = True
         if Issue is not None:
             self.data[bin]["ErrorMSG"] = Issue
-    def wham_init(self, WhamLocation:str, convergence=1e-6):
-        if self.colvar.VariableType != "distance":
+    def wham_init(self, WhamLocation:str, convergence=1e-6,vis="false"):
+        if self.colvar.VariableType != "length":
             periodicity = "P"
         else:
             periodicity = ""
@@ -81,16 +82,20 @@ class UmbrellaClass:
             if self.data[bin]["ERROR"] == False:
                 UseableBins += 1
                 meta = [str]*(len(self.autocorrelate_results[bin]["data"])+1)
-                meta[0] = f"Step   Value"
+                meta[0] = f"#Step\tValue"
                 for i, val in enumerate(self.autocorrelate_results[bin]["data"]):
-                    meta[i+1] = f"{i}   {val}"
-                metafile = os.path.join(metapath, f"{self.data[bin]["Window"]}.metadata.dat")
-                io.textDump(meta, metafile)
-                metafiles.append(metafile)
+                    meta[i+1] = f"{i}\t{val}"
+                metafile = f"{bin}.metadata.dat"
+                io.textDump(meta, os.path.join(metapath,metafile))
+                metafiles.append(f"{os.path.join(metapath,metafile)} {self.data[bin]["Value"]} {self.colvar.stepsize} {self.autocorrelate_results[bin]["integral_time"]}")
+                plt.hist(self.autocorrelate_results[bin]["data"], 100)
             else:
                 pass
-
-        io.textDump(metafiles, os.path.join(metapath, "meta_locations.dat"))
+        plt.xlabel("Reaction coordinate")
+        plt.ylabel("Count")
+        if vis == "true":
+            plt.show()
+        io.textDump(metafiles, "meta_locations.dat")
         
         if self.colvar.Min > self.colvar.Max:
             colvar_low = self.colvar.Max
@@ -99,11 +104,11 @@ class UmbrellaClass:
             colvar_low = self.colvar.Min
             colvar_high = self.colvar.Max
 
-        whamfile = f"""wham {periodicity} {colvar_low} {colvar_high} {UseableBins} {convergence} {self.Temperature} 0 {os.path.join(metapath, "meta_locations.dat")} {os.path.join(metapath, "wham.pmf")} 10 60
+        whamfile = f"""wham {periodicity} {colvar_low} {colvar_high} {UseableBins} {convergence} {self.Temperature} 0 "meta_locations.dat" {os.path.join(metapath, "wham.pmf")} 10 60
 sed '1d' {os.path.join(metapath, "wham.pmf")} | awk '{"{"}print $1,"",$2{"}"}' > {os.path.join(metapath, "plot_free_energy.dat")}
         """
-        io.textDump(whamfile, os.path.join(metapath, "wham.sh"))
-        self.whamscript = os.path.join(metapath, "wham.sh")
+        io.textDump(whamfile,  "wham.sh")
+        self.whamscript = "wham.sh"
     def wham_run(self):
         wham_out = subprocess.run(f"sh {self.whamscript}", shell=True, capture_output=True)
         io.textDump(wham_out.stdout.decode(), self.whamscript.replace(".sh", ".out"))

@@ -10,6 +10,7 @@ setup(
             'Standalone = pyBrellaSampling.Standalone:main',
             'Benchmark = pyBrellaSampling.Benchmark:main',
             'convert = pyBrellaSampling.Tools.utils:convert',
+            'pyscfQMMM = pyBrellaSampling.Code.Tools.QM.run_pyscf:main'
         ],
     },
 )

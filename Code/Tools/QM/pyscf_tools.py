@@ -1,4 +1,5 @@
 import pyscf
+from pyscf import qmmm as qmmm
 import pyscf.fci as fci
 import pyscf.grad
 import pyscf.tools.cubegen as cubegen
@@ -12,6 +13,7 @@ except:
     print("WARNING: QSD optimizer not found... Dont try to perform a TS search")
 
 import libmsym 
+import density_functional_approximation_dm21 as dm21
 
 
 
@@ -198,7 +200,7 @@ def genMol(atoms: str|list, charge: int, spin:int, basis: str, symmetry:bool)->p
         # mol.build()
     return mol
 
-def UHF(mol: pyscf.M)->pyscf.scf.UHF:
+def UHF(mol: pyscf.M,charges=None, locs=None)->pyscf.scf.UHF:
     """performs UHF on the molecule
 
     Args:
@@ -209,13 +211,19 @@ def UHF(mol: pyscf.M)->pyscf.scf.UHF:
     """
     HF = pyscf.scf.UHF(mol)
     HF.max_cycle = 300
-    HF.kernel()
-    try:
-        HF.analyze()
-    except KeyError:
-        print("WARNING Cannot analyze with this symmetry group... Sorry!")
-    # print(HF.mo_coeff)
-    return HF
+    if charges != None:
+        mf = qmmm.mm_charge(HF, locs, charges)
+        mf.kernel()
+        grad = mf.nuc_grad_method().kernel()
+        return mf, grad
+    else:
+        HF.kernel()
+        try:
+            HF.analyze()
+        except KeyError:
+            print("WARNING Cannot analyze with this symmetry group... Sorry!")
+        # print(HF.mo_coeff)
+        return HF
 
 def RHF(mol: pyscf.M)->pyscf.scf.RHF:
     """performs RHF on the molecule
@@ -306,7 +314,7 @@ def FunctionalChecker(Functionals: list) -> list:
         
     return Functionals
 
-def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:int, GPU:bool):
+def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:int, GPU:bool, charges=None, locs=None):
     """Performs DFT on a given molecule using pySCF. Allows user to chose either GPU or CPU implementation, however if the GPU implementation is unavailable, it will roll-back to the CPU implementation in pySCF. Default SCF convergence = e-12. Default max SCF cycles = 50
 
     Args:
@@ -336,8 +344,31 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
         mf_DFT.disp = Dispersion
     mf_DFT.conv_tol = 1e-8
     mf_DFT.max_cycle = 300
-    mf_DFT.kernel()
-    return mf_DFT
+    if charges != None:
+        mf = qmmm.mm_charge(mf_DFT, locs, charges, )
+        mf.kernel()
+        grad = mf.nuc_grad_method().kernel()
+        return mf, grad
+    else:
+        mf_DFT.kernel()
+        return mf_DFT
+
+def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None):
+    mf = pyscf.dft.UKS(mol)
+    mf.conv_tol = 1e-8
+    mf.max_cycle = 300
+    mf.grids.level = grid
+    if Dispersion != "None":
+        mf.disp = Dispersion
+    mf._numint = dm21.NeuralNumInt(dm21.Functional.DM21)
+    if charges != None:
+        qmmm = pyscf.qmmm.mm_charge(mf, locs, charges)
+        qmmm.kernel()
+        grad = qmmm.nuc_grad_method().run()
+        return qmmm, grad
+    else:
+        mf.kernel()
+        return mf
 
 def CCSD(MF, FrozenCore:bool, Tripples:bool):
     """

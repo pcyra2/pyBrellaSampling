@@ -482,7 +482,7 @@ def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None):
         mf.disp = Dispersion
     mf._numint = dm21.NeuralNumInt(dm21.Functional.DM21)
     if charges != None:
-        qmmm = pyscf.qmmm.mm_charge(HF, locs, charges)
+        qmmm = pyscf.qmmm.mm_charge(mf, locs, charges)
         qmmm.kernel()
         qmmm.nuc_grad_method().run()
         return qmmm
