@@ -15,6 +15,7 @@ class QMClass:
         if Software.casefold() == "orca":
             self.software = orca_class()
         elif Software.casefold() == "pyscf":
+            spin -= 1 # pyscf = 2S not 2S+1
             self.software = pyscf_class()
             self.software.set_envVars(Method, Basis, charge, spin)
         else:

@@ -263,15 +263,26 @@ forceConstant   {self.colvar.HoldForce}
                 runscript = ""
             else:
                 runscript = """#!/bin/bash 
-    mkdir /dev/shm/RUNDIR
-    """
+mkdir /dev/shm/RUNDIR
+mkdir /dev/shm/RUNDIR/0
+"""
+                if MM.qm == "pyscf":
+                    runscript += """cd /dev/shm/RUNDIR/0
+nohup qmmm_sniffer & diswon
+"""
             
             for bin in self.data.keys():
                 if HPC.exists:
-                    runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                    if MM.qm == "pyscf":
+                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; cd /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; nohup qmmm_sniffer & disown {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; touch /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0/kill; sleep 10; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                    else:
+                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                 else:
                     runscript += f"cd {bin} ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ \n"
             if HPC.exists == False:
+                if MM.qm == "pyscf":
+                    runscript += "touch /dev/shm/RUNDIR/0/kill"
+                    runscript += "sleep 10"
                 runscript += "rm -r /dev/shm/RUNDIR"
 
             io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"))
