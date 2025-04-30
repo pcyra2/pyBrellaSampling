@@ -3,8 +3,9 @@ from pyscf import qmmm as qmmm
 import pyscf.fci as fci
 import pyscf.grad
 import pyscf.tools.cubegen as cubegen
-from pyscf.symm import msym
+# from pyscf.symm import msym
 from pyscf import cc
+from pyscf import lib
 from pyscf.geomopt.berny_solver import optimize
 from pyscf.hessian import thermo
 try:
@@ -15,7 +16,9 @@ except:
 import libmsym 
 import density_functional_approximation_dm21 as dm21
 
+import pyBrellaSampling.Code.Tools.classes as classes
 
+from pprint import pprint
 
 try: 
     from gpu4pyscf.dft.rks import RKS as RKSG
@@ -33,8 +36,8 @@ import os
 import numpy
 
 
-pyscf.symm.geom.TOLERANCE = 5e-3 ## Needs to be called outside of the function to be initialised first. 
 
+pyscf.symm.geom.TOLERANCE = 5e-3 ## Needs to be called outside of the function to be initialised first. 
 
 XC_ALIAS = {
     # Conventional name : name in XC_CODES
@@ -151,7 +154,7 @@ XC_ALIAS = {
     'TPSS0'         : 'TPSS0'    ,
 }
 
-def genMol(atoms: str|list, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
+def genMol(atoms, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
     """Generates a pySCF molecule from a .xyz file
 
     Args:
@@ -164,6 +167,7 @@ def genMol(atoms: str|list, charge: int, spin:int, basis: str, symmetry:bool)->p
     Returns:
         mol (pyscf.M): pySCF molecule object. 
     """
+    # print(type(atoms))
     if type(atoms) == str:
         if ".xyz" in atoms:
             assert os.path.isfile(atoms), "Coordinate file does not exist."
@@ -179,15 +183,21 @@ def genMol(atoms: str|list, charge: int, spin:int, basis: str, symmetry:bool)->p
                 text = text + "; "+ str(atom[0]) + " "  + str(atom[1]) + " " + str(atom[2]) + " " + str(atom[3]) 
             else:
                 text = text + "; " + atom
-        mol = pyscf.gto.Mole(atom=text)
+        mol = pyscf.gto.Mole(atom=text, unit="Ang")
+    elif type(atoms) == classes.molecule:
+        text = ""
+        for atom in atoms.atoms:
+            text += f"{atom.element} {atom.x} {atom.y} {atom.z} ;"
+        mol = pyscf.gto.Mole(atom=text, unit="Ang")
     mol.basis = basis
     mol.charge = charge
     mol.spin = spin
     mol.symmetry = symmetry
+    
     # mol.unit="Ang"
     mol.build()
     # sym = pyscf.symm.geom.detect_symm(mol._atom)
-    print("INFO Symetry is currently at " +mol.topgroup)
+    # print("INFO Symetry is currently at " +mol.topgroup)
     if symmetry == True:
         # pyscf.symm.geom.TOLERANCE = 1e-3
         try:
@@ -213,6 +223,7 @@ def UHF(mol: pyscf.M,charges=None, locs=None)->pyscf.scf.UHF:
     HF.max_cycle = 300
     if charges != None:
         mf = qmmm.mm_charge(HF, locs, charges)
+        mf.verbose=0
         mf.kernel()
         grad = mf.nuc_grad_method().kernel()
         return mf, grad
@@ -328,6 +339,9 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
     Returns:
         md_DFT: pySCF DFT object that has completed
     """
+    if unrestricted == False:
+        if Molecule.spin != 0:
+            unrestricted = True
     if GPU == True:
         if unrestricted == True:
             mf_DFT = UKSG(Molecule)
@@ -342,32 +356,52 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
     mf_DFT.grids.level = grid
     if Dispersion != "None":
         mf_DFT.disp = Dispersion
-    mf_DFT.conv_tol = 1e-8
+    mf_DFT.conv_tol = 1e-7
     mf_DFT.max_cycle = 300
+    mf_DFT.density_fit()
     if charges != None:
-        mf = qmmm.mm_charge(mf_DFT, locs, charges, )
+        mf = qmmm.mm_charge(mf_DFT, locs, charges, unit="Ang" )
+        mf.verbose=0
+        # try:
+            # mf.init_guess_by_chkfile("tmp.chk")
+            # print("Using checkfile")
+        # except:
+            # print("Not using checkfile")
+            # pass
         mf.kernel()
         grad = mf.nuc_grad_method().kernel()
+        # mf.dump_chk("tmp.chk")
         return mf, grad
     else:
         mf_DFT.kernel()
         return mf_DFT
 
-def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None):
-    mf = pyscf.dft.UKS(mol)
+def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None, dm0=None):
+    try:
+        if charges == None:
+            qmmm_calc = False
+        else:
+            qmmm_calc = True
+    except: 
+        qmmm_calc = True
+    mf = pyscf.scf.UKS(mol)
     mf.conv_tol = 1e-8
     mf.max_cycle = 300
+    mf.verbose=0
+    mf.density_fit()
     mf.grids.level = grid
     if Dispersion != "None":
         mf.disp = Dispersion
     mf._numint = dm21.NeuralNumInt(dm21.Functional.DM21)
-    if charges != None:
-        qmmm = pyscf.qmmm.mm_charge(mf, locs, charges)
-        qmmm.kernel()
-        grad = qmmm.nuc_grad_method().run()
-        return qmmm, grad
+    if qmmm_calc == True:
+        qmmm = pyscf.qmmm.mm_charge(mf, locs, charges, unit="Ang")
+        qmmm.verbose=0
+        qmmm.kernel(dm0=dm0)
+        
+        return qmmm
     else:
-        mf.kernel()
+        mf.run()
+        # mf.kernel()
         return mf
 
 def CCSD(MF, FrozenCore:bool, Tripples:bool):
@@ -451,7 +485,7 @@ def GetFreq(mf,imaginary_freq = False ):
     Thermo = thermo.thermo(mf, Freq["freq_au"],298.15, 101325)
     return hessian, Freq, Thermo
 
-def get_constant_energy_for_frozen_core_for_uhf(meanfield: pyscf.scf.uhf.UHF| pyscf.scf.rhf.RHF, freeze=0)->float:
+def get_constant_energy_for_frozen_core_for_uhf(meanfield: pyscf.scf.uhf.UHF, freeze=0)->float:
     """Abhishek's code for calculating the Energy contribution for the cores removed in the frozen core implementation of VQE.
 
     Args:
@@ -481,3 +515,45 @@ def get_frozen(mol: pyscf.gto.Mole)->int:
     elements = [atom[0] for atom in atoms]
     NonH = [atom for atom in elements if atom != "H"]
     return int(len(NonH)*2)
+
+def fdiff_forces(atoms:classes.molecule,dispersion, grid, charges, charge_locs, delta, dm0):
+    if type(atoms) == pyscf.gto.mole.Mole:
+        molecule = classes.molecule()
+        molecule.from_gtoMole(atoms)
+        atoms = molecule
+
+    forces = [tuple]*atoms.nat
+    for i in range(atoms.nat):
+        print(f"INFO: atom {atoms.atoms[i].element}")
+        atoms.atoms[i].translate_x(delta)
+        dmol = atoms.to_gtoMole(False)
+        print("INFO: dx+")
+        En_p = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        atoms.atoms[i].translate_x(-2*delta)
+        dmol = atoms.to_gtoMole(False)
+        print("INFO: dx-")
+        En_m = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        dx = ((En_p.e_tot - En_m.e_tot)/(2*delta))*atoms.bohr2ang
+        atoms.atoms[i].translate_x(delta)
+        atoms.atoms[i].translate_y(delta)
+        dmol = atoms.to_gtoMole(False)
+        print("INFO: dy+")
+        En_p = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        atoms.atoms[i].translate_y(-2*delta)
+        dmol = atoms.to_gtoMole(False)
+        print("INFO: dy-")
+        En_m = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        dy = ((En_p.e_tot - En_m.e_tot)/(2*delta))*atoms.bohr2ang
+        atoms.atoms[i].translate_y(delta)
+        atoms.atoms[i].translate_z(delta)
+        print("INFO: dz+")
+        dmol = atoms.to_gtoMole(False)
+        En_p = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        atoms.atoms[i].translate_z(-2*delta)
+        dmol = atoms.to_gtoMole(False)
+        print("INFO: dz-")
+        En_m = NN_MF(dmol,dispersion, grid, charges, charge_locs, dm0)
+        dz = ((En_p.e_tot - En_m.e_tot)/(2*delta))*atoms.bohr2ang
+        atoms.atoms[i].translate_z(delta)
+        forces[i] = [dx, dy, dz]
+    return forces

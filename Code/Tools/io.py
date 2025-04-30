@@ -82,7 +82,7 @@ def MakeDir(path: str):
         print(f"INFO: {path} already exists")
         pass
     
-def parse_float_keys(dct)->float|str:
+def parse_float_keys(dct):
     rval = dict()
     for key, val in dct.items():
         try:

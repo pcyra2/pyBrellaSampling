@@ -1,9 +1,14 @@
 import pyBrellaSampling.Code.Tools.io as io
+import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscf_tools
 import os
 import subprocess
 import numpy
 import socket
+import pyscf
+
+
 CurrentPath = os.path.dirname(os.path.abspath(__file__))
+
 
 class QMClass:
     def __init__(self,Method="PBE", Basis="6-31G*", charge=0, spin=0, Software="pyscf"):
@@ -11,6 +16,7 @@ class QMClass:
             self.software = orca_class()
         elif Software.casefold() == "pyscf":
             self.software = pyscf_class()
+            self.software.set_envVars(Method, Basis, charge, spin)
         else:
             raise NotImplementedError(f"Software {Software} not recognized. Known software is orca and pyscf.")
         self.charge = charge
@@ -19,12 +25,15 @@ class QMClass:
         self.Basis = Basis
     def set_cores(self, cores:int):
         self.cores = cores
+        if self.software.name == "pyscf":
+            os.environ['OMP_NUM_THREADS'] = str(cores)
 
     def init_qmmm(self, qmzone:str):
         self.vmd_selection = qmzone
     
 class MMClass:
     jobs = {}
+    qm = None
     def __init__(self, Software, parameters, topology):
         if Software.casefold() == "namd":
             self.software = namd_class()
@@ -34,6 +43,8 @@ class MMClass:
         if ".parm7" in parameters:
             Amber = True
         self.software.set_global(Amber, parameters, topology)
+    def define_qm(self, package):
+        self.qm = package
     def minimize(self,
                 infile:str,
                 outfile:str,
@@ -123,6 +134,7 @@ class MMClass:
                     traj_steps:int,
                     temperature:float,
                     pressure = None,
+                    seed=None
                     ):
         assert steps > traj_steps, f"Number of steps ({steps}) is less than the number of steps in the trajectory output ({traj_steps})."
         if pressure != None:
@@ -138,7 +150,7 @@ class MMClass:
             en_steps = 100
         self.software.set_outputs(en_steps, traj_steps, en_steps, traj_steps)
         self.software.set_colvar(colvarfile)
-        file, config = self.software.gen_input(infile, outfile, steps)
+        file, config = self.software.gen_input(infile, outfile, steps, seed)
         self.jobs[outfile] = {"file":file,
                               "config":config}
         return file
@@ -151,8 +163,15 @@ class atom:
         self.z = z
     def echo(self):
         return f"{self.element} {self.x} {self.y} {self.z}"
+    def translate_x(self, distance):
+        self.x += distance
+    def translate_y(self, distance):
+        self.y += distance
+    def translate_z(self, distance):
+        self.z += distance
 
 class molecule:
+    bohr2ang = 0.529177
     atoms = []
     def __init__(self, ):
         pass
@@ -166,16 +185,37 @@ class molecule:
         self.atoms = atoms
         self.charge = charge
         self.spin = spin
-    def from_atoms_list(self, atoms, charge, spin):
+    def from_atoms_list(self, atoms:atom, charge:int, spin:int):
         self.nat = len(atoms)
         self.atoms = atoms
         self.charge = charge
         self.spin = spin
+    def from_gtoMole(self, mole:pyscf.gto.Mole):
+        atoms = mole._atom
+        self.nat = mole.natm
+        self.atoms = [atom]*mole.natm
+        for i, at in enumerate(atoms):
+            self.atoms[i] = atom(at[0], round(at[1][0]*self.bohr2ang,6), round(at[1][1]*self.bohr2ang,6), round(at[1][2]*self.bohr2ang,6))
+        self.charge = mole.charge
+        self.spin = mole.spin
+        self.basis = mole.basis
     def print_coords(self)->str:
         text = ""
         for at in self.atoms:
             text += at.echo()+"\n"
         return text
+    def to_gtoMole(self, symmetry:bool):
+        """Converts the molecule class into 
+
+        Args:
+            basis (str): basis set to describe the molecule
+            symmetry (bool): Whether to use symmetry
+
+        Returns:
+            mol (pyscf.gto.M): pySCF initialised molecule
+        """
+        mol = pyscf_tools.genMol(self, self.charge, self.spin, self.basis, symmetry)
+        return mol
 
 class Colour:
     def __init__(self, red:int, green:int, blue:int):
@@ -237,11 +277,11 @@ class pyscf_class:
     def gen_input(self, method:str, basis:str ,jobtype:str , charge:int , spin:int , mol, cores:int , ram:int , *args):
         pass
     def set_envVars(self, method, basis, charge, spin):
-        os.environ["method"] = method
-        os.environ["basis"] = basis
-        os.environ["charge"] = charge
-        os.environ["spin"] = spin
-
+        os.environ["method"] = str(method)
+        os.environ["basis"] = str(basis)
+        os.environ["charge"] = str(charge)
+        os.environ["spin"] = str(spin)
+        
 class namd_class:
     name = "namd"
     config = {"colvarlines":""}
@@ -369,7 +409,7 @@ QMOutStride             1
 qmEnergyStride          1
 QMPositionOutStride     1
 """
-    def gen_input(self, infile:str, outfile:str, steps:int):
+    def gen_input(self, infile:str, outfile:str, steps:int, seed=None):
         self.config["run"] = steps
         for key in self.defaults.keys():
             if key not in self.config.keys():
@@ -378,7 +418,10 @@ QMPositionOutStride     1
             self.config["GPUresident"] = "GPUResident   on" #TODO: implement NAMD version compatibility
         else:
             self.config["GPUresident"] = ""
-            
+        if seed == None:
+            self.config["seed"] = ""
+        else:
+            self.config["seed"] = f"seed    {seed}"
         if infile == self.config["ambercoor"]: # Starting from the initial amber file, not a previous trajectory.
             self.config["bincoordinates"] = ""
             self.config["extendedSystem"] = ""
@@ -469,6 +512,7 @@ qmForces            {self.config["qmForces"]}
 # GPU speedups
 {self.config["GPUresident"]}
 
+{self.config["seed"]}
 {self.config["command"]}      {self.config["run"]}
 """
         
@@ -605,8 +649,7 @@ colvar {
         self.bins = [minimum + i*step for i in range(self.nsteps)]
     def update_initial_point(self, point):
         self.initial = point
-    
-    
+       
 class TrackerClass:
     def __init__(self, atoms:list, Name:str, ):
         self.data = {}

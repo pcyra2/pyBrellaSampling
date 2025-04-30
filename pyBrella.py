@@ -15,6 +15,7 @@ def main():
     print(f"INFO: Input file read, starting calculation, Verbosity is set to {Inputs['verbosity']}" if Inputs["verbosity"]>2 else "")
     assert os.path.isdir(Inputs['workdir']), f"ERROR: WorkDirectory does not exist: {Inputs['workdir']}"
     MM = classes.MMClass("namd", Inputs["parameters"], Inputs["topology"])
+    MM.software.change_config(Inputs["MMConfig"])
     HPC = classes.HPCClass(Inputs["hpc"]["hostname"], os.getenv("USERNAME"))
     if "max_steps" in Inputs["hpc"]:
         HPC.walltime_partition(Inputs["hpc"]["max_steps"])
@@ -36,13 +37,13 @@ def main():
         job = Inputs["jobs"]["minimize"]
         file = MM.minimize(job["input"], job["output"], job["steps"])
         print(os.path.join(Inputs['workdir'],job["output"],".conf"))
-        io.textDump(file, os.path.join(Inputs['workdir'],job["output"],".conf"))
+        io.textDump(file, os.path.join(Inputs['workdir'],job["output"]+".conf"))
         if job["run"].casefold() == "true":
-            if MM.software.check_output(str(os.path.join(Inputs['workdir'],job["output"],".out")))[0] != "completed":
-                _ = MM.software.exec(os.path.join(Inputs['workdir'],f"{job['output']}.conf"), os.path.join(Inputs['workdir'],job["output"],".out"), Inputs["gpu"])
-                status, _ = MM.software.check_output(os.path.join(Inputs['workdir'],job["output"],".out")) 
+            if MM.software.check_output(str(os.path.join(Inputs['workdir'],job["output"]+".out")))[0] != "completed":
+                _ = MM.software.exec(os.path.join(Inputs['workdir'],f"{job['output']}.conf"), os.path.join(Inputs['workdir'],job["output"]+".out"), Inputs["gpu"])
+                status, _ = MM.software.check_output(os.path.join(Inputs['workdir'],job["output"]+".out")) 
                 if status != "completed":
-                    raise RuntimeError(f"ERROR: Minimization has had an issue. Status = {status}. Please check the output file: {os.path.join(Inputs['workdir'],job['output'],'.out')}")
+                    raise RuntimeError(f"ERROR: Minimization has had an issue. Status = {status}. Please check the output file: {os.path.join(Inputs['workdir'],job['output']+'.out')}")
                 TrackerFile = VMD.GenAnalysisScript([job["output"]])
                 io.textDump(TrackerFile, os.path.join(Inputs['workdir'],"Analysis.tcl"))
                 VMD.RunAnalysis(os.path.join(Inputs['workdir'],"Analysis.tcl"))
@@ -105,8 +106,7 @@ def main():
         QM.set_cores(qmVars["cores"])
         QM.software.add_extras(qmVars["extras"])
         MM.software.set_qm(QM, "../syst-qm.pdb")
-        
-        
+        MM.define_qm(qmVars["software"] )
         VMD.qmPDB_gen(MM)
     print("INFO: initiating colvar region" if Inputs["verbosity"]>2 else"")
     colvarVars = Inputs["colvar"]
@@ -128,12 +128,13 @@ def main():
 
     ### Umbrella pull
     if "pull" in Inputs["jobs"]:
-        keys = ["pull", "input", 'output', "steps", "timestep", "trajout", "temperature", "pressure", "run", "vis",]
+        keys = ["pull", "input", 'output', "steps", "timestep", "trajout", "temperature", "pressure", "run", "vis","seed"]
         job = Inputs["jobs"]["pull"]
         job = InputParser.check_keys(job, keys)
 
         MM.software.set_global(True, os.path.join("../", Inputs["parameters"]), os.path.join("../",Inputs["topology"] ))
         Umbrella.pull_init(Inputs['workdir'],MM, job)
+
         trackers = Umbrella.pull_run(Inputs['workdir'], MM, job,VMD, trackers)
         for bin in Umbrella.data.keys():
             data = io.textRead(os.path.join(Inputs['workdir'], str(bin), "pull.colvars.traj"))

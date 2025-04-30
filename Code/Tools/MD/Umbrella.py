@@ -1,6 +1,7 @@
 import emcee as emcee
 import os
 import subprocess
+import time
 from pprint import pprint
 import matplotlib.pyplot as plt
 
@@ -87,7 +88,7 @@ class UmbrellaClass:
                     meta[i+1] = f"{i}\t{val}"
                 metafile = f"{bin}.metadata.dat"
                 io.textDump(meta, os.path.join(metapath,metafile))
-                metafiles.append(f"{os.path.join(metapath,metafile)} {self.data[bin]["Value"]} {self.colvar.stepsize} {self.autocorrelate_results[bin]["integral_time"]}")
+                metafiles.append(f"{os.path.join(metapath,metafile)} {self.data[bin]['Value']} {self.colvar.stepsize} {self.autocorrelate_results[bin]['integral_time']}")
                 plt.hist(self.autocorrelate_results[bin]["data"], 100)
             else:
                 pass
@@ -104,7 +105,7 @@ class UmbrellaClass:
             colvar_low = self.colvar.Min
             colvar_high = self.colvar.Max
 
-        whamfile = f"""wham {periodicity} {colvar_low} {colvar_high} {UseableBins} {convergence} {self.Temperature} 0 "meta_locations.dat" {os.path.join(metapath, "wham.pmf")} 10 60
+        whamfile = f"""wham {periodicity} {colvar_low} {colvar_high} {UseableBins} {convergence} {self.Temperature} 0 "meta_locations.dat" {os.path.join(metapath, 'wham.pmf')} 10 60
 sed '1d' {os.path.join(metapath, "wham.pmf")} | awk '{"{"}print $1,"",$2{"}"}' > {os.path.join(metapath, "plot_free_energy.dat")}
         """
         io.textDump(whamfile,  "wham.sh")
@@ -126,14 +127,14 @@ sed '1d' {os.path.join(metapath, "wham.pmf")} | awk '{"{"}print $1,"",$2{"}"}' >
         for key in self.data.keys():
             bin = self.data[key]
             if bin["PreviousWindow"] != None:
-                infile = os.path.join(f"../{bin["PreviousWindow"]}", job["output"])
+                infile = os.path.join(f"../{bin['PreviousWindow']}", job['output'])
             else:
                 infile = os.path.join("../", job["input"])
             windowPath = os.path.join(WorkDir, str(key))
             
-            file = MM.SMD(infile, job["output"], "pull.colvar.conf", job["steps"], 
-                            job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-            io.textDump(file, os.path.join(windowPath, f"{job["output"]}.conf"))
+            file = MM.SMD(infile, job['output'], "pull.colvar.conf", job["steps"], 
+                            job["timestep"],job["trajout"], job["temperature"], job["pressure"], job["seed"] )
+            io.textDump(file, os.path.join(windowPath, f"{job['output']}.conf"))
             baseColvarFile = self.colvar.VariableLines
             baseColvarFile += f"""
 harmonic {"{"}
@@ -156,27 +157,34 @@ mkdir /dev/shm/RUNDIR
             MMPath = MM.software.path_gpu
             CommandLines = "+oneWthPerCore +setcpuaffinity +devices 0"
             GPU=True
-        
+        if MM.qm == "pyscf" and job["run"].casefold() == "true":
+            if os.path.isdir("/dev/shm/RUNDIR") == False:
+                os.mkdir("/dev/shm/RUNDIR")
+                os.mkdir("/dev/shm/RUNDIR/0")
+            print("INFO: Starting sniffer")
+            sniffer = os.system("cd /dev/shm/RUNDIR/0 ; qmmm_sniffer &")
         for i in range(self.start_index,self.colvar.nsteps):
-            runscript += f"cd {i} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
+            runscript += f"cd {i} ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ \n"
             if job["run"].casefold() == "true":
-                filepath = os.path.join(WorkDir, str(i), f"{job["output"]}")
+                filepath = os.path.join(WorkDir, str(i), f"{job['output']}")
                 if MM.software.check_output(f"{filepath}.out")[0] != "completed":
                     if os.path.isdir("/dev/shm/RUNDIR") == False:
                         os.mkdir("/dev/shm/RUNDIR")
+                    
                     _ = MM.software.exec(f"{filepath}.conf", f"{filepath}.out", GPU)
+                    
                     status, _ = MM.software.check_output(f"{filepath}.out")
                     if status != "completed":
                         raise RuntimeError(f"ERROR: pull has had an issue. Status = {status}. Please check the output file: {filepath}.out")
-                    TrackerFile = VMD.GenAnalysisScript([os.path.join(str(i),job["output"])])
+                    TrackerFile = VMD.GenAnalysisScript([os.path.join(str(i),job['output'])])
                     io.textDump(TrackerFile, os.path.join(os.path.join(WorkDir, str(i)),f"Analysis.tcl"))
                     VMD.RunAnalysis(os.path.join(os.path.join(WorkDir, str(i)),f"Analysis.tcl"))
                     for Tracker in Trackers:
-                        Tracker.get_vmdData(WorkDir, job["output"], i)
+                        Tracker.get_vmdData(WorkDir, job['output'], i)
         for i in range(self.start_index, 0, -1):
-            runscript += f"cd {i-1} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
+            runscript += f"cd {i-1} ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ \n"
             if job["run"].casefold() == "true":
-                filepath = os.path.join(WorkDir, str(i-1), f"{job["output"]}")
+                filepath = os.path.join(WorkDir, str(i-1), f"{job['output']}")
                 if MM.software.check_output(f"{filepath}.out")[0] != "completed":
                     if os.path.isdir("/dev/shm/RUNDIR") == False:
                         os.mkdir("/dev/shm/RUNDIR")
@@ -184,11 +192,12 @@ mkdir /dev/shm/RUNDIR
                     status, _ = MM.software.check_output(f"{filepath}.out")
                     if status != "completed":
                         raise RuntimeError(f"ERROR: pull has had an issue. Status = {status}. Please check the output file: {filepath}.out")
-                    TrackerFile = VMD.GenAnalysisScript([os.path.join(str(i-1),job["output"])])
+                    TrackerFile = VMD.GenAnalysisScript([os.path.join(str(i-1),job['output'])])
                     io.textDump(TrackerFile, os.path.join(os.path.join(WorkDir, str(i-1)),f"Analysis.tcl"))
                     VMD.RunAnalysis(os.path.join(os.path.join(WorkDir, str(i-1)),f"Analysis.tcl"))
                     for Tracker in Trackers:
-                        Tracker.get_vmdData(WorkDir, job["output"], i-1)
+                        Tracker.get_vmdData(WorkDir, job['output'], i-1)
+        io.textDump("","/dev/shm/RUNDIR/0/kill" )
         runscript += "rm -r /dev/shm/RUNDIR"
         io.textDump(runscript, os.path.join(WorkDir, "pull.sh"))
         if job["run"].casefold() == "true":
@@ -201,29 +210,29 @@ mkdir /dev/shm/RUNDIR
             binpath = os.path.join(WorkDir,str(key))
             assert os.path.isdir(binpath)
             if HPC.partition == False or job["steps"] <= HPC.max_steps:
-                file = MM.SMD(job["input"], job["output"], "hold.colvar.conf", job["steps"], 
+                file = MM.SMD(job["input"], job['output'], "hold.colvar.conf", job["steps"], 
                             job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                io.textDump(file, os.path.join(binpath, f"{job["output"]}.conf"))
-                files = [f"{job["output"]}.conf"]
+                io.textDump(file, os.path.join(binpath, f"{job['output']}.conf"))
+                files = [f"{job['output']}.conf"]
             else:
                 files = []
-                file = MM.SMD(job["input"], f"{job["output"]}_1", "hold.colvar.conf", HPC.max_steps, 
+                file = MM.SMD(job["input"], f"{job['output']}_1", "hold.colvar.conf", HPC.max_steps, 
                         job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                io.textDump(file, os.path.join(binpath, f"{job["output"]}_1.conf"))
-                files.append(f"{job["output"]}_1.conf")
+                io.textDump(file, os.path.join(binpath, f"{job['output']}_1.conf"))
+                files.append(f"{job['output']}_1.conf")
                 if job["steps"]//HPC.max_steps != 1:
                     for i in range(1,job["steps"]//HPC.max_steps):
-                        file = MM.SMD(f"{job["output"]}_{i}", f"{job["output"]}_{i+1}", "hold.colvar.conf", HPC.max_steps, 
+                        file = MM.SMD(f"{job['output']}_{i}", f"{job['output']}_{i+1}", "hold.colvar.conf", HPC.max_steps, 
                             job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                        io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+1}.conf"))
-                        files.append(f"{job["output"]}_{i+1}.conf")
+                        io.textDump(file, os.path.join(binpath, f"{job['output']}_{i+1}.conf"))
+                        files.append(f"{job['output']}_{i+1}.conf")
                 else:
                     i = 0
                 if job["steps"]%HPC.max_steps > 0:
-                    file = MM.SMD(f"{job["output"]}_{i+1}", f"{job["output"]}_{i+2}", "hold.colvar.conf",job["steps"]%HPC.max_steps, 
+                    file = MM.SMD(f"{job['output']}_{i+1}", f"{job['output']}_{i+2}", "hold.colvar.conf",job["steps"]%HPC.max_steps, 
                         job["timestep"],job["trajout"], job["temperature"], job["pressure"] )
-                    io.textDump(file, os.path.join(binpath, f"{job["output"]}_{i+2}.conf"))
-                    files.append(f"{job["output"]}_{i+2}.conf")            
+                    io.textDump(file, os.path.join(binpath, f"{job['output']}_{i+2}.conf"))
+                    files.append(f"{job['output']}_{i+2}.conf")            
             baseColvarFile = self.colvar.VariableLines
             baseColvarFile += f"""
 harmonic {"{"}
@@ -258,27 +267,27 @@ forceConstant   {self.colvar.HoldForce}
             
             for bin in self.data.keys():
                 if HPC.exists:
-                    runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                    runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                 else:
-                    runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}.conf > {job["output"]}.out ; cd ../ \n"
+                    runscript += f"cd {bin} ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ \n"
             if HPC.exists == False:
                 runscript += "rm -r /dev/shm/RUNDIR"
 
-            io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"))
+            io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"))
             if HPC.exists:
-                slurmscript = HPC.gen_slumScript("array-job", job["output"], os.path.join(WorkDir, f"Umbrella-{job["output"]}.sh"), len(self.data.keys()))
-                io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+                slurmscript = HPC.gen_slumScript("array-job", job['output'], os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"), len(self.data.keys()))
+                io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job['output']}.sh"))
                 io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                 if job["run"] == "true":
-                    filepath = os.path.join(WorkDir, str(bin), f"{job["output"]}")
+                    filepath = os.path.join(WorkDir, str(bin), f"{job['output']}")
                     if MM.software.check_output(f"{filepath}.out")[0] != "completed":
-                        status = HPC.check_dependecy(job["output"])
+                        status = HPC.check_dependecy(job['output'])
                         if status != "wait":
-                            HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}.sh"))
+                            HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job['output']}.sh"))
                         else:
-                            print(f"INFO: {job["output"]} job already in the queue, skipping.")
+                            print(f"INFO: {job['output']} job already in the queue, skipping.")
                     else:
-                        print(f"INFO:  {job["output"]} job has already finished.")
+                        print(f"INFO:  {job['output']} job has already finished.")
         else:
             for i in range(NPartitions):
                 if HPC.exists:
@@ -290,27 +299,27 @@ forceConstant   {self.colvar.HoldForce}
                 
                 for bin in self.data.keys():
                     if HPC.exists:
-                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job["output"]}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job["output"]}_{i+1}.conf > {job["output"]}_{i+1}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                     else:
-                        runscript += f"cd {bin} ; {MMPath} {CommandLines} {job["output"]}_{i+1}.conf > {job["output"]}_{i+1}.out ; cd ../ \n"
+                        runscript += f"cd {bin} ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ \n"
                 if HPC.exists == False:
                     runscript += "rm -r /dev/shm/RUNDIR"
 
-                io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job["output"]}_{i+1}.sh"))
+                io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"))
                 if HPC.exists:
-                    slurmscript = HPC.gen_slumScript("array-job", f"{job["output"]}_{i+1}", os.path.join(WorkDir, f"Umbrella-{job["output"]}_{i+1}.sh"), len(self.data.keys()))
-                    io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
+                    slurmscript = HPC.gen_slumScript("array-job", f"{job['output']}_{i+1}", os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"), len(self.data.keys()))
+                    io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job['output']}_{i+1}.sh"))
                     io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                     if job["run"] == "true":
-                        filepath = os.path.join(WorkDir, str(i), f"{job["output"]}_{i+1}")
+                        filepath = os.path.join(WorkDir, str(i), f"{job['output']}_{i+1}")
                         if MM.software.check_output(f"{filepath}.out")[0] != "completed":
-                            status = HPC.check_dependecy(f"{job["output"]}_{i+1}")
+                            status = HPC.check_dependecy(f"{job['output']}_{i+1}")
                             if status != "wait":
-                                HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job["output"]}_{i+1}.sh"))
+                                HPC.run_slurmScript(os.path.join(WorkDir, f"sub-Umbrella-{job['output']}_{i+1}.sh"))
                             else:
-                                print(f"INFO: {job["output"]}_{i+1} job already in the queue, skipping.")
+                                print(f"INFO: {job['output']}_{i+1} job already in the queue, skipping.")
                         else:
-                            print(f"INFO:  {job["output"]}_{i+1} job has already finished.")
+                            print(f"INFO:  {job['output']}_{i+1} job has already finished.")
     def analyse_completed(self,WorkDir:str,Files:list, MM:MMClass,VMD:VMDClass, job:dict, Trackers:list):
         for bin in self.data.keys():
             print(bin)
@@ -333,7 +342,7 @@ forceConstant   {self.colvar.HoldForce}
             io.textDump(TrackerFile, os.path.join(bindir,f"Analysis.tcl"))
             VMD.RunAnalysis(os.path.join(bindir,f"Analysis.tcl"))
             for Tracker in Trackers:
-                Tracker.get_vmdData(WorkDir, job["output"],bin)
+                Tracker.get_vmdData(WorkDir, job['output'],bin)
         return Trackers
     def dump_data(self, path:str):
         data = self.data

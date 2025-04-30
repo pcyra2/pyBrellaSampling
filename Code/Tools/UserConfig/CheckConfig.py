@@ -13,7 +13,8 @@ HardCodedDefaults = {
     "qm":{},
     "colvar":{},
     "tracker":{},
-    "hpc":{"hostname":"localhost"}
+    "hpc":{"hostname":"localhost"},
+    "MMConfig":{}
     }
 
 NAMDDefaults = {
@@ -105,6 +106,7 @@ def GetDefaults()->dict:
             DefInps["colvar"] = {}
             DefInps["tracker"] = {}
             DefInps["hpc"]={"hostname":"localhost"}
+            DefInps["MMConfig"] = {}
         else:
             DefInps = HardCodedDefaults
         assert len(DefInps.keys()) == len(HardCodedDefaults.keys()) # Check that either method produces the same size dictionary...
