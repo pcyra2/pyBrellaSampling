@@ -197,7 +197,8 @@ mkdir /dev/shm/RUNDIR
                     VMD.RunAnalysis(os.path.join(os.path.join(WorkDir, str(i-1)),f"Analysis.tcl"))
                     for Tracker in Trackers:
                         Tracker.get_vmdData(WorkDir, job['output'], i-1)
-        io.textDump("","/dev/shm/RUNDIR/0/kill" )
+        if MM.qm == "pyscf":
+            io.textDump("","/dev/shm/RUNDIR/0/kill" )
         runscript += "rm -r /dev/shm/RUNDIR"
         io.textDump(runscript, os.path.join(WorkDir, "pull.sh"))
         if job["run"].casefold() == "true":
