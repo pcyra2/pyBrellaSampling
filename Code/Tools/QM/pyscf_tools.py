@@ -14,7 +14,10 @@ except:
     print("WARNING: QSD optimizer not found... Dont try to perform a TS search")
 
 import libmsym 
-import density_functional_approximation_dm21 as dm21
+try:
+    import density_functional_approximation_dm21 as dm21
+except ModuleNotFoundError:
+    print("WARNING: DM21 not found... Do not try to use it.")
 
 import pyBrellaSampling.Code.Tools.classes as classes
 
