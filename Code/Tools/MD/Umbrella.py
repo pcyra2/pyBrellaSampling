@@ -274,7 +274,7 @@ nohup qmmm_sniffer & diswon
             for bin in self.data.keys():
                 if HPC.exists:
                     if MM.qm == "pyscf":
-                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; cd /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; nohup qmmm_sniffer & disown {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; touch /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0/kill; sleep 10; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                        runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; cd /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; nohup qmmm_sniffer & disown ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; touch /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0/kill ; sleep 10 ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                     else:
                         runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                 else:
