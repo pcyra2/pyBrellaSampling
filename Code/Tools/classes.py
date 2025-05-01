@@ -933,6 +933,7 @@ eval "$RUNLINE wait"
     dependency = ""
     slurmIDindex=3
     connected = False
+    arrayCap = ""
     def __init__(self, hostname:str, username:str):
         self.hostname = hostname
     def init_slurm(self, config:dict, modulefiles:list, env:list):
@@ -955,6 +956,8 @@ eval "$RUNLINE wait"
         self.environmentLines = envLines
         if socket.gethostname() == self.hostname:
             self.connected = True
+    def limit_arrayJobs(self, cap:int):
+        self.arrayCap = f"%{cap}"
     def walltime_partition(self, steps:int):
         self.max_steps = steps
         self.partition = True
@@ -971,7 +974,7 @@ eval "$RUNLINE wait"
 """
         else:
             file = f"""{self.slurmlines}
-#SBATCH --array=1-{arrayLen}
+#SBATCH --array=1-{arrayLen}{self.arrayCap}
 #SBATCH --job-name={name}
 {self.dependency}
 export ARRAY_JOBFILE=array_job.sh
