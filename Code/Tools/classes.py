@@ -940,7 +940,10 @@ eval "$RUNLINE wait"
         self.config = config
         slurmLines = f"#!/bin/bash \n"
         for key, value in config.items():
-            slurmLines += f"#SBATCH --{key}={value}\n"
+            if key != "get-user-env":
+                slurmLines += f"#SBATCH --{key}"
+            else:
+                slurmLines += f"#SBATCH --{key}={value}\n"
         self.slurmlines = slurmLines
         modulelines = ""
         for file in modulefiles:
