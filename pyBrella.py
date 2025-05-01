@@ -22,7 +22,7 @@ def main():
     if "config" in Inputs["hpc"]:
         HPC.init_slurm(Inputs["hpc"]["config"], Inputs["hpc"]["modulefiles"], Inputs["hpc"]["environment"])
     if "max_array" in Inputs["hpc"]:
-        HPC.arrayCap(Inputs["hpc"]["max_array"])
+        HPC.limit_arrayJobs(Inputs["hpc"]["max_array"])
     partitioned = False
     tracker_inf = Inputs["tracker"]
     trackers = [None]*len(tracker_inf.keys())
