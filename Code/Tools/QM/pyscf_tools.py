@@ -277,8 +277,8 @@ def FCI(HF: pyscf.scf.uhf.UHF, UHF: bool, )-> float:
     else: 
         alpha = int(numpy.sum(occ[0])/2)
         beta = alpha
-    print(f"{alpha=}, {beta=}")
-    print(f"{norb=}")
+    # print(f"{alpha=}, {beta=}")
+    # print(f"{norb=}")
     # rdm1, rdm2 = cisolver.make_rdm12(fcivec, int(norb), (alpha, beta)) # Currently not working correctly. #TODO: Fix this
     rdm1 = False
     rdm2 = False

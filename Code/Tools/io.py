@@ -2,7 +2,7 @@ import json
 import numpy
 import os
 import h5py
-import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscfTools
+# import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscfTools
 import pyscf
 
 def jsonDump(dict:dict, path:str):
@@ -95,51 +95,51 @@ def parse_float_keys(dct):
             rval[key] = val
     return rval
 
-def TrajIn(path:str, molFile:str, charge: int, spin:int, basis: str, symmetry:bool)-> list:
-    """Reads in a trajectory file of .xyz coordinates. 
+# def TrajIn(path:str, molFile:str, charge: int, spin:int, basis: str, symmetry:bool)-> list:
+#     """Reads in a trajectory file of .xyz coordinates. 
 
-    Args:
-        path (str): path to file
-        charge (int): Net charge of system
-        spin (int): number of unpaired electrons
-        basis (str): basis set to use
+#     Args:
+#         path (str): path to file
+#         charge (int): Net charge of system
+#         spin (int): number of unpaired electrons
+#         basis (str): basis set to use
         
-    Returns:
-        list (str): List of Molecules
-    """
-    text = textRead(path+molFile)
-    state = numpy.zeros(len(text)) # initiate a line type array. number is number of items per line
-    starts = [0]
-    OrigNat = int(text[0])
-    for line in range(1,len(text)):
-        state[line] = len(text[line].split())
-        if state[line] == 1:
-            try:
-                nat = int(text[line])
-                assert nat == OrigNat, "Number of atoms seems to change in the trajectory file at line "+str(line)
-                starts.append(line)
-            except ValueError:
-                if line -1 in starts: # Then this is a comment line. so allowed to be a single item. 
-                    pass
-                else:
-                    raise Exception("There seems to be incorrect formatting on line " + str(line)+", There is only one item in the line, therefore expecting NAT, but instead got a string...")
-    Molecules = [None]*len(starts)
-    starts.append(len(text))
-    Name=molFile.replace(".trj","")
-    for i in range(len(starts)-1):
-        molecule_lines = [text[line].replace("\n","") for line in range(starts[i], starts[i+1])]
-        try:
-            os.mkdir(path+str(i))
-        except FileExistsError:
-            pass
-        if i != len(starts)-2:
-            assert len(molecule_lines) == OrigNat + 2, "There seems to be incorrect formatting in the trajectory file, number of atoms != NAT"
-        else: 
-            assert len(molecule_lines) >= OrigNat + 2, "There seems to be incorrect formatting in the trajectory file, number of atoms != NAT"
+#     Returns:
+#         list (str): List of Molecules
+#     """
+#     text = textRead(path+molFile)
+#     state = numpy.zeros(len(text)) # initiate a line type array. number is number of items per line
+#     starts = [0]
+#     OrigNat = int(text[0])
+#     for line in range(1,len(text)):
+#         state[line] = len(text[line].split())
+#         if state[line] == 1:
+#             try:
+#                 nat = int(text[line])
+#                 assert nat == OrigNat, "Number of atoms seems to change in the trajectory file at line "+str(line)
+#                 starts.append(line)
+#             except ValueError:
+#                 if line -1 in starts: # Then this is a comment line. so allowed to be a single item. 
+#                     pass
+#                 else:
+#                     raise Exception("There seems to be incorrect formatting on line " + str(line)+", There is only one item in the line, therefore expecting NAT, but instead got a string...")
+#     Molecules = [None]*len(starts)
+#     starts.append(len(text))
+#     Name=molFile.replace(".trj","")
+#     for i in range(len(starts)-1):
+#         molecule_lines = [text[line].replace("\n","") for line in range(starts[i], starts[i+1])]
+#         try:
+#             os.mkdir(path+str(i))
+#         except FileExistsError:
+#             pass
+#         if i != len(starts)-2:
+#             assert len(molecule_lines) == OrigNat + 2, "There seems to be incorrect formatting in the trajectory file, number of atoms != NAT"
+#         else: 
+#             assert len(molecule_lines) >= OrigNat + 2, "There seems to be incorrect formatting in the trajectory file, number of atoms != NAT"
         
-        textDump(molecule_lines, path+str(i)+"/"+str(Name)+"_"+str(i)+".xyz")
-        Molecules[i] = pyscfTools.genMol(path+str(i)+"/"+str(Name)+"_"+str(i)+".xyz", charge, spin, basis, symmetry)
-    return Molecules
+#         textDump(molecule_lines, path+str(i)+"/"+str(Name)+"_"+str(i)+".xyz")
+#         Molecules[i] = pyscfTools.genMol(path+str(i)+"/"+str(Name)+"_"+str(i)+".xyz", charge, spin, basis, symmetry)
+#     return Molecules
 
 def h5Read(keys:list, path:str)->dict:
     hf = h5py.File(path, "r")

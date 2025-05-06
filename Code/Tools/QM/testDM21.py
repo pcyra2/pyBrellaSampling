@@ -4,9 +4,6 @@ from pprint import pprint
 from pyscf import grad as pygrad
 import numpy
 
-# import pyBrellaSampling.Code.Tools.io as io
-# import pyBrellaSampling.Code.Tools.classes as classes
-# import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscf_tools
 import pyscf
 from pyscf import lib
 from pyscf import qmmm, dft, gto, scf, df
@@ -212,22 +209,18 @@ def main():
         return numpy.array(forces)
 
     def NN(mol, charges, charge_locs, dm0=None):
-        mol.verbose=0
-        mf = dft.UKS(mol)
-        mf.xc = "B3LYP"
-        qm_mf = qmmm.mm_charge(mf, charge_locs, charges, unit="Ang")
-        qm_mf.kernel()
-        dm0 =qm_mf.make_rdm1()
         mf = dft.UKS(mol)
         mf._numint = dm21.NeuralNumInt(dm21.Functional.DM21mc)
-        qm_mf = qmmm.mm_charge(mf, charge_locs, charges, unit="Ang").run(dm0=dm0)
+        mf.conv_tol = 1E-6
+        mf.conv_tol_grad = 1E-3
+        qm_mf = qmmm.mm_charge(mf, charge_locs, charges, unit="Ang").run()
         return qm_mf
 
     def fdiff_forces(atoms:molecule, charges, charge_locs, delta, dm0):
         if type(atoms) == pyscf.gto.Mole:
-            molecule = molecule()
-            molecule.from_gtoMole(atoms)
-            atoms = molecule
+            mol = molecule()
+            mol.from_gtoMole(atoms)
+            atoms = mol
             
         mol = atoms.to_gtoMole(False)
 
@@ -314,28 +307,9 @@ def main():
     charges= [1]
     charge_locs = [[0,1,0] ]
     ncharges = len(charges)
-    # for index, line in enumerate(inpFile[1:nat+1]):
-    #     words = line.split()
-    #     atoms[index] = f"{words[3]} {words[0]} {words[1]} {words[2]}"
-    # charges = [float]*ncharges
-    # charge_loc = [tuple]*ncharges
-    # for i, line in enumerate(inpFile[nat+1:]):
-    #     words = line.split()
-    #     charges[i] = float(words[3]) #### WARNING, this should be 3. changed for testing!
-    #     charge_loc[i] = (float(words[0]), float(words[1]), float(words[2]))
-    #     print(f"{charge_loc[i]=}")
-    #     print(f"{charge=}")
-
-    # mol = pyscf_tools.genMol(atoms, charge, spin, basis,False)
-    # molecule = classes.molecule()
-    # molecule.from_atoms_list([classes.atom("O", 0,0,0), classes.atom("H", 1,0,0), classes.atom("H", 0,0,1), ], charge, spin)
-    # mol = gto.M(atom="H 1 0 0; H -1 0 0", basis=basis,unit="Ang", charge=charge, spin=spin)
-    # molecule.from_gtoMole(mol)
     mol = gto.M(atom="O 0 0 0 ; H 1 0 0; H 0 0 1 ", basis=basis,unit="Ang", charge=charge, spin=spin)
-    # mol = gto.M(atom="H 0 0 0",basis=basis,unit="Ang", charge=-1, spin=spin )
     nat = mol.natm
-    # fdiff_forces(mol,charges, charge_locs, 0.1 )
-    mf, = NN(mol, charges, charge_locs)
+    mf = NN(mol, charges, charge_locs)
     dm = mf.make_rdm1()
     grad = fdiff_forces(mol,  charges, charge_locs, 0.01, dm)
     pc_grad = grad_nuc_mm(mf, mol, dm)
@@ -343,7 +317,6 @@ def main():
     result = [str]*(nat+ncharges+1)
     result[0] = f"{mf.e_tot*eh2kcal} {ncharges}"
     for i in range(nat):
-        # print(grad[i][2])
         result[i+1] = f"{grad[i][0]*grad_fix} {grad[i][1]*grad_fix} {grad[i][2]*grad_fix} {chg[1][i]}"
     for i in range(ncharges):
         result[i+nat+1] = f"{pc_grad[i][0]*kcal2pN} {pc_grad[i][1]*kcal2pN} {pc_grad[i][2]*kcal2pN}"
@@ -356,3 +329,7 @@ def main():
 
     stop = time.perf_counter()
     print(f"INFO: Time taken {round(stop - start, 2)} s")
+
+
+if __name__ == "__main__":
+    main()
