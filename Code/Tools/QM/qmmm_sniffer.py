@@ -94,6 +94,7 @@ def run_qmmm():
         # qm_grad = pygrad.UKS(mf)
     # muliken, dipole = mf.analyze()
     muliken = mf.mulliken_pop(verbose=0)
+    
     dm = mf.make_rdm1()
     pc_grad = grad_nuc_mm(mf, mol, dm)
 
