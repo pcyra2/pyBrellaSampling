@@ -43,12 +43,14 @@ def grad_nuc_mm(qmmm, mol,dm): # Credit to pySCF. This is pulled from v.2.8.0 ©
         coords = mm_mol.atom_coords()
         charges = mm_mol.atom_charges()
         # g_mm = numpy.zeros_like(coords)
+        print("Hcore")
         g_mm = grad_hcore_mm(qmmm, mol, dm)
         for i in range(mol.natm):
             # q1 = qm_charges[i]
             q1 = mol.atom_charge(i)
             r1 = mol.atom_coord(i)
             r = lib.norm(coords -r1, axis=1)
+            print("Nuc")
             g_mm -= q1 * numpy.einsum('i,ix,i->ix', charges, coords-r1, 1/r**3)
         return g_mm
 
@@ -93,8 +95,7 @@ def run_qmmm():
         mf, grad = pyscf_tools.DFT(mol, method, "None",False, 3, False, charges, charge_loc)
         # qm_grad = pygrad.UKS(mf)
     # muliken, dipole = mf.analyze()
-    muliken = mf.mulliken_pop(verbose=0)
-    
+    muliken = mf.mulliken_pop(verbose=1)
     dm = mf.make_rdm1()
     pc_grad = grad_nuc_mm(mf, mol, dm)
 
