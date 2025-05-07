@@ -218,7 +218,7 @@ class moleculeClass:
         Returns:
             mol (pyscf.gto.M): pySCF initialised molecule
         """
-        mol = pyscf_tools.genMol(self, self.charge, self.spin, self.basis, symmetry)
+        mol = genMol(self, self.charge, self.spin, self.basis, symmetry)
         return mol
 
 def genMol(atoms, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
