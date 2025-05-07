@@ -31,6 +31,7 @@ def grad_hcore_mm(qmmm, qm_mol, dm):# Credit to pySCF. This is pulled from v.2.8
         fakemol = gto.fakemol_for_charges(coords[i0:i1])
         j3c = df.incore.aux_e2(mol, fakemol, intor, aosym='s1',
                                 comp=3, cintopt=cintopt)
+        print(vars(j3c))
         g[i0:i1] = numpy.einsum('ipqk,qp->ik', j3c * charges[i0:i1], dm).T
     return g
 

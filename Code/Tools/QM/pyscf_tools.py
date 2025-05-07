@@ -452,7 +452,7 @@ def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None, dm0=Non
             qmmm_calc = True
     except: 
         qmmm_calc = True
-    mf = pyscf.scf.UKS(mol)
+    mf = pyscf.scf.RKS(mol)
     mf.conv_tol = 1e-8
     mf.max_cycle = 300
     mf.verbose=0
