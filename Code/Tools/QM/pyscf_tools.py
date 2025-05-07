@@ -8,6 +8,10 @@ from pyscf import cc
 from pyscf import lib
 from pyscf.geomopt.berny_solver import optimize
 from pyscf.hessian import thermo
+
+# import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscf_tools
+import pyBrellaSampling.Code.Tools.io as io
+# from pyBrellaSampling.Code.Tools.classes import atom
 try:
     from pyscf.qsdopt.qsd_optimizer import QSD
 except:
@@ -19,7 +23,6 @@ try:
 except ModuleNotFoundError:
     print("WARNING: DM21 not found... Do not try to use it.")
 
-import pyBrellaSampling.Code.Tools.classes as classes
 
 from pprint import pprint
 
@@ -156,6 +159,67 @@ XC_ALIAS = {
     'B1B95'         : 'B1B95'    ,
     'TPSS0'         : 'TPSS0'    ,
 }
+class atom:
+    def __init__(self, element, x, y, z):
+        self.element = element
+        self.x = x
+        self.y = y
+        self.z = z
+    def echo(self):
+        return f"{self.element} {self.x} {self.y} {self.z}"
+    def translate_x(self, distance):
+        self.x += distance
+    def translate_y(self, distance):
+        self.y += distance
+    def translate_z(self, distance):
+        self.z += distance
+
+class moleculeClass:
+    bohr2ang = 0.529177
+    atoms = []
+    def __init__(self, ):
+        pass
+    def from_xyz(self, path, charge, spin):
+        lines = io.textRead(path)
+        self.nat = int(lines[0])
+        atoms = [atom]*self.nat
+        for i in range(self.nat):
+            items = lines[i+2].split()
+            atoms[i] = atom(items[0], items[1], items[2], items[3])
+        self.atoms = atoms
+        self.charge = charge
+        self.spin = spin
+    def from_atoms_list(self, atoms:atom, charge:int, spin:int):
+        self.nat = len(atoms)
+        self.atoms = atoms
+        self.charge = charge
+        self.spin = spin
+    def from_gtoMole(self, mole:pyscf.gto.Mole):
+        atoms = mole._atom
+        self.nat = mole.natm
+        self.atoms = [atom]*mole.natm
+        for i, at in enumerate(atoms):
+            self.atoms[i] = atom(at[0], round(at[1][0]*self.bohr2ang,6), round(at[1][1]*self.bohr2ang,6), round(at[1][2]*self.bohr2ang,6))
+        self.charge = mole.charge
+        self.spin = mole.spin
+        self.basis = mole.basis
+    def print_coords(self)->str:
+        text = ""
+        for at in self.atoms:
+            text += at.echo()+"\n"
+        return text
+    def to_gtoMole(self, symmetry:bool):
+        """Converts the molecule class into 
+
+        Args:
+            basis (str): basis set to describe the molecule
+            symmetry (bool): Whether to use symmetry
+
+        Returns:
+            mol (pyscf.gto.M): pySCF initialised molecule
+        """
+        mol = pyscf_tools.genMol(self, self.charge, self.spin, self.basis, symmetry)
+        return mol
 
 def genMol(atoms, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
     """Generates a pySCF molecule from a .xyz file
@@ -187,7 +251,7 @@ def genMol(atoms, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
             else:
                 text = text + "; " + atom
         mol = pyscf.gto.Mole(atom=text, unit="Ang")
-    elif type(atoms) == classes.molecule:
+    elif type(atoms) == moleculeClass:
         text = ""
         for atom in atoms.atoms:
             text += f"{atom.element} {atom.x} {atom.y} {atom.z} ;"
@@ -519,9 +583,9 @@ def get_frozen(mol: pyscf.gto.Mole)->int:
     NonH = [atom for atom in elements if atom != "H"]
     return int(len(NonH)*2)
 
-def fdiff_forces(atoms:classes.molecule,dispersion, grid, charges, charge_locs, delta, dm0):
+def fdiff_forces(atoms,dispersion, grid, charges, charge_locs, delta, dm0):
     if type(atoms) == pyscf.gto.mole.Mole:
-        molecule = classes.molecule()
+        molecule = moleculeClass()
         molecule.from_gtoMole(atoms)
         atoms = molecule
 
@@ -560,3 +624,5 @@ def fdiff_forces(atoms:classes.molecule,dispersion, grid, charges, charge_locs, 
         atoms.atoms[i].translate_z(delta)
         forces[i] = [dx, dy, dz]
     return forces
+
+

@@ -35,9 +35,12 @@ def jsonRead(path:str)->dict:
         text (dict): The function `jsonRead` reads a JSON file located at the specified `path` and returns the contents
     of the file as a Python dictionary.
     """
-    with open(path, "r") as f:
-        text = json.load(f, object_hook=parse_float_keys)
-        f.close()
+    try:
+        with open(path, "r") as f:
+            text = json.load(f, object_hook=parse_float_keys)
+            f.close()
+    except FileNotFoundError:
+        text = {}
     return text
 
 def textDump(text, path:str):

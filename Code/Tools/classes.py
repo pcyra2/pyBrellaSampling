@@ -1,10 +1,9 @@
+from pyBrellaSampling.Code.Tools.QM.pyscf_tools import moleculeClass
 import pyBrellaSampling.Code.Tools.io as io
-import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscf_tools
 import os
 import subprocess
 import numpy
 import socket
-import pyscf
 
 
 CurrentPath = os.path.dirname(os.path.abspath(__file__))
@@ -156,68 +155,6 @@ class MMClass:
                               "config":config}
         return file
 
-class atom:
-    def __init__(self, element, x, y, z):
-        self.element = element
-        self.x = x
-        self.y = y
-        self.z = z
-    def echo(self):
-        return f"{self.element} {self.x} {self.y} {self.z}"
-    def translate_x(self, distance):
-        self.x += distance
-    def translate_y(self, distance):
-        self.y += distance
-    def translate_z(self, distance):
-        self.z += distance
-
-class molecule:
-    bohr2ang = 0.529177
-    atoms = []
-    def __init__(self, ):
-        pass
-    def from_xyz(self, path, charge, spin):
-        lines = io.textRead(path)
-        self.nat = int(lines[0])
-        atoms = [atom]*self.nat
-        for i in range(self.nat):
-            items = lines[i+2].split()
-            atoms[i] = atom(items[0], items[1], items[2], items[3])
-        self.atoms = atoms
-        self.charge = charge
-        self.spin = spin
-    def from_atoms_list(self, atoms:atom, charge:int, spin:int):
-        self.nat = len(atoms)
-        self.atoms = atoms
-        self.charge = charge
-        self.spin = spin
-    def from_gtoMole(self, mole:pyscf.gto.Mole):
-        atoms = mole._atom
-        self.nat = mole.natm
-        self.atoms = [atom]*mole.natm
-        for i, at in enumerate(atoms):
-            self.atoms[i] = atom(at[0], round(at[1][0]*self.bohr2ang,6), round(at[1][1]*self.bohr2ang,6), round(at[1][2]*self.bohr2ang,6))
-        self.charge = mole.charge
-        self.spin = mole.spin
-        self.basis = mole.basis
-    def print_coords(self)->str:
-        text = ""
-        for at in self.atoms:
-            text += at.echo()+"\n"
-        return text
-    def to_gtoMole(self, symmetry:bool):
-        """Converts the molecule class into 
-
-        Args:
-            basis (str): basis set to describe the molecule
-            symmetry (bool): Whether to use symmetry
-
-        Returns:
-            mol (pyscf.gto.M): pySCF initialised molecule
-        """
-        mol = pyscf_tools.genMol(self, self.charge, self.spin, self.basis, symmetry)
-        return mol
-
 class Colour:
     def __init__(self, red:int, green:int, blue:int):
         self.red = red
@@ -254,7 +191,7 @@ class orca_class:
             mol_lines = f"* xyz {charge} {spin}"
             for line in mol:
                 mol_lines += line+"\n"
-        elif type(mol) == molecule:
+        elif type(mol) == moleculeClass:
             mol_lines = f"* xyz {charge} {spin}"
             mol_lines += mol.print_coords()
 
@@ -299,8 +236,13 @@ class namd_class:
             pre_inputfile = ""
             path = self.path_cpu
         command = f"{path} {pre_inputfile} {input} > {output}"
-        print(f"Running command: {command}")
-        outlines = subprocess.run([command],shell=True, capture_output=True)
+        if pre_inputfile != "":
+            command_list = [path, pre_inputfile, input, ">", output ]
+        else:
+            command_list = [path, input, ">", output]
+        print(f"Running command: {command_list}")
+        outlines = subprocess.run(command_list,stdout=subprocess.PIPE)
+        print(outlines.stdout)
         return outlines
     def set_global(self, amber:bool, param:str, amber_coor:str):
         if amber == True:
@@ -534,7 +476,6 @@ qmForces            {self.config["qmForces"]}
 colvars         on
 colvarsConfig   {file}
 """
-
     def check_output(self,file:str):
         status = "Not started"
         data = []
@@ -908,8 +849,8 @@ mol addfile {file} waitfor -1
 quit
 """
         io.textDump(lines, "./tmp.tcl")
-        log = subprocess.run(["vmd", "-dispdev", "text", "-e", "tmp.tcl"],
-                                        text = True, capture_output = True)
+        # log = None
+        log = subprocess.run(["vmd", "-dispdev", "text", "-e", "tmp.tcl"],stdout=subprocess.PIPE)
         data = io.textRead("Colvar.dat")
         distance = data[-1].split()[1]
         os.remove("tmp.tcl")

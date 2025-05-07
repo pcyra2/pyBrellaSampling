@@ -14,6 +14,7 @@ def main():
     Inputs = InputParser.ParseInputs(DefInps)
     print(f"INFO: Input file read, starting calculation, Verbosity is set to {Inputs['verbosity']}" if Inputs["verbosity"]>2 else "")
     assert os.path.isdir(Inputs['workdir']), f"ERROR: WorkDirectory does not exist: {Inputs['workdir']}"
+    JobStatus = io.jsonRead(os.path.join(Inputs["workdir"], "JobStatus.json"))
     MM = classes.MMClass("namd", Inputs["parameters"], Inputs["topology"])
     MM.software.change_config(Inputs["MMConfig"])
     HPC = classes.HPCClass(Inputs["hpc"]["hostname"], os.getenv("USERNAME"))
@@ -36,16 +37,21 @@ def main():
 
     ### Initial minimization
     if "minimize" in Inputs["jobs"]:
+        if "minimize" not in JobStatus:
+            JobStatus["minimize"] = {}
+            JobStatus["minimize"]["status"] = "Not started"
         job = Inputs["jobs"]["minimize"]
         file = MM.minimize(job["input"], job["output"], job["steps"])
         print(os.path.join(Inputs['workdir'],job["output"],".conf"))
         io.textDump(file, os.path.join(Inputs['workdir'],job["output"]+".conf"))
         if job["run"].casefold() == "true":
-            if MM.software.check_output(str(os.path.join(Inputs['workdir'],job["output"]+".out")))[0] != "completed":
+            if MM.software.check_output(str(os.path.join(Inputs['workdir'],job["output"]+".out")))[0] != "completed" or JobStatus["minimize"]["status"] == "completed":
                 _ = MM.software.exec(os.path.join(Inputs['workdir'],f"{job['output']}.conf"), os.path.join(Inputs['workdir'],job["output"]+".out"), Inputs["gpu"])
                 status, _ = MM.software.check_output(os.path.join(Inputs['workdir'],job["output"]+".out")) 
                 if status != "completed":
                     raise RuntimeError(f"ERROR: Minimization has had an issue. Status = {status}. Please check the output file: {os.path.join(Inputs['workdir'],job['output']+'.out')}")
+                
+                JobStatus["minimize"]["status"] == status
                 TrackerFile = VMD.GenAnalysisScript([job["output"]])
                 io.textDump(TrackerFile, os.path.join(Inputs['workdir'],"Analysis.tcl"))
                 VMD.RunAnalysis(os.path.join(Inputs['workdir'],"Analysis.tcl"))
@@ -189,6 +195,7 @@ def main():
 
     GlobEnd = time.perf_counter()
     print(f"INFO: Total calculation time was {GlobEnd - GlobStart} s" if Inputs["verbosity"] > 2 else "")
+    io.jsonDump(JobStatus, os.path.join(Inputs["workdir"], "JobStatus.json"))
     for tracker in trackers:
         tracker.dump(Inputs['workdir'])
 
