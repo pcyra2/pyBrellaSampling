@@ -159,6 +159,7 @@ XC_ALIAS = {
     'B1B95'         : 'B1B95'    ,
     'TPSS0'         : 'TPSS0'    ,
 }
+
 class atom:
     def __init__(self, element, x, y, z):
         self.element = element
