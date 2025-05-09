@@ -162,7 +162,7 @@ mkdir /dev/shm/RUNDIR
                 os.mkdir("/dev/shm/RUNDIR")
                 os.mkdir("/dev/shm/RUNDIR/0")
             print("INFO: Starting sniffer")
-            sniffer = os.system("cd /dev/shm/RUNDIR/0 ; qmmm_sniffer &")
+            sniffer = os.system("cd /dev/shm/RUNDIR/0 ; qmmm_sniffer > sniffer.out &")
         for i in range(self.start_index,self.colvar.nsteps):
             runscript += f"cd {i} ; {MMPath} {CommandLines} {job['output']}.conf > {job['output']}.out ; cd ../ \n"
             if job["run"].casefold() == "true":

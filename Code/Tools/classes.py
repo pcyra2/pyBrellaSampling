@@ -5,9 +5,7 @@ import subprocess
 import numpy
 import socket
 
-
 CurrentPath = os.path.dirname(os.path.abspath(__file__))
-
 
 class QMClass:
     def __init__(self,Method="PBE", Basis="6-31G*", charge=0, spin=0, Software="pyscf"):
@@ -239,10 +237,11 @@ class namd_class:
         if pre_inputfile != "":
             command_list = [path, pre_inputfile, input, ">", output ]
         else:
-            command_list = [path, input, ">", output]
+            command_list = [path, input,]
         print(f"Running command: {command_list}")
-        outlines = subprocess.run(command_list,stdout=subprocess.PIPE)
-        print(outlines.stdout)
+        with open(output, "w") as f:
+            outlines = subprocess.run(command_list,stdout=f)
+        # print(outlines.stdout)
         return outlines
     def set_global(self, amber:bool, param:str, amber_coor:str):
         if amber == True:
@@ -839,8 +838,7 @@ quit
                 io.textDump(log.stdout, os.path.join(path, "qm_prep.log"))
             assert os.path.isfile(os.path.join(path, "syst-qm.pdb")), "ERROR: QM zone preparation has failed. Check the 'qm_prep.log'"
     def RunAnalysis(self, file:str):
-         log = subprocess.run(["vmd", "-dispdev", "text", "-e", file],
-                                        text = True, capture_output = True)
+         log = subprocess.run(["vmd", "-dispdev", "text", "-e", file], stdout=subprocess.PIPE).stdout
     def get_colvardistance(self, file:str, colvar_lines = None):
         lines = f""" mol new {self.parmfile} waitfor -1
 mol addfile {file} waitfor -1

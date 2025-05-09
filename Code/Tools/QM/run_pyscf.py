@@ -15,10 +15,13 @@ import time
 import os
 
 def main():
+    start = time.perf_counter()
     inputFilename = "qmmm_0.input"
     while True:
         time.sleep(5)
         if os.path.isfile(inputFilename+".result"):
+            stop = time.perf_counter()
+            print(f"INFO: QM calculation took {stop - start}")
             exit(0)
     
 

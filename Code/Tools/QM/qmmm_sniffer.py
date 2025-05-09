@@ -31,7 +31,6 @@ def grad_hcore_mm(qmmm, qm_mol, dm):# Credit to pySCF. This is pulled from v.2.8
         fakemol = gto.fakemol_for_charges(coords[i0:i1])
         j3c = df.incore.aux_e2(mol, fakemol, intor, aosym='s1',
                                 comp=3, cintopt=cintopt)
-        print(vars(j3c))
         g[i0:i1] = numpy.einsum('ipqk,qp->ik', j3c * charges[i0:i1], dm).T
     return g
 
@@ -44,20 +43,18 @@ def grad_nuc_mm(qmmm, mol,dm): # Credit to pySCF. This is pulled from v.2.8.0 ©
         coords = mm_mol.atom_coords()
         charges = mm_mol.atom_charges()
         # g_mm = numpy.zeros_like(coords)
-        print("Hcore")
         g_mm = grad_hcore_mm(qmmm, mol, dm)
         for i in range(mol.natm):
             # q1 = qm_charges[i]
             q1 = mol.atom_charge(i)
             r1 = mol.atom_coord(i)
             r = lib.norm(coords -r1, axis=1)
-            print("Nuc")
             g_mm -= q1 * numpy.einsum('i,ix,i->ix', charges, coords-r1, 1/r**3)
         return g_mm
 
 
 
-def run_qmmm():
+def run_qmmm(dm=None):
     start = time.perf_counter()
     inpFile = io.textRead(inputFilename)
     os.remove(inputFilename)
@@ -89,7 +86,7 @@ def run_qmmm():
         # qm_grad = pygrad.uhf(mf)
         # pprint(vars(mf.mm_mol))
     elif method.casefold() == "dm21":
-        mf = pyscf_tools.NN_MF(mol, "None", 8, charges, charge_loc)
+        mf = pyscf_tools.NN_MF(mol, "None", 8, charges, charge_loc, dm0=dm)
         dm0 = mf.make_rdm1()
         grad = pyscf_tools.fdiff_forces(mol, "None", 3, charges, charge_loc, 0.05, dm0)
     else:
@@ -110,11 +107,14 @@ def run_qmmm():
     io.textDump(result, f"{inputFilename}.result.OLD")
     end = time.perf_counter()
     print(f"INFO: QM calculation took {end - start} s")
+    return dm
 
 def main():
+    dm = None
+    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     while True:
         if os.path.isfile(inputFilename):
-            run_qmmm()
+            dm = run_qmmm(dm)
         if os.path.isfile("./kill") == True:
             exit(0)
         time.sleep(2)
