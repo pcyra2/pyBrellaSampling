@@ -94,6 +94,7 @@ class UmbrellaClass:
                 pass
         plt.xlabel("Reaction coordinate")
         plt.ylabel("Count")
+        plt.savefig(os.path.join(WhamLocation, "WhamCoverage.eps"))
         if vis == "true":
             plt.show()
         io.textDump(metafiles, "meta_locations.dat")
