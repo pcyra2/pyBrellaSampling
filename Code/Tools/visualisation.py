@@ -1,8 +1,14 @@
-import nglview
-import ase
-from ase.io import read
-from Code.Tools.classes import Colour
-import Code.Tools.io as io
+try:
+    import nglview
+except:
+    pass
+try:
+    import ase
+    from ase.io import read
+except:
+    pass
+from pyBrellaSampling.Code.Tools.classes import Colour
+import pyBrellaSampling.Code.Tools.io as io
 
 
 import plotly
@@ -34,7 +40,7 @@ def VisXYZ(path: str):
     view = nglview.show_ase(mol)
     return view
 
-def Plot2D(x: list, y:list, ylabels:list, title:str, xlabel:str, ylabel:str)->plotly.graph_objects.Figure():
+def Plot2D(x: list, y:list, ylabels:list, title:str, xlabel:str, ylabel:str, template="simple_white")->plotly.graph_objects.Figure():
     """
     Creates a 2D plot using Plotly library in Python.
     
@@ -62,10 +68,11 @@ def Plot2D(x: list, y:list, ylabels:list, title:str, xlabel:str, ylabel:str)->pl
     if title != None or title != "":
         fig.update_layout(title=title)
     fig.update_layout(xaxis_title = xlabel,
-                    yaxis_title = ylabel)
+                    yaxis_title = ylabel,
+                    template=template)
     return fig
 
-def PlotTrajData(Data:dict, PlotKeys:list|str, Title:str, xlabel:str, ylabel:str):
+def PlotTrajData(Data:dict, PlotKeys:list, Title:str, xlabel:str, ylabel:str):
     """
     Plots trajectory data from a dictionary. The dictionary format should be Data[XValue][YKey] = YValue where PlotKeys are a list of dictionary keys for Y plots. 
 

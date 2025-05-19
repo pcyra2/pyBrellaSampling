@@ -213,7 +213,10 @@ def main():
         mf._numint = dm21.NeuralNumInt(dm21.Functional.DM21mc)
         mf.conv_tol = 1E-6
         mf.conv_tol_grad = 1E-3
-        qm_mf = qmmm.mm_charge(mf, charge_locs, charges, unit="Ang").run()
+        if charges != None:
+            qm_mf = qmmm.mm_charge(mf, charge_locs, charges, unit="Ang").run()
+        else:
+            qm_mf = mf.run()
         return qm_mf
 
     def fdiff_forces(atoms:molecule, charges, charge_locs, delta, dm0):
@@ -304,22 +307,23 @@ def main():
     spin = 0
     method = "PBE"
     basis = "6-31G"
-    charges= [1]
-    charge_locs = [[0,1,0] ]
-    ncharges = len(charges)
-    mol = gto.M(atom="O 0 0 0 ; H 1 0 0; H 0 0 1 ", basis=basis,unit="Ang", charge=charge, spin=spin)
+    charges= None#[1]
+    charge_locs = None#[[0,1,0] ]
+    ncharges = 0#len(charges)
+    mol = gto.M(atom="O 0 0 0 ; H 0.758602  0.000000  0.504284; H 0.758602  0.000000  -0.504284 ", basis=basis,unit="Ang", charge=charge, spin=spin)
     nat = mol.natm
     mf = NN(mol, charges, charge_locs)
+    qm_time = time.perf_counter()
     dm = mf.make_rdm1()
     grad = fdiff_forces(mol,  charges, charge_locs, 0.01, dm)
-    pc_grad = grad_nuc_mm(mf, mol, dm)
+    # pc_grad = grad_nuc_mm(mf, mol, dm)
     chg =mf.mulliken_pop()
     result = [str]*(nat+ncharges+1)
     result[0] = f"{mf.e_tot*eh2kcal} {ncharges}"
     for i in range(nat):
         result[i+1] = f"{grad[i][0]*grad_fix} {grad[i][1]*grad_fix} {grad[i][2]*grad_fix} {chg[1][i]}"
-    for i in range(ncharges):
-        result[i+nat+1] = f"{pc_grad[i][0]*kcal2pN} {pc_grad[i][1]*kcal2pN} {pc_grad[i][2]*kcal2pN}"
+    # for i in range(ncharges):
+        # result[i+nat+1] = f"{pc_grad[i][0]*kcal2pN} {pc_grad[i][1]*kcal2pN} {pc_grad[i][2]*kcal2pN}"
 
 
     print("OUTPUT FILE:")
@@ -328,6 +332,7 @@ def main():
     textDump(result, f"qmmm_0.input.result" )
 
     stop = time.perf_counter()
+    print(f"INFO: qm time taken {round(qm_time - start, 2) } s")
     print(f"INFO: Time taken {round(stop - start, 2)} s")
 
 

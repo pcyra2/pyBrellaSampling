@@ -88,7 +88,7 @@ class UmbrellaClass:
                     meta[i+1] = f"{i}\t{val}"
                 metafile = f"{bin}.metadata.dat"
                 io.textDump(meta, os.path.join(metapath,metafile))
-                metafiles.append(f"{os.path.join(metapath,metafile)} {self.data[bin]['Value']} {self.colvar.stepsize} {self.autocorrelate_results[bin]['integral_time']}")
+                metafiles.append(f"{os.path.join(metapath,metafile)} {self.data[bin]['Value']} {self.colvar.HoldForce} {self.autocorrelate_results[bin]['integral_time']}")
                 plt.hist(self.autocorrelate_results[bin]["data"], 100)
             else:
                 pass
@@ -308,7 +308,7 @@ nohup qmmm_sniffer & diswon
                     runscript = ""
                 else:
                     runscript = """#!/bin/bash 
-        mkdir /dev/shm/RUNDIR
+mkdir /dev/shm/RUNDIR
         """
                 
                 for bin in self.data.keys():
