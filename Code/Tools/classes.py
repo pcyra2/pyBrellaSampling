@@ -895,7 +895,9 @@ eval "$RUNLINE wait"
         self.environmentLines = envLines
         if socket.gethostname() == self.hostname:
             self.connected = True
-
+    def add_envs(self, envs:dict):
+        for key, value  in envs.items():
+            self.environmentLines += f"export {key}={value}\n"
     def init_trap(self, ArrayJob:bool):
         if ArrayJob:
             self.trap = """function clean_up { 

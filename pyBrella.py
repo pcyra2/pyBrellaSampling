@@ -24,6 +24,7 @@ def main():
         HPC.init_slurm(Inputs["hpc"]["config"], Inputs["hpc"]["modulefiles"], Inputs["hpc"]["environment"])
     if "max_array" in Inputs["hpc"]:
         HPC.limit_arrayJobs(Inputs["hpc"]["max_array"])
+    
     partitioned = False
     tracker_inf = Inputs["tracker"]
     trackers = [None]*len(tracker_inf.keys())
@@ -110,6 +111,12 @@ def main():
         if "software" not in qmVars:
             qmVars["software"] = "orca"
         QM = classes.QMClass(qmVars["method"], qmVars["basis"], qmVars["charge"], qmVars["spin"], qmVars["software"])
+        if QM.software.name == "pyscf":
+            env_dict = dict(method = QM.Method, 
+            basis = QM.Basis,
+            charge = QM.charge,
+            spin = QM.spin )
+            HPC.add_envs(env_dict) 
         QM.init_qmmm(qmVars["vmd_selection"])
         QM.set_cores(qmVars["cores"])
         QM.software.add_extras(qmVars["extras"])
