@@ -10,7 +10,9 @@ setup(
             'Standalone = pyBrellaSampling.Standalone:main',
             'Benchmark = pyBrellaSampling.Benchmark:main',
             'convert = pyBrellaSampling.Tools.utils:convert',
-            'pyscfQMMM = pyBrellaSampling.Code.Tools.QM.run_pyscf:main'
+            'pyscfQMMM = pyBrellaSampling.Code.Tools.QM.run_pyscf:main',
+            'qmmm_sniffer = pyBrellaSampling.Code.Tools.QM.qmmm_sniffer:main',
+            'dm21_test = pyBrellaSampling.Code.Tools.QM.testDM21:main'
         ],
     },
 )
