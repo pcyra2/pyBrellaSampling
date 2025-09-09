@@ -899,7 +899,7 @@ eval "$RUNLINE wait"
     def init_trap(self, ArrayJob:bool):
         if ArrayJob:
             self.trap = """function clean_up { 
-    echo "Cleaning up $SLURM_ARRAY_TASK_ID
+    echo "Cleaning up $SLURM_ARRAY_TASK_ID"
     rm -rf /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID
     exit
 }
@@ -907,7 +907,7 @@ eval "$RUNLINE wait"
 trap 'clean_up' EXIT"""
         else:
             self.trap = """function clean_up { 
-    echo "Cleaning up $SLURM_ARRAY_TASK_ID
+    echo "Cleaning up $SLURM_ARRAY_TASK_ID"
     rm -rf /dev/shm/$SLURM_JOB_ID
     exit
 }
