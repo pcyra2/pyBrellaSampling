@@ -950,6 +950,9 @@ export ARRAY_TASKFILE={arrayFile}
 export ARRAY_NTASKS=$(cat $ARRAY_TASKFILE | wc -l)
 {self.module_lines}
 {self.environmentLines}
+
+{self.trap}
+
 sh $ARRAY_JOBFILE
 """
         return file
