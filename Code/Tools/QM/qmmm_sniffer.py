@@ -90,7 +90,7 @@ def run_qmmm(dm=None):
         dm0 = mf.make_rdm1()
         grad = pyscf_tools.fdiff_forces(mol, "None", 3, charges, charge_loc, 0.05, dm0)
     else:
-        mf, grad = pyscf_tools.DFT(mol, method, "None",False, 3, False, charges, charge_loc)
+        mf, grad = pyscf_tools.DFT(mol, method, "None",True, 3, False, charges, charge_loc)
         # qm_grad = pygrad.UKS(mf)
     # muliken, dipole = mf.analyze()
     muliken = mf.mulliken_pop(verbose=1)
