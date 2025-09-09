@@ -4,13 +4,17 @@ import pyscf.fci as fci
 import pyscf.grad
 import pyscf.tools.cubegen as cubegen
 # from pyscf.symm import msym
-from pyscf import cc
+from pyscf import cc, dft
 from pyscf import lib
 from pyscf.geomopt.berny_solver import optimize
 from pyscf.hessian import thermo
+import pylibxc
+
+import numpy as np
 
 # import pyBrellaSampling.Code.Tools.QM.pyscf_tools as pyscf_tools
 import pyBrellaSampling.Code.Tools.io as io
+import pyBrellaSampling.UserVars.CustomXC as CustomXC
 # from pyBrellaSampling.Code.Tools.classes import atom
 try:
     from pyscf.qsdopt.qsd_optimizer import QSD
@@ -158,6 +162,8 @@ XC_ALIAS = {
     'REVPBE0'       : 'REVPBE0'  ,
     'B1B95'         : 'B1B95'    ,
     'TPSS0'         : 'TPSS0'    ,
+    'gga_5p'         : 'gga_5p',
+    'gga_2p'        :'gga_2p'
 }
 
 class atom:
@@ -420,7 +426,12 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
             mf_DFT = pyscf.dft.UKS(Molecule)
         elif unrestricted == False:
             mf_DFT = pyscf.dft.RKS(Molecule)
-    mf_DFT.xc = XC
+    if XC.casefold() == "gga_5p":
+        mf_DFT.define_xc_(gga_5p, "GGA")
+    elif XC.casefold() == "gga_2p":
+        mf_DFT.define_xc_(gga_5p, "GGA")
+    else:
+        mf_DFT.xc = XC
     mf_DFT.grids.level = grid
     if Dispersion != "None":
         mf_DFT.disp = Dispersion
@@ -585,7 +596,7 @@ def get_frozen(mol: pyscf.gto.Mole)->int:
     NonH = [atom for atom in elements if atom != "H"]
     return int(len(NonH)*2)
 
-def fdiff_forces(atoms,dispersion, grid, charges, charge_locs, delta, dm0):
+def fdiff_forces(atoms,dispersion, grid, charges, charge_locs, delta, dm0)->list:
     if type(atoms) == pyscf.gto.mole.Mole:
         molecule = moleculeClass()
         molecule.from_gtoMole(atoms)
@@ -627,4 +638,200 @@ def fdiff_forces(atoms,dispersion, grid, charges, charge_locs, delta, dm0):
         forces[i] = [dx, dy, dz]
     return forces
 
+def gga_5p(xc_code, rho, spin=0, relativity=0, deriv=1, omega=None, verbose=None):
+    # This is the 5 param GGA funcitonal
+    kappa = CustomXC.gga_5p_vars["kappa"]
+    kappa2 = CustomXC.gga_5p_vars["kappa2"]
+    mu = CustomXC.gga_5p_vars["mu"]
+    mu2 = CustomXC.gga_5p_vars["mu2"]
+    cut = CustomXC.gga_5p_vars["cut"]
+
+
+    mix=1000
+    hyb, id_fac = dft.libxc.parse_xc('PBE') #using this approach is an artificate from the example script I modfied
+
+    if spin == 0:
+        rho0, dx, dy, dz = rho[:4]
+        gamma = (dx**2 + dy**2 + dz**2)
+
+        inp = {}
+        inp["rho"] = rho0
+        inp["sigma"] = gamma
+        #inp["tau"] = rho[5]
+        exc = 0
+        
+
+        for id,fac in id_fac:
+            func_x = pylibxc.LibXCFunctional('gga_x_pbe',1)
+            func_x.set_dens_threshold(1E-30)
+            func_x2 = pylibxc.LibXCFunctional('gga_x_pbe',1)
+            func_x2.set_dens_threshold(1E-30)
+
+            #evaluate
+            
+            filter_low=np.expand_dims(0.5 + 0.5*np.tanh((cut-rho0)*mix),1)
+            filter_high=np.expand_dims(0.5 + 0.5*np.tanh((-cut+rho0)*mix),1)
+            
+            #___________
+            func_x.set_ext_params([kappa, mu]) #modify here to change parameters
+            ret_x = func_x.compute(inp,do_vxc=True)
+            
+            #___________
+            func_x2.set_ext_params([kappa2, mu2]) #modify here to change parameters
+            ret_x2 = func_x2.compute(inp,do_vxc=True)
+            
+            #___________
+            func_c = pylibxc.LibXCFunctional('gga_c_pbe',1)
+            ret_c = func_c.compute(inp,do_vxc=True)
+            
+
+            k=filter_low*ret_x['zk']+filter_high*ret_x2['zk']+ret_c['zk']
+            v_xc=filter_low*ret_x['vrho']+filter_high*ret_x2['vrho']+ret_c['vrho']
+            v_sigma=filter_low*ret_x['vsigma']+filter_high*ret_x2['vsigma']+ret_c['vsigma']
+
+        exc=k
+        vxc = (v_xc, v_sigma , None, None)
+        fxc=None
+        kxc=None
+
+    if spin == 1:
+        inp = {}
+        inp["rho"] = np.ascontiguousarray(np.array([rho[0][0],rho[1][0]]).T)
+        #print('rho',inp["rho"], np.shape(inp["rho"]))
+        dx_u  = rho[0][1]
+        dy_u  = rho[0][2]
+        dz_u  = rho[0][3]
+        dx_d  = rho[1][1]
+        dy_d  = rho[1][2]
+        dz_d  = rho[1][3]
+        g_uu = dx_u*dx_u+dy_u*dy_u+dz_u*dz_u
+        g_ud = dx_u*dx_d+dy_u*dy_d+dz_u*dz_d
+        g_dd = dx_d*dx_d+dy_d*dy_d+dz_d*dz_d
+        inp["sigma"] = np.ascontiguousarray(np.array([g_uu,g_ud,g_dd]).T)
+
+        exc = 0
+        spin=spin+1
+
+
+        mix=1000
+
+        for id,fac in id_fac:
+            func_x = pylibxc.LibXCFunctional('gga_x_pbe',spin)
+            func_x.set_dens_threshold(1E-30)
+            func_x2 = pylibxc.LibXCFunctional('gga_x_pbe',spin)
+            func_x2.set_dens_threshold(1E-30)
+
+            #evaluate
+    
+            filter_low=np.reshape((0.5 + 0.5*np.tanh((cut-rho[0][0]-rho[1][0])*mix)),(len(rho[0][0]),1))
+            filter_high=np.reshape((0.5 + 0.5*np.tanh((-cut+rho[0][0]+rho[1][0])*mix)),(len(rho[0][0]),1))
+
+            filter_low_v=np.reshape(np.concatenate((filter_low,filter_low)),(2,len(rho[0][0]))).T
+            filter_high_v=np.reshape(np.concatenate((filter_high,filter_high)),(2,len(rho[0][0]))).T
+
+            filter_low_sigma=np.reshape(np.concatenate((filter_low,filter_low,filter_low)),(3,len(rho[0][0]))).T
+            filter_high_sigma=np.reshape(np.concatenate((filter_high,filter_high,filter_high)),(3,len(rho[0][0]))).T
+    
+            #___________
+            func_x.set_ext_params([kappa, mu]) #modify here to change parameters
+            ret_x = func_x.compute(inp,do_vxc=True)
+    
+            #___________
+            func_x2.set_ext_params([kappa2, mu2]) #modify here to change parameters
+            ret_x2 = func_x2.compute(inp,do_vxc=True)
+    
+            #___________
+            func_c = pylibxc.LibXCFunctional('gga_c_pbe',spin)
+            ret_c = func_c.compute(inp,do_vxc=True)
+
+            k=filter_low*ret_x['zk']+filter_high*ret_x2['zk']+ret_c['zk']
+            v_xc=filter_low_v*ret_x['vrho']+filter_high_v*ret_x2['vrho']+ret_c['vrho']
+            v_sigma=filter_low_sigma*ret_x['vsigma']+filter_high_sigma*ret_x2['vsigma']+ret_c['vsigma']
+
+            exc=k
+            vxc = (v_xc, v_sigma , None, None)
+            fxc=None
+            kxc=None
+
+    return exc, vxc, fxc, kxc
+
+def gga_2p(xc_code, rho, spin=0, relativity=0, deriv=0, omega=None, verbose=None):
+    # This funciton is for the 2 parameter GGA like functional
+    kappa = CustomXC.gga_2p_vars["kappa"]
+    mu = CustomXC.gga_2p_vars["mu"]
+    #print('rho shape',np.shape(rho[0]))
+    #rho0, dx, dy, dz = rho[:4]
+    #gamma = (dx**2 + dy**2 + dz**2)
+        
+    hyb, id_fac = dft.libxc.parse_xc('PBE') # this line is an artifact from a demo script I was using.
+    #print('hyb',hyb)
+    #print('id_fac',id_fac)
+    #print('shape rho', np.shape(rho))
+    
+    if spin == 0:
+        rho0, dx, dy, dz = rho[:4]
+        gamma = (dx**2 + dy**2 + dz**2)
+        
+        inp = {}
+        inp["rho"] = rho0
+        inp["sigma"] = gamma
+        #inp["tau"] = rho[5]
+        exc = 0
+        
+        for id,fac in id_fac:
+            func_x = pylibxc.LibXCFunctional('gga_x_pbe',1)
+            func_x.set_dens_threshold(1E-30)
+            
+            func_x.set_ext_params([kappa, mu]) #modify here to change parameters
+            ret_x = func_x.compute(inp,do_vxc=True)
+            
+            func_c = pylibxc.LibXCFunctional('gga_c_pbe',1)
+            ret_c = func_c.compute(inp,do_vxc=True)
+            
+            k=ret_x['zk']+ret_c['zk']
+            v_xc=ret_x['vrho']+ret_c['vrho']
+            v_sigma=ret_x['vsigma']+ret_c['vsigma']
+        
+        exc=k
+        vxc = (v_xc, v_sigma , None, None)
+        fxc=None
+        kxc=None
+    
+    if spin == 1:
+        inp = {}
+        inp["rho"] = np.ascontiguousarray(np.array([rho[0][0],rho[1][0]]).T)
+        #print('rho',inp["rho"])
+        dx_u  = rho[0][1]
+        dy_u  = rho[0][2]
+        dz_u  = rho[0][3]
+        dx_d  = rho[1][1]
+        dy_d  = rho[1][2]
+        dz_d  = rho[1][3]
+        g_uu = dx_u*dx_u+dy_u*dy_u+dz_u*dz_u
+        g_ud = dx_u*dx_d+dy_u*dy_d+dz_u*dz_d
+        g_dd = dx_d*dx_d+dy_d*dy_d+dz_d*dz_d
+        inp["sigma"] = np.ascontiguousarray(np.array([g_uu,g_ud,g_dd]).T)
+
+        exc = 0
+        spin=spin+1
+    
+        for id,fac in id_fac:
+            func_x = pylibxc.LibXCFunctional('gga_x_pbe',spin)
+        
+            func_x.set_ext_params([kappa, mu])
+            ret_x = func_x.compute(inp,do_vxc=True)
+
+            func_c = pylibxc.LibXCFunctional('gga_c_pbe',spin)
+            ret_c = func_c.compute(inp,do_vxc=True)
+        
+            k=ret_x['zk']+ret_c['zk']
+            v_xc=ret_x['vrho']+ret_c['vrho']
+            v_sigma=ret_x['vsigma']+ret_c['vsigma']
+        
+            exc=k
+            vxc = (v_xc, v_sigma , None, None)
+            fxc=None
+            kxc=None
+
+    return exc, vxc, fxc, kxc
 

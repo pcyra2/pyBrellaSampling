@@ -8,6 +8,8 @@ import pyscf
 from pyscf import lib
 from pyscf import qmmm, dft, gto, scf, df
 import density_functional_approximation_dm21 as dm21
+
+
 def genMol(atoms, charge: int, spin:int, basis: str, symmetry:bool)->pyscf.M:
     """Generates a pySCF molecule from a .xyz file
 

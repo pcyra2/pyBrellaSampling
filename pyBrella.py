@@ -130,8 +130,10 @@ def main():
     VMD.colvarPDB_gen(colvar, MM)
     VMD.GenUmbrellaPDB(Inputs['workdir'])
     # pprint(vars(trackers[0]))
-
-    Umbrella = UmbrellaClass(colvar, job["temperature"])
+    try:
+        Umbrella = UmbrellaClass(colvar, job["temperature"])
+    except:
+        Umbrella = UmbrellaClass(colvar,300)
     Umbrella.init_directories(Inputs['workdir'])
 
     ### Umbrella pull
