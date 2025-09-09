@@ -289,7 +289,7 @@ nohup qmmm_sniffer & diswon
 
             io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"))
             if HPC.exists:
-                slurmscript = HPC.gen_slumScript("array-job", job['output'], os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"), len(self.data.keys()))
+                slurmscript = HPC.gen_slumScript("array-job", job['output'], os.path.join(WorkDir, f"Umbrella-{job['output']}.sh"), len(self.data.keys()), True)
                 io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job['output']}.sh"))
                 io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                 if job["run"] == "true":
@@ -322,7 +322,7 @@ mkdir /dev/shm/RUNDIR
 
                 io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"))
                 if HPC.exists:
-                    slurmscript = HPC.gen_slumScript("array-job", f"{job['output']}_{i+1}", os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"), len(self.data.keys()))
+                    slurmscript = HPC.gen_slumScript("array-job", f"{job['output']}_{i+1}", os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"), len(self.data.keys()), True)
                     io.textDump(slurmscript, os.path.join(WorkDir, f"sub-Umbrella-{job['output']}_{i+1}.sh"))
                     io.textDump(HPC.arrayjobscript, os.path.join(WorkDir, "array_job.sh"))
                     if job["run"] == "true":

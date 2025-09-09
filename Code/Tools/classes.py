@@ -895,19 +895,48 @@ eval "$RUNLINE wait"
         self.environmentLines = envLines
         if socket.gethostname() == self.hostname:
             self.connected = True
+
+    def init_trap(self, ArrayJob:bool):
+        if ArrayJob:
+            self.trap = """function clean_up { 
+    echo "Cleaning up $SLURM_ARRAY_TASK_ID
+    rm -rf /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID
+    exit
+}
+
+trap 'clean_up' EXIT"""
+        else:
+            self.trap = """function clean_up { 
+    echo "Cleaning up $SLURM_ARRAY_TASK_ID
+    rm -rf /dev/shm/$SLURM_JOB_ID
+    exit
+}
+
+trap 'clean_up' EXIT"""
+        
+    
     def limit_arrayJobs(self, cap:int):
         self.arrayCap = f"%{cap}"
     def walltime_partition(self, steps:int):
         self.max_steps = steps
         self.partition = True
-    def set_dependency(self, id):
+    def set_dependency(self, id:int):
         self.dependency = f"#SBATCH --depend=afterok:{id}"
-    def gen_slumScript(self, command:str, name:str,  arrayFile=None, arrayLen=0):
+    def gen_slumScript(self, command:str, name:str,  arrayFile=None, arrayLen: int=0, trap: bool=True):
+        if trap:
+            if arrayFile != None:
+                self.init_trap(True)
+            else:
+                self.init_trap(False)
+        else:
+            self.trap = ""
         if command != "array-job":
             file=f"""{self.slurmlines}
 #SBATCH --job-name={name}
 {self.dependency}
 {self.module_lines}
+
+{self.trap}
 
 {command}
 """
