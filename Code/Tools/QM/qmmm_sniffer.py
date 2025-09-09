@@ -90,7 +90,7 @@ def run_qmmm(dm=None):
         dm0 = mf.make_rdm1()
         grad = pyscf_tools.fdiff_forces(mol, "None", 3, charges, charge_loc, 0.05, dm0)
     else:
-        mf, grad = pyscf_tools.DFT(mol, method, "None",True, 3, False, charges, charge_loc)
+        mf, grad = pyscf_tools.DFT(mol, method, "None",False, 3, False, charges, charge_loc)
         # qm_grad = pygrad.UKS(mf)
     # muliken, dipole = mf.analyze()
     muliken = mf.mulliken_pop(verbose=1)
@@ -114,7 +114,7 @@ def main():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     while True:
         if os.path.isfile(inputFilename):
-            dm = run_qmmm(dm)
+            dm = run_qmmm()
         if os.path.isfile("./kill") == True:
             exit(0)
         time.sleep(2)
