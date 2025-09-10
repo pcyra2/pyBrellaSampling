@@ -972,7 +972,10 @@ sh $ARRAY_JOBFILE
         existing_jobs = {}
         status = None
         if self.connected == True:
-            jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
+            try:
+                jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
+            except TypeError:
+                jobs = subprocess.run(["squeue", "-u", "pcyra2"] ).stdout.decode().split("\n")
             for job in jobs[1:]:
                 tags = job.split()
                 if len(tags) != 0:
