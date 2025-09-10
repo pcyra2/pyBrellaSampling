@@ -194,12 +194,13 @@ def main():
         trackers = Umbrella.analyse_completed(Inputs['workdir'], files, MM, VMD,job, trackers)
 
     if "wham" in Inputs["jobs"]:
-        keys = ["wham", "convergence", "vis"]
+        keys = ["wham", "convergence", "vis", "run"]
         job = InputParser.check_keys(Inputs["jobs"]["wham"], keys)
         Umbrella.autocorrelate("prodValues")
         Umbrella.dump_data(os.path.join(Inputs['workdir'], "Umbrella.json"))
         Umbrella.wham_init(os.path.join(Inputs['workdir'], "WHAM"), vis=job["vis"])
-        Umbrella.wham_run()
+        if job["run"].casefold() == "true":
+            Umbrella.wham_run()
 
 
     GlobEnd = time.perf_counter()
