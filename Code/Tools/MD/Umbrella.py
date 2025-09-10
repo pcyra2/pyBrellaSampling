@@ -112,7 +112,10 @@ sed '1d' {os.path.join(metapath, "wham.pmf")} | awk '{"{"}print $1,"",$2{"}"}' >
         io.textDump(whamfile,  "wham.sh")
         self.whamscript = "wham.sh"
     def wham_run(self):
-        wham_out = subprocess.run(f"sh {self.whamscript}", shell=True, capture_output=True)
+        try:
+            wham_out = subprocess.run(f"sh {self.whamscript}", shell=True, capture_output=True)
+        except TypeError:
+            wham_out = subprocess.run(f"sh {self.whamscript}", shell=True, stdout=subprocess.PIPE)
         io.textDump(wham_out.stdout.decode(), self.whamscript.replace(".sh", ".out"))
         if "wham.sh" in wham_out.stderr.decode():
             raise Exception(f"Problem with running wham: {wham_out.stderr.decode()}")
