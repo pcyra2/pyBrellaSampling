@@ -965,7 +965,7 @@ sh $ARRAY_JOBFILE
             try:
                 out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
             except TypeError:
-                out = subprocess.run(["sbatch", filename] ).stdout.decode()
+                out = subprocess.run(["sbatch", filename],stdout = subprocess.PIPE, ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
             print(f"INFO: {filename} submitted. SLURM ID: {words[self.slurmIDindex]}")
@@ -976,9 +976,9 @@ sh $ARRAY_JOBFILE
         status = None
         if self.connected == True:
             try:
-                jobs = subprocess.run(["squeue", "-u", "pcyra2"],capture_output=True ).stdout.decode().split("\n")
+                jobs = subprocess.run(["squeue", "-u", "$USER"],capture_output=True ).stdout.decode().split("\n")
             except TypeError:
-                jobs = subprocess.run(["squeue", "-u", "pcyra2"] ).stdout.decode().split("\n")
+                jobs = subprocess.run(["squeue", "-u", "$USER"], stdout = subprocess.PIPE,).stdout.decode().split("\n")
             for job in jobs[1:]:
                 tags = job.split()
                 if len(tags) != 0:
