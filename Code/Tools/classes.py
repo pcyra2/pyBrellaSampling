@@ -962,7 +962,10 @@ sh $ARRAY_JOBFILE
         return file
     def run_slurmScript(self, filename):
         if self.connected == True:
-            out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
+            try:
+                out = subprocess.run(["sbatch", filename],capture_output=True ).stdout.decode()
+            except TypeError:
+                out = subprocess.run(["sbatch", filename] ).stdout.decode()
             words = out.split()
             self.set_dependency(words[self.slurmIDindex])
             print(f"INFO: {filename} submitted. SLURM ID: {words[self.slurmIDindex]}")
