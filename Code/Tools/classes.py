@@ -976,9 +976,9 @@ sh $ARRAY_JOBFILE
         status = None
         if self.connected == True:
             try:
-                jobs = subprocess.run(["squeue", "-u", "$USER"],capture_output=True ).stdout.decode().split("\n")
+                jobs = subprocess.run(["squeue", "-u", os.environ.get('USER')],capture_output=True ).stdout.decode().split("\n")
             except TypeError:
-                jobs = subprocess.run(["squeue", "-u", "$USER"], stdout = subprocess.PIPE,).stdout.decode().split("\n")
+                jobs = subprocess.run(["squeue", "-u", os.environ.get('USER')], stdout = subprocess.PIPE,).stdout.decode().split("\n")
             for job in jobs[1:]:
                 tags = job.split()
                 if len(tags) != 0:
