@@ -74,9 +74,15 @@ def run_qmmm(dm=None):
     charges = [float]*ncharges
     charge_loc = [tuple]*ncharges
     for i, line in enumerate(inpFile[nat+1:]):
-        words = line.split()
-        charges[i] = float(words[3]) #### WARNING, this should be 3. changed for testing!
-        charge_loc[i] = (float(words[0]), float(words[1]), float(words[2]))
+        try:
+            words = line.split()
+            charges[i] = float(words[3]) #### WARNING, this should be 3. changed for testing!
+            charge_loc[i] = (float(words[0]), float(words[1]), float(words[2]))
+        except IndexError:
+            print(f"ERROR: Problem reading charge {i} from input file. Check that there are {ncharges} charges in the input file."  )
+            print(f"Line is : {line}")
+            charges[i] = 0.0
+            charge_loc[i] = (0.0, 0.0, 0.0)
         # print(f"{charge_loc[i]=}")
         # print(f"{charges[i]=}")
     

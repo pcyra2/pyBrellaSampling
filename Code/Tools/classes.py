@@ -378,7 +378,7 @@ cellOrigin          0 0 0
 """
         else:
             self.config["bincoordinates"] = "bincoordinates      ${input}.restart.coor" # Read in the coordinates
-            self.config["extendedSystem"] = "extendedSystem      ${input}.xsc" # Read in the PBC info. 
+            self.config["extendedSystem"] = "extendedSystem      ${input}.restart.xsc" # Read in the PBC info. 
             self.config["dcdUnitCell"] = "yes"
             self.config["cell"] = ""
         file = f"""### pyBrellaSampling generated input file
