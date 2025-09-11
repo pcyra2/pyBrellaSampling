@@ -55,12 +55,14 @@ def grad_nuc_mm(qmmm, mol,dm): # Credit to pySCF. This is pulled from v.2.8.0 ©
 
 
 def run_qmmm(dm=None):
+    if os.path.isfile(inputFilename+".result"):
+        os.remove(inputFilename+".result")
+    time.sleep(2)
     start = time.perf_counter()
     inpFile = io.textRead(inputFilename)
     os.remove(inputFilename)
     io.textDump(inpFile, inputFilename.replace("input", "RossTemp"))
-    if os.path.isfile(inputFilename+".result"):
-        os.remove(inputFilename+".result")
+
     nat = int(inpFile[0].split()[0])
     ncharges = int(inpFile[0].split()[1])
     atoms = [str]*nat
@@ -120,10 +122,10 @@ def main():
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
     while True:
         if os.path.isfile(inputFilename):
-            dm = run_qmmm()
+            dm = run_qmmm(dm)
         if os.path.isfile("./kill") == True:
             exit(0)
-        time.sleep(2)
+        # time.sleep(2)
 
 if __name__ == "__main__":
     main()
