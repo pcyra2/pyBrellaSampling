@@ -272,7 +272,7 @@ mkdir /dev/shm/RUNDIR/0
 """
                 if MM.qm == "pyscf":
                     runscript += """cd /dev/shm/RUNDIR/0
-nohup qmmm_sniffer & diswon
+nohup qmmm_sniffer & disown
 """
             
             for bin in self.data.keys():
@@ -317,10 +317,17 @@ mkdir /dev/shm/RUNDIR
                 for bin in self.data.keys():
                     if MM.software.check_output(f"{bin}/{job['output']}_{i+1}.out")[0] != "completed":
                         if HPC.exists:
-                            runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+                            if MM.qm == "pyscf":
+                                runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0 ; cd /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0  ; nohup qmmm_sniffer & disown ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ ; touch /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/0/kill ; sleep 10 ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
+
+                            else:
+                                runscript += f"cd {bin} ; sed -i \"s/RUNDIR/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID/g\" {job['output']}_{i+1}.conf ; mkdir /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ ; rm -r /dev/shm/$SLURM_JOB_ID-$SLURM_ARRAY_TASK_ID ;\n"
                         else:
                             runscript += f"cd {bin} ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ \n"
                 if HPC.exists == False:
+                     if MM.qm == "pyscf":
+                        runscript += "touch /dev/shm/RUNDIR/0/kill"
+                        runscript += "sleep 10"
                     runscript += "rm -r /dev/shm/RUNDIR"
 
                 io.textDump(runscript, os.path.join(WorkDir, f"Umbrella-{job['output']}_{i+1}.sh"))

@@ -399,7 +399,7 @@ def FunctionalChecker(Functionals: list) -> list:
         
     return Functionals
 
-def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:int, GPU:bool, charges=None, locs=None):
+def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:int, GPU:bool, charges=None, locs=None, dm0=None):
     """Performs DFT on a given molecule using pySCF. Allows user to chose either GPU or CPU implementation, however if the GPU implementation is unavailable, it will roll-back to the CPU implementation in pySCF. Default SCF convergence = e-12. Default max SCF cycles = 50
 
     Args:
@@ -436,8 +436,10 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
     if Dispersion != "None":
         mf_DFT.disp = Dispersion
     mf_DFT.conv_tol = 1e-7
-    mf_DFT.max_cycle = 300
-    mf_DFT.density_fit()
+    mf_DFT.max_cycle = 100
+    if unrestricted == True:
+        mf_DFT.level_shift=(1.6,0.2)
+    # mf_DFT.density_fit()
     if charges != None:
         mf = qmmm.mm_charge(mf_DFT, locs, charges, unit="Ang" )
         mf.verbose=0
@@ -447,12 +449,12 @@ def DFT(Molecule: pyscf.M, XC: str, Dispersion: str, unrestricted: bool, grid:in
         # except:
             # print("Not using checkfile")
             # pass
-        mf.kernel()
+        mf.kernel(dm0=dm0)
         grad = mf.nuc_grad_method().kernel()
         # mf.dump_chk("tmp.chk")
         return mf, grad
     else:
-        mf_DFT.kernel()
+        mf_DFT.kernel(dm0)
         return mf_DFT
 
 def NN_MF(mol: pyscf.gto.Mole,Dispersion, grid, charges=None, locs=None, dm0=None):
