@@ -325,7 +325,7 @@ mkdir /dev/shm/RUNDIR
                         else:
                             runscript += f"cd {bin} ; {MMPath} {CommandLines} {job['output']}_{i+1}.conf > {job['output']}_{i+1}.out ; cd ../ \n"
                 if HPC.exists == False:
-                     if MM.qm == "pyscf":
+                    if MM.qm == "pyscf":
                         runscript += "touch /dev/shm/RUNDIR/0/kill"
                         runscript += "sleep 10"
                     runscript += "rm -r /dev/shm/RUNDIR"
